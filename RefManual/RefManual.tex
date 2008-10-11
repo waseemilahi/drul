@@ -14,7 +14,7 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{10pt plus 2pt minus 1pt}
 
-\title{Proposal: Drumming Language \textbf{(DruL)}\\
+\title{\textbf{(DruL)} Reference Manual\\
 \vspace{1cm}
 COMS W4115: Programming Language and Translators}
 \author{Team Leader: Rob Stewart (rs2660) \and Thierry Bertin-Mahieux (tb2332) \and Benjamin Warfield (bbw2108) \and Waseem Ilahi (wki2001)}
@@ -32,196 +32,28 @@ COMS W4115: Programming Language and Translators}
 \end{center}
 \end{figure}
 
+
 \newpage
 
+
 \section{Introduction}
-DruL is a programming language designed for composing drum music.  Unlike other more general-purpose music programming languages (ChucK, SuperCollider, Nyquist, Haskore), DruL's focus is on defining and manipulating beat patterns and is unconcerned with pitches, sound durations, or audio effects.  DruL is mainly an imperative programming language, however it borrows ideas (map and filter) from the functional paradigm.  In additions to integers, DruL's main datatypes are pattern and clip. Instruments are defined as constants.
+Here is the language manual.
 
-A pattern is essentially an object that holds binary, discrete, time-series data.  At each discrete-time step, which will henceforth refer to as a beat, there is either a note or a rest.  For the non-musically inclined, a note represents sound produced by the striking of a drum (or similar instrument) and a rest represents the absence of any such sound.  Patterns are immutable.  When a pattern is manipulated, the target pattern remains intact and a new copy is created.
 
-An instrument is one of a pre-defined set of sounds (e.g. drum notes) that can occupy a single beat.
+\section{Language Manual}
 
-A clip is a mapping of patterns to instruments. Clips are processed in sequence as the program runs to produce output which may be audio, sheet-music notation, or a MIDI file.
+\subsection{Lexical Conventions}
 
-DruL is a strictly and staticly typed language. However, types are not explicitly declared, they are inferred.
+\subsubsection{Comments}
 
-DruL programs do not contain any loops or user-defined functions.  All pattern 
-and clip creation and manipulation is done using the map construct described below.
+\subsubsection{Whitespace}
 
-%********************************************************************
-% LANGUAGE DEFINITION
-\section{Language specification}
-There are $3$ data types in DruL: \textbf{int}, \textbf{pattern},
-and \textbf{clip}.
+\subsubsection{Identifiers}
 
-Keywords and arguments are white space delimited. Indentation is not significant.
+\subsubsection{Keywords}
 
-Anything remaining on a line after // is a comment will be ignored by the compiler.
 
-A \textit{map} takes one or many patterns, and iterates over beats on all 
-of them at the same time, from the first beat to the last beat of the longest
-sequence.\\
-A \textit{map} returns a pattern (that can be empty). Inside the map, the last pattern
-created is the one appended to the returned pattern.
+\subsection{Statements}
 
-Here is the list of the 16 reserved keywords:
-\begin{verbatim}
-NULL
-if
-elseif
-else
-rand
-pattern
-concat
-slice
-clip
-instruments
-length
-map
-mapper
-print
-output
-return
-\end{verbatim}
-
-\textbf{Scopes}: There is a general scope, and one scope per \textit{map} 
-(or \textit{mapper}). Variables in the general scope can not be seen
-from within a \textit{map}. Variables defined in a \textit{map} are garbage
-collected at the end of the \textit{map}.
-
-\pagebreak
-
-%*******************************************************************
-% EXAMPLES
-\section{Quick tutorial}
-In this section we give examples of what DruL code will look like, in the form
-of a tutorial.
-
-\subsection{Integers}
-Integers are part of our language. Unlike patterns and clips, they are mutable.
-\begin{verbatim}
-a = 3;
-b = a + 2;
-c = b * 12;
-\end{verbatim}
-
-\subsection{Pattern}
-Patterns are the data type the programmer will likely spend most of their time dealing with.  For convenience, the programmer can supply a string constant made up of 1s and 0s, which will be translated into a pattern: if the character is a 1, there is a note on the corresponding beat; if 0, a rest.
-\begin{verbatim}
-p1 = pattern("101010");
-\end{verbatim}
-Patterns can be concatenated to form new patterns:
-\begin{verbatim}
-pcat = concat(p1 pattern("111000") pattern("1"));
-\end{verbatim}
-\textit{pcat} will be equal to 1010101110001.
-
-There is also a shortcut to concatenate the same pattern many times:
-\begin{verbatim}
-pcat2 = concat(p1 p1 p1);
-pcat3 = pattern("101010").repeat(3);
-pcat4 = p1.repeat(3);
-\end{verbatim}
-\textit{pcat2}, \textit{pcat3}, and \textit{pcat4} are all equivalent.
-
-\subsection{Map}
-Of course, we will not hardcode every pattern we want to create. We use
-map to create meaningful new patterns from existing ones:
-\begin{verbatim}
-p2 = map (p1)
-{
-    if (p1.note) { pattern("11"); }
-    else         { pattern("0");  }
-};
-\end{verbatim}
-This will create the following pattern: 110110110. The goal of a map
-is to easily iterate over a pattern. \textit{p1.note} returns
-\textit{true} if there is a note on the current beat, \textit{false} otherwise.
-If you call map on multiple patterns that are not of the same length,
-the shorter patterns will be padded with \textit{NULL} beats.\\
-
-\subsection{Mapper}
-For ease of use, you can define a \textit{mapper} that contains the behaviour
-used by \textit{map}. We create \textit{p3}, which is the same as
-\textit{p2}:
-\begin{verbatim}
-mapper myMapper (p1)
-{
-    if (p1.note) { return pattern("11"); }
-    else         { return pattern("0");  }
-}
-
-p3 = map (p1) myMapper;
-\end{verbatim}
-\textit{mapper} will be very important when building a standard library
-for the language.
-
-\subsection{More complex examples}
-Now that we have a proper syntax, let's get to more complicated examples.
-We introduce $2$ new features that can be used inside a \textit{map}:
-\textit{prev} and \textit{next}. They give you access to earlier
-and later beats in a pattern, using the syntax \textit{p.prev(n)} and
-\textit{p.next(n)}. 
-%Also, for a pattern \textit{p}, \textit{p.rest} is
-%true if and only if we did not reach the end of this pattern.
-
-\textbf{reduction}: accelerate by cutting one beat out of two
-\begin{verbatim}
-downbeats = pattern("1000100010001000");
-alternate_beats = pattern("10").repeat(8);
-downbeat_diminution = map(downbeats alternate_beats)
-{
-    if     (alternate_beats.rest) { return pattern("");  } // pattern of length 0
-    elseif (downbeats.note)       { return pattern("1"); }
-    else                          { return pattern("0"); }
-}
-\end{verbatim}
-output is: 10101010.
-
-\textbf{improved reduction}: putting a rest (0) only if the $2$ original beats were rest
-\begin{verbatim}
-// this will map "1001100110011001" to "11111111", rather than "10101010"
-one_and_four = pattern("1001100110011001");
-alternate_beats = pattern("10").repeat(8);
-improved_diminution = map(one_and_four alternate_beats)
-{
-    if     (alternate_beats.rest)      { return pattern("");  } // still required
-    elseif (one_and_four.note)         { return pattern("1"); }
-    elseif (one_and_four.next(1).note) { return pattern("1"); }
-    else                               { return pattern("0"); }
-};
-\end{verbatim}
-
-\subsection{Instruments and Clips}
-
-Now that we have a large and varied collection of patterns, we can show how to combine those patterns into clips.  
-
-Before we define any clips, we must tell the compiler what instruments they will use.  This can only be done once per program, and uses the \textit{instruments} function:
-
-\begin{verbatim}
-instruments(hihat bassdrum crash snare);
-\end{verbatim}
-
-Once the instruments are defined, we can create a clip from our existing patterns, using an
-associative-array notation:
-
-\begin{verbatim}
-clip1 = clip
-(
-    bassdrum = downbeats
-    hihat    = alternate_beats
-);
-\end{verbatim}
-
-The same result can be achieved by simply listing the patterns for each instrument in the order they are defined in the \textit{instruments} declaration:
-\begin{verbatim}
-clip2 = clip
-(
-    alternate_beats
-    downbeats
-    // remaining instruments have an empty beat-pattern
-);
-
-\end{verbatim}
 
 \end{document}
