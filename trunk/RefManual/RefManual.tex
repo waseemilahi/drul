@@ -47,8 +47,17 @@ Here is the language manual.
 \subsubsection{Comments}
 
 \subsubsection{Whitespace}
+All spaces, tab, end of line, and return are considered the same 
+and their only used is to seperate the tokens.
+
+\subsubsection{Characters}
+We use ASCII characters.
 
 \subsubsection{Identifiers}
+An identifier may be defined using any uppercase or lowercase character
+or an underscore, followed by any set of uppercase or lowercase character,
+underscore, and digits ($0$ through $9$). The maximum length of an identifier
+is $64$.
 
 \subsubsection{Keywords}
 
@@ -74,11 +83,15 @@ There are $3$ types in Drul: \textbf{int}, \textbf{pattern},
 and \textbf{clip}.
 
 \subsubsection{int}
+We accept only positive int, so any combination of digits
+($0$ through $9$). $0000123$ is interpreted as $123$.
 
 \subsubsection{pattern}
+A pattern is a serie of events and silences.
+
 
 \subsubsection{clip}
-
+A clip is a set of patterns associated with instruments.
 
 \subsection{Statements}
 
@@ -100,6 +113,8 @@ Do we have them?
 
 
 \subsubsection{Assignments}
+We can assign any type to any identifier using the equal ($=$) sign.
+
 
 \subsection{Patterns and patterns operations}
 
