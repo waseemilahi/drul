@@ -63,7 +63,13 @@ Spaces, tab, end of line, and return are all considered the same
 and their only used is to seperate the tokens.
 
 \subsubsection{Characters}
-We use ASCII characters.
+DruL uses the ASCII character set.
+
+\subsubsection{Identifiers}
+An identifier may be defined using any uppercase or lowercase character
+or an underscore, followed by any set of uppercase or lowercase character,
+underscore, and digits ($0$ through $9$). The maximum length of an identifier
+is $64$.
 
 \subsubsection{Keywords}
 
@@ -82,27 +88,28 @@ We use ASCII characters.
 \end{table}
 
 
-\subsubsection{Identifiers}
-An identifier may be defined using any uppercase or lowercase character
-or an underscore, followed by any set of uppercase or lowercase character,
-underscore, and digits ($0$ through $9$). The maximum length of an identifier
-is $64$.
-
 \subsection{Types}
 
-There are $3$ types in Drul: \textbf{int}, \textbf{pattern},
-and \textbf{clip}.
+There are $3$ types in DruL: \textbf{integer}s, \textbf{pattern}s,
+and \textbf{clip}s.  In addition, string constants may be used in DruL source code, but there is no variable type to which they can be directly assigned.
+Values in DruL are strongly typed, but the type of a variable is determined dynamically.
 
-\subsubsection{int}
-We accept only positive integers, so any combination of digits
-($0$ through $9$), such as $0000123$,  is interpreted as $123$.
+\subsubsection{integer}
+All integers are base 10, and may optionally be preceded by a sign ({\tt \textbf + -}).
+Any sequence of digits 
+($0$ through $9$) is valid.  Leading $0$s are ignored, so a sequence such as $0000123$  is interpreted as $123$.
 
 \subsubsection{pattern}
 A pattern is a series of events and silences.
+It can be of any non-negative length.
 
 
 \subsubsection{clip}
 A clip is a set of patterns associated with instruments.
+
+\subsubsection{string}
+
+A string constant begins with an ASCII double-quote character, continues with an arbitrary sequence of ASCII characters other than $\\$ and $''$, and concludes with another $''$ character.  If a $\\$ or $''$ character is desired, it can be escaped using the $\\$ character.
 
 \subsection{Statements}
 
