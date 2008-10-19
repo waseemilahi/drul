@@ -133,8 +133,38 @@ We can assign any type to any identifier using the equal ($=$) sign.
 \subsection{Patterns and pattern operations}
 
 \subsubsection{Patterns}
+A pattern is a set of beats, each beat can be a note or a rest.
+To declare a pattern, DruL uses '0' for rests and '1' for note.
+A pattern can be created in the following way:
+\begin{verbatim}
+  p1 = pattern("101010");
+\end{verbatim}
+which represents the sequence {note,rest,note,rest,note,rest}.
+Its length is $6$.
+
+There are simple operations of patterns included in DruL. We
+can repeat a pattern:
+\begin{verbatim}
+  p2 = pattern("100");
+  p3 = p2.repeat(3);
+  p4 = pattern("100").repeat(3);
+\end{verbatim}
+p3 is "100100100" and so is p4. Two patterns can be concatenated:
+\begin{verbatim}
+  p5 = pattern("111");
+  p6 = pattern("000");
+  p7 = concat(p5 p6);
+\end{verbatim}
+p7 is "111000". \textbf{concat} can takes any positive number of
+patters as argument, patterns are concatenated from left to right.
+Finally, you can have an empty pattern of length 0:
+\begin{verbatim}
+  p8 = pattern("");
+\end{verbatim}
+
 
 \subsubsection{Map}
+
 
 \subsubsection{Mapper}
 Mapper has to be declared before it is used in the file.
