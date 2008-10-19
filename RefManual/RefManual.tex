@@ -164,9 +164,30 @@ Finally, you can have an empty pattern of length 0:
 
 
 \subsubsection{Map}
+A map is used to perform an operation iteratively on a set of patterns.
+Patterns are iterated over from left to right. The output of a map is
+a pattern. For example:
+\begin{verbatim}
+  p9 = pattern("101");
+  p10 = map(p9) {if (p9.note) {return pattern("11")'} else {return  pattern("0");}}
+\end{verbatim}
+p10 is "11011". DruL uses \textbf{p.note} or \textbf{p.rest} to check whether
+the current beat is a note or a rest, 'p' being the name of the input pattern.
 
 
 \subsubsection{Mapper}
+A mapper is the body of a map. It is used when a same operation has to be
+used multiple times, over different sequences.
+For example, the previous example could have been written in the following
+way:
+\begin{verbatim}
+  mapper mymapper (p)
+     {
+         if (p.note) { return pattern("11"); }
+         else        { return pattern("0"); }
+     }
+  p10 = map(p9) mymapper;
+\end{verbatim}
 Mapper has to be declared before it is used in the file.
 
 \subsection{Clips}
