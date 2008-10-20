@@ -299,6 +299,13 @@ output, including strings. For example:
   print "DruL";
   print pattern("01");
 \end{verbatim}
+The representation of a string is the string itself. The representation
+of a pattern is the string that would have been used to initialized
+the pattern. For example, if we have a pattern
+\begin{verbatim}
+  p = pattern("01").repeat(2);
+\end{verbatim}
+it's representation is \textbf{0101}.
 
 \subsubsection{Text}
 Similar as \textbf{print}, DruL can output the representation of any type 
