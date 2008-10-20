@@ -201,8 +201,8 @@ DruL has a limited block structure: only in the context of an \textbf{if}/\textb
 Mapper definitions define a new closed scope (one from within which externally defined variables are not visible); \textbf{if} blocks do not define a new scope, so all variables used within them are visible to the enclosing  block, and vise-versa.
 
 \subsubsection{Namespace}
-DruL has a single namespace shared by variables, built-in functions and 
-mapper names.
+DruL has a namespace shared by variables, built-in functions and 
+mapper names. Additionally, each type has an associated namespace for methods.
 
 \subsubsection{Scoping}
 DruL has one top level scope and one scope per each mapper
