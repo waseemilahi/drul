@@ -65,6 +65,8 @@ or an underscore, followed by any set of uppercase or lowercase character,
 underscore, and digits ($0$ through $9$). The maximum length of an identifier
 is $64$.
 
+All identifiers in a given scope, be they mapper names, variables, or built-in functions, belong to a single namespace.
+
 \subsubsection{Keywords}
 
 
@@ -183,7 +185,7 @@ Mapper name (arg1 arg2  arg3)
 \subsubsection{Blocks}
 DruL has a limited block structure: only in the context of an \textbf{if}/\textbf{elseif}/\textbf{else} sequence or a Mapper Definition statement is a new block needed or allowed.  In these cases, curly braces (``\{\}'') are used to delimit the statement-sequence that falls within the block, and they must contain one or more statements.
 
-Mapper definitions define a new scope, from within which externally defined variables are not visible; \textbf{if} blocks do not define a new scope, so all variables used within them are visible to the enclosing  block, and vise-versa.
+Mapper definitions define a new closed scope (one from within which externally defined variables are not visible); \textbf{if} blocks do not define a new scope, so all variables used within them are visible to the enclosing  block, and vise-versa.
 
 \subsection{Patterns and pattern operations}
 
