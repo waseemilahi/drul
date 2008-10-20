@@ -301,8 +301,8 @@ output, including strings. For example:
 \end{verbatim}
 
 \subsubsection{Text}
-Similar as \textbf{print}, we can output any type to a file. The command
-is:
+Similar as \textbf{print}, DruL can output the representation of any type 
+to a file. The command is:
 \begin{verbatim}
   output.file("myfile.txt","DruL");
   output.file("myfile.txt",pattern("01");
@@ -313,7 +313,7 @@ The function \textbf{output.midi(clip)} outputs a clip as a MIDI file,
 default filename is "output.midi". 
 The function \textbf{output.midi(clip,"my.file")} outputs a clip as a MIDI
 file with filename "my.file". The transformation from clip to MIDI may rely
-on external libraries as MIDGE\footnote{\url{http://www.undef.org.uk/code/midge/}}.
+on external libraries as MIDGE\footnote{\url{http://www.undef.org.uk/code/midge/}}. There is no guarantee on which of the three existing MIDI formats is used.
 
 
 \section{Examples}
