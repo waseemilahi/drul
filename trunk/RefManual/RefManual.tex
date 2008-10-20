@@ -113,22 +113,82 @@ A string constant begins with an ASCII double-quote character, continues with an
 
 \subsection{Statements}
 
-\subsubsection{Expressions}
+In the most common case, a statement consists of a single expression followed by a semicolon (``;'').  Importantly, unlike many languages with similar syntax, DruL does \emph{not} consider a block to be equivalent to a statement.  Instead, statements in DruL take one of the four forms below.
 
+
+
+\subsubsection{Expression Statements}
+
+The basic form of statement, as in most C-like languages, is the expression statement: \emph{expression-statement}: \emph{expression}\textbf{;}
+
+The precedence table for operators in DruL is given here:
+
+\begin{tabular}{ l |l| l}
+\hline\hline
+Operators & Notes & Associativity \\
+\hline $ . $ & Method call & left to right \\
+$-$  $!$ &Unary minus and logical negation & right to left \\
+$*$ $/$ $\%$ & Standard C meanings & left to right \\
+$+$ $-$ & Addition/subtraction & left to right \\
+$<$ $<=$ $>$ $>=$ &  &  \\
+$!=$ $==$ &  & \\
+$\&\&$ &  & \\
+$||$ &  & \\
+\end{tabular}
+
+The subsections that follow use the model of the C Language Reference Manual to indicate the various types of expression.  As in that example. the highest-precedence forms of expression are listed first.
+
+\paragraph{Primary Expressions}
+
+A primary expression consists of a constant (integer or string), an identifier, or a parenthesized expression.
+
+\paragraph{Function and Method calls}
+Right to left.
+
+\paragraph{Unary operations}
+Arithmetic and logical negation.
+
+\paragraph{Standard arithmetic operations}
+
+\paragraph{Comparison operations}
+
+(relation first, then equality)
+
+\paragraph{Logical combination operations}
+
+AND precedes OR.
+
+\subsubsection{Assignment Statements}
+
+\[ assignment-statement: identifier \mathbf{=} expression-statement \]
+
+Assignment in DruL is not a simple operator to be placed in the middle of an expression.  Rather, it is a separate type of statement, which may appear anywhere another statement may appear.  
+
+\emph{assignment-statement}: \emph{identifier} \textbf{=}  \emph{expression-statement}
+
+\subsubsection{Selection Statements}
+
+Selection statements in DruL take the following form: the string \textbf{if}, followed by an expression that returns a boolean result, enclosed in parentheses, followed by an open-brace (``\{''), one or more statements, and a close-brace (``\}'').  This may optionally be followed by one or more \textbf{elseif}s, which are also followed by parentheses and a block of statements, and one \textbf{else}, which omits the test expression but is also followed by a block of statements.
+
+\begin{verbatim}
+if ( expression ) { statement-list } 
+[ elseif (expression) {statement-list} ]*
+else { statement-list}
+\end{verbatim}
+
+\subsubsection{Mapper Definition Statements}
+
+A mapper definition consists of the word \textbf{Mapper}, followed by an identifier, followed by a parenthesized list of space-separated identifiers, followed by a block.
+
+
+Mapper name (arg1 arg2  arg3) {
+	statement-list
+};
 
 \subsubsection{Blocks}
-The curly braces mark the beginning and end of a block.
+DruL has a limited block structure: only in the context of an \textbf{if}/\textbf{elseif}/\textbf{else} sequence or a Mapper Definition statement is a new block needed or allowed.  In these cases, curly braces (``\{\}'') are used to delimit the statement-sequence that falls within the block, and they must contain one or more statements.
 
-\subsubsection{Logical operators}
-$\&\&$, $||$, $==$, etc
-
-
-\subsubsection{Conditional}
-
-
-\subsubsection{Assignments}
-We can assign any type to any identifier using the equal ($=$) sign.
-???
+Mapper definitions define a new scope, from within which externally defined variables are not visible; \textbf{if} blocks do not define a new scope, so all variables used within them are visible to the enclosing  block, and vise-versa.
 
 \subsection{Patterns and pattern operations}
 
