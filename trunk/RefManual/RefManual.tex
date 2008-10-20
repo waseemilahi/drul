@@ -142,7 +142,10 @@ The subsections that follow use the model of the C Language Reference Manual to 
 A primary expression consists of a constant (integer or string), an identifier, or a parenthesized expression.
 
 \paragraph{Function and Method calls}
-Functions and method calls associate right to left.  Depending on the function or method in question, they may return values of any type, including boolean values (which cannot be assigned to variables).
+Functions and method calls associate right to left.  Depending on the function or method in question, they may return values of any type, including boolean values (which cannot be assigned to variables). Arguments to function and method
+calls are passed by value, not by reference.
+
+
 
 \paragraph{Unary operations}
 Arithmetic and logical negation.
@@ -190,16 +193,18 @@ Mapper name (arg1 arg2  arg3)
 };
 \end{verbatim}
 
-\subsection{Blocks and scoping}
+\subsection{Blocks, namespace and scoping}
 
 \subsubsection{Blocks}
 DruL has a limited block structure: only in the context of an \textbf{if}/\textbf{elseif}/\textbf{else} sequence or a Mapper Definition statement is a new block needed or allowed.  In these cases, curly braces (``\{\}'') are used to delimit the statement-sequence that falls within the block, and they must contain one or more statements.
 
 Mapper definitions define a new closed scope (one from within which externally defined variables are not visible); \textbf{if} blocks do not define a new scope, so all variables used within them are visible to the enclosing  block, and vise-versa.
 
-\subsubsection{Scoping}
-DruL has a single namespace shared by variables and mapper names.
+\subsubsection{Namespace}
+DruL has a single namespace shared by variables, built-in functions and 
+mapper names.
 
+\subsubsection{Scoping}
 DruL has one top level scope and one scope per each mapper
 (named or anonymous). Mapper scopes may be nested.
 Each scope has read-only access to all variables and mapper names
@@ -295,7 +300,6 @@ clip1 = clip
     hihat    = alternate_beats
 );
 \end{verbatim}
-
 The same result can be achieved by simply listing the patterns for each instrument in the order they are defined in the \textit{instruments} declaration:
 \begin{verbatim}
 clip2 = clip
@@ -306,7 +310,7 @@ clip2 = clip
 );
 
 \end{verbatim}
-
+The patterns passed into clips are passed by value, not by reference.
 
 
 
@@ -339,8 +343,10 @@ to a file. The command is:
 \end{verbatim}
 
 \subsubsection{MIDI}
-The function \textbf{output.midi("my.file",clip)} outputs a clip as a MIDI
-file with filename "my.file". The transformation from clip to MIDI may rely
+The function \textbf{output.midi("my.file",clip,tempo)} outputs a clip as a MIDI
+file with filename "my.file". \textbf{tempo} is a positive integer that
+represents the beat per minute (BPM). 
+The transformation from clip to MIDI may rely
 on external libraries as MIDGE\footnote{\url{http://www.undef.org.uk/code/midge/}}. There is no guarantee on which of the three existing MIDI formats is used.
 
 
