@@ -142,7 +142,7 @@ The subsections that follow use the model of the C Language Reference Manual to 
 A primary expression consists of a constant (integer or string), an identifier, or a parenthesized expression.
 
 \paragraph{Function and Method calls}
-Right to left.
+Functions and method calls associate right to left.  Depending on the function or method in question, they may return values of any type, including boolean values (which cannot be assigned to variables).
 
 \paragraph{Unary operations}
 Arithmetic and logical negation.
@@ -151,11 +151,11 @@ Arithmetic and logical negation.
 
 \paragraph{Comparison operations}
 
-(relation first, then equality)
+As in most C-family languages (and as shown in the precedence table above), relational operators have precedence over equality tests.  These operators return boolean values, which can be used in \textbf{if} statements but cannot be assigned to variables.
 
 \paragraph{Logical combination operations}
 
-AND precedes OR.
+Here again we follow the conventions of C, and give $\&\&$ precedence over $||$.  These operators require their operands to be boolean values, and return boolean values.
 
 \subsubsection{Assignment Statements}
 
@@ -171,7 +171,7 @@ a variable may be reassigned to a different type.
 
 \subsubsection{Selection Statements}
 
-Selection statements in DruL take the following form: the string \textbf{if}, followed by an expression that returns a boolean result, enclosed in parentheses, followed by an open-brace (``\{''), one or more statements, and a close-brace (``\}'').  This may optionally be followed by one or more \textbf{elseif}s, which are also followed by parentheses and a block of statements, and one \textbf{else}, which omits the test expression but is also followed by a block of statements.
+Selection statements in DruL take the following form: the string \textbf{if}, followed by an expression that returns a boolean result, enclosed in parentheses, followed by an open-brace (``\{''), one or more statements, and a close-brace (``\}'').  This may optionally be followed by one or more \textbf{elseif}s, which are also followed by parentheses and a block of statements, and one (optional) \textbf{else}, which omits the test expression but is also followed by a block of statements.
 
 \begin{verbatim}
 if (expression) { statement-list } 
