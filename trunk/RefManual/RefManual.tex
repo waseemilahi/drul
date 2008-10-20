@@ -104,7 +104,10 @@ A clip is a mapping of patterns to instruments. Clips are processed in sequence 
 
 \subsubsection{string}
 
-A string constant begins with an ASCII double-quote character, continues with an arbitrary sequence of ASCII characters other than $\\$ and $''$, and concludes with another $''$ character.  If a $\\$ or $''$ character is desired, it can be escaped using the $\\$ character.
+A string constant begins with an ASCII double-quote character, continues 
+with an arbitrary sequence of ASCII characters other than $\backslash$ and $''$, 
+and concludes with another $''$ character.  If a $\backslash$ or $''$ character is 
+desired, it can be escaped using the $\backslash$ character.
 
 \subsection{Statements}
 
@@ -182,10 +185,19 @@ Mapper name (arg1 arg2  arg3)
 };
 \end{verbatim}
 
+\subsection{Blocks and scoping}
+
 \subsubsection{Blocks}
 DruL has a limited block structure: only in the context of an \textbf{if}/\textbf{elseif}/\textbf{else} sequence or a Mapper Definition statement is a new block needed or allowed.  In these cases, curly braces (``\{\}'') are used to delimit the statement-sequence that falls within the block, and they must contain one or more statements.
 
 Mapper definitions define a new closed scope (one from within which externally defined variables are not visible); \textbf{if} blocks do not define a new scope, so all variables used within them are visible to the enclosing  block, and vise-versa.
+
+\subsubsection{Scoping}
+DruL has a single namespace shared by variable and mapper names.
+
+DruL has one top level scope and one closed scope per each mapper,
+named and anonymous.
+
 
 \subsection{Patterns and pattern operations}
 
@@ -219,7 +231,7 @@ Finally, you can have an empty pattern of length 0:
   p8 = pattern("");
 \end{verbatim}
 
-\iffalse
+
 \subsubsection{Map}
 A map is used to perform an operation iteratively on a set of patterns.
 Patterns are iterated over from left to right. The output of a map is
@@ -246,7 +258,7 @@ way:
   p10 = map(p9) mymapper;
 \end{verbatim}
 Mapper has to be declared before it is used in the file.
-\fi
+
 
 
 \subsection{Clips}
