@@ -88,6 +88,7 @@ All identifiers in a given scope, be they mapper names, variables, or built-in f
 
 There are $3$ types in DruL: \textbf{integer}s, \textbf{pattern}s,
 and \textbf{clip}s.  In addition, string constants may be used in DruL source code, but there is no variable type to which they can be directly assigned.
+Likewise, boolean expressions exist, but can not be assigned to variables.
 Values in DruL are strongly typed, but the type of a variable is determined dynamically.
 
 \subsubsection{integer}
@@ -158,11 +159,15 @@ AND precedes OR.
 
 \subsubsection{Assignment Statements}
 
-\[ assignment-statement: identifier \mathbf{=} expression-statement \]
-
 Assignment in DruL is not a simple operator to be placed in the middle of an expression.  Rather, it is a separate type of statement, which may appear anywhere another statement may appear.  
 
+\begin{center}
 \emph{assignment-statement}: \emph{identifier} \textbf{=}  \emph{expression-statement}
+\end{center}
+
+Assignment is polymorphic: the same syntax is used to assign variables to
+integers, patterns and clips. Furthermore, due to DruL's dynamic typing,
+a variable may be reassigned to a different type.
 
 \subsubsection{Selection Statements}
 
@@ -193,11 +198,13 @@ DruL has a limited block structure: only in the context of an \textbf{if}/\textb
 Mapper definitions define a new closed scope (one from within which externally defined variables are not visible); \textbf{if} blocks do not define a new scope, so all variables used within them are visible to the enclosing  block, and vise-versa.
 
 \subsubsection{Scoping}
-DruL has a single namespace shared by variable and mapper names.
+DruL has a single namespace shared by variables and mapper names.
 
-DruL has one top level scope and one closed scope per each mapper,
-named and anonymous.
-
+DruL has one top level scope and one scope per each mapper
+(named or anonymous). Mapper scopes may be nested.
+Each scope has read-only access to all variables and mapper names
+defined in the scopes above it in the scope hierarchy.
+This allows for recursive mappers.
 
 \subsection{Patterns and pattern operations}
 
