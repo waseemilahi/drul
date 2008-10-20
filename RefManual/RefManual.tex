@@ -288,12 +288,27 @@ clip2 = clip
 
 
 \subsection{Outputs}
+DruL has two kinds of outputs, the first one display a straightforward
+representation of some data, the second one transform a clip into a
+more complex representation, like MIDI.
 
 \subsubsection{Standard output}
+The \textbf{print} statement displays any type to the standard
+output, including strings. For example:
+\begin{verbatim}
+  print "DruL";
+  print pattern("01");
+\end{verbatim}
 
 \subsubsection{Text}
 
 \subsubsection{MIDI}
+The function \textbf{output.midi(clip)} outputs a clip as a MIDI file,
+default filename is "output.midi". 
+The function \textbf{output.midi(clip,"my.file")} outputs a clip as a MIDI
+file with filename "my.file". The transformation from clip to MIDI may rely
+on external libraries as MIDGE\footnote{\url{http://www.undef.org.uk/code/midge/}}.
+
 
 \section{Examples}
 In this section we give examples of what DruL code will look like, in the form
