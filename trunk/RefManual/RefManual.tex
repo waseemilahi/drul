@@ -37,15 +37,9 @@ COMS W4115: Programming Language and Translators}
 
 
 \section{Introduction}
-DruL is a programming language designed for composing drum music.  Unlike other more general-purpose music programming languages (ChucK, SuperCollider, Nyquist, Haskore), DruL's focus is on defining and manipulating beat patterns and is unconcerned with pitches, sound durations, or audio effects.  DruL is mainly an imperative programming language, however it borrows ideas (map and filter) from the functional paradigm.  In additions to integers, DruL's main datatypes are pattern and clip. Instruments are defined as constants.
+DruL is a programming language designed for composing drum music.  Unlike other more general-purpose music programming languages (ChucK, SuperCollider, Nyquist, Haskore), DruL's focus is on defining and manipulating beat patterns and is unconcerned with pitches, sound durations, or audio effects.
 
-A pattern is essentially an object that holds binary, discrete, time-series data.  At each discrete-time step, which will henceforth refer to as a beat, there is either a note or a rest.  For the non-musically inclined, a note represents sound produced by the striking of a drum (or similar instrument) and a rest represents the absence of any such sound.  Patterns are immutable.  When a pattern is manipulated, the target pattern remains intact and a new copy is created.
-
-An instrument is one of a pre-defined set of sounds (e.g. drum notes) that can occupy a single beat.
-
-A clip is a mapping of patterns to instruments. Clips are processed in sequence as the program runs to produce output which may be audio, sheet-music notation, or a MIDI file.
-
-DruL is a strictly and staticly typed language. However, types are not explicitly declared, they are inferred.
+DruL is mainly an imperative programming language, however it borrows ideas (map and filter) from the functional paradigm.  In additions to integers, DruL's main datatypes are pattern and clip. Instruments are defined as constants.  See below for further details.
 
 DruL programs do not contain any loops or user-defined functions.  All pattern 
 and clip creation and manipulation is done using the map construct described below.
@@ -96,16 +90,15 @@ Values in DruL are strongly typed, but the type of a variable is determined dyna
 
 \subsubsection{integer}
 All integers are base 10, and may optionally be preceded by a sign ({\tt \textbf + -}).
-Any sequence of digits 
-($0$ through $9$) is valid.  Leading $0$s are ignored, so a sequence such as $0000123$  is interpreted as $123$.
+Any sequence of digits ($0$ through $9$) is valid.  Leading $0$s are ignored, so a sequence such as $0000123$  is interpreted as $123$.  Integers are mutable.
 
 \subsubsection{pattern}
-A pattern is a series of events and silences.
-It can be of any non-negative length.
-
+A pattern is essentially an object that holds binary, discrete, time-series data.  At each discrete-time step, which will henceforth refer to as a beat, there is either a note or a rest.  For the non-musically inclined, a note represents sound produced by the striking of a drum (or similar instrument) and a rest represents the absence of any such sound.  Patterns are immutable.  When a pattern is manipulated, the target pattern remains intact and a new copy is created.  The length of a patten can be any non-negative integer.
 
 \subsubsection{clip}
-A clip is a set of patterns associated with instruments.
+
+An instrument is one of a pre-defined set of sounds (e.g. drum notes) that can occupy a single beat.
+A clip is a mapping of patterns to instruments. Clips are processed in sequence as the program runs to produce output which may be audio, sheet-music notation, or a MIDI file.  Clips are immutable.
 
 \subsubsection{string}
 
@@ -171,19 +164,21 @@ Assignment in DruL is not a simple operator to be placed in the middle of an exp
 Selection statements in DruL take the following form: the string \textbf{if}, followed by an expression that returns a boolean result, enclosed in parentheses, followed by an open-brace (``\{''), one or more statements, and a close-brace (``\}'').  This may optionally be followed by one or more \textbf{elseif}s, which are also followed by parentheses and a block of statements, and one \textbf{else}, which omits the test expression but is also followed by a block of statements.
 
 \begin{verbatim}
-if ( expression ) { statement-list } 
-[ elseif (expression) {statement-list} ]*
-else { statement-list}
+if (expression) { statement-list } 
+[ elseif (expression) { statement-list } ]*
+else { statement-list }
 \end{verbatim}
 
 \subsubsection{Mapper Definition Statements}
 
 A mapper definition consists of the word \textbf{Mapper}, followed by an identifier, followed by a parenthesized list of space-separated identifiers, followed by a block.
 
-
-Mapper name (arg1 arg2  arg3) {
-	statement-list
+\begin{verbatim}
+Mapper name (arg1 arg2  arg3)
+{
+    statement-list
 };
+\end{verbatim}
 
 \subsubsection{Blocks}
 DruL has a limited block structure: only in the context of an \textbf{if}/\textbf{elseif}/\textbf{else} sequence or a Mapper Definition statement is a new block needed or allowed.  In these cases, curly braces (``\{\}'') are used to delimit the statement-sequence that falls within the block, and they must contain one or more statements.
@@ -194,12 +189,12 @@ Mapper definitions define a new scope, from within which externally defined vari
 
 \subsubsection{Patterns}
 A pattern is a set of beats, each beat can be a note or a rest.
-To declare a pattern, DruL uses '0' for rests and '1' for note.
+To declare a pattern, DruL uses `0' for rests and `1' for note.
 A pattern can be created in the following way:
 \begin{verbatim}
   p1 = pattern("101010");
 \end{verbatim}
-which represents the sequence {note,rest,note,rest,note,rest}.
+which represents the sequence {note, rest, note, rest, note, rest}.
 Its length is $6$.
 
 There are simple operations of patterns included in DruL. We
@@ -242,10 +237,10 @@ For example, the previous example could have been written in the following
 way:
 \begin{verbatim}
   mapper mymapper (p)
-     {
-         if (p.note) { return pattern("11"); }
-         else        { return pattern("0"); }
-     }
+  {
+      if (p.note) { return pattern("11"); }
+      else        { return pattern("0");  }
+  }
   p10 = map(p9) mymapper;
 \end{verbatim}
 Mapper has to be declared before it is used in the file.
@@ -254,8 +249,43 @@ Mapper has to be declared before it is used in the file.
 
 \subsubsection{Instruments}
 
+Before we define any clips, we must tell the compiler what instruments they will use.
+This can only be done once per program, and uses the instruments function.  This function is unique in that it can take a variable number of arguments.  Each argument is the name of an instrument to be defined.  In the example below, four instruments are defined:
+
+\begin{verbatim}
+instruments(hihat bassdrum crash snare);
+\end{verbatim}
+
+Instruments must be defined at the beginning of a DruL program, before any clips have been defined.
 
 \subsubsection{Clips}
+
+A clip represents a collection of patterns to be played in parallel, where each pattern is played on a single instrument.
+
+Once the instruments are defined, we can create a clip from our existing patterns, using an
+associative-array notation:
+
+\begin{verbatim}
+clip1 = clip
+(
+    bassdrum = downbeats
+    hihat    = alternate_beats
+);
+\end{verbatim}
+
+The same result can be achieved by simply listing the patterns for each instrument in the order they are defined in the \textit{instruments} declaration:
+\begin{verbatim}
+clip2 = clip
+(
+    alternate_beats
+    downbeats
+    // remaining instruments have an empty beat-pattern
+);
+
+\end{verbatim}
+
+
+
 
 \subsection{Outputs}
 
@@ -270,7 +300,9 @@ In this section we give examples of what DruL code will look like, in the form
 of a tutorial.
 
 \subsection{Integers}
-Integers are part of our language. Unlike patterns and clips, they are mutable.
+
+Integer values can be assigned to variables and used in expresisons as follows:
+
 \begin{verbatim}
 a = 3;
 b = a + 2;
@@ -363,39 +395,5 @@ improved_diminution = map(one_and_four alternate_beats)
     else                               { return pattern("0"); }
 };
 \end{verbatim}
-
-\subsection{Instruments and Clips}
-
-Now that we have a large and varied collection of patterns, we can show how to combine those patterns into clips.  
-
-Before we define any clips, we must tell the compiler what instruments they will use.  This can only be done once per program, and uses the \textit{instruments} function:
-
-\begin{verbatim}
-instruments(hihat bassdrum crash snare);
-\end{verbatim}
-
-Once the instruments are defined, we can create a clip from our existing patterns, using an
-associative-array notation:
-
-\begin{verbatim}
-clip1 = clip
-(
-    bassdrum = downbeats
-    hihat    = alternate_beats
-);
-\end{verbatim}
-
-The same result can be achieved by simply listing the patterns for each instrument in the order they are defined in the \textit{instruments} declaration:
-\begin{verbatim}
-clip2 = clip
-(
-    alternate_beats
-    downbeats
-    // remaining instruments have an empty beat-pattern
-);
-
-\end{verbatim}
-
-
 
 \end{document}
