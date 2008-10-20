@@ -219,7 +219,7 @@ Finally, you can have an empty pattern of length 0:
   p8 = pattern("");
 \end{verbatim}
 
-
+\iffalse
 \subsubsection{Map}
 A map is used to perform an operation iteratively on a set of patterns.
 Patterns are iterated over from left to right. The output of a map is
@@ -246,6 +246,8 @@ way:
   p10 = map(p9) mymapper;
 \end{verbatim}
 Mapper has to be declared before it is used in the file.
+\fi
+
 
 \subsection{Clips}
 
@@ -314,13 +316,11 @@ Similar as \textbf{print}, DruL can output the representation of any type
 to a file. The command is:
 \begin{verbatim}
   output.file("myfile.txt","DruL");
-  output.file("myfile.txt",pattern("01");
+  output.file("myfile.txt",pattern("01"));
 \end{verbatim}
 
 \subsubsection{MIDI}
-The function \textbf{output.midi(clip)} outputs a clip as a MIDI file,
-default filename is "output.midi". 
-The function \textbf{output.midi(clip,"my.file")} outputs a clip as a MIDI
+The function \textbf{output.midi("my.file",clip)} outputs a clip as a MIDI
 file with filename "my.file". The transformation from clip to MIDI may rely
 on external libraries as MIDGE\footnote{\url{http://www.undef.org.uk/code/midge/}}. There is no guarantee on which of the three existing MIDI formats is used.
 
