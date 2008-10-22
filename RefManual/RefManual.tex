@@ -477,7 +477,7 @@ Consult the definitions above for verification purposes.
 //This code manipulates some patterns, associate them to instruments and
 //sends them to outputs.
 //First the Instrument definition. It has to be done before 
-//any clips are created, otherwise there will be a compile time error.
+//any clips are created, otherwise there will be an error.
 
 instruments(hihat bassdrum crash snare); //define four instruments
 
@@ -497,11 +497,14 @@ p4 = pattern("1");//pattern with only one 'note' in it.
 
 p_concat = concat(p1 pattern("11110000") pattern("00011"));
 
-//Make a new pattern using above patterns and the library methods 'repeat' and 'slice'. 
+//Make a new pattern using above patterns and 
+//the library methods 'repeat' and 'slice'. 
 
-p_custom = concat(p2 p3.repeat(2) p4.repeat(3) p3.repeat(2) p4.repeat(4) p_concat );
+p_custom = concat( p2 p3.repeat(2) p4.repeat(3) 
+    p3.repeat(2) p4.repeat(4) p_concat );
 p_custom_new = concat(p_custom p3.repeat(2) p_concat p4.repeat(3));
-p_new = concat( p_custom_new.slice(4,10) p_concat.slice(5,p1.length) p3.repeat(7) );
+p_new = concat( p_custom_new.slice(4,10) 
+    p_concat.slice(5,p1.length) p3.repeat(7) );
 
 \end{verbatim}
 \clearpage
@@ -518,7 +521,7 @@ P_concat_new = concat(p_concat p_custom);
 p_new_rev = map (p_new)
 {
     if ($1.rest) { pattern("1"); }
-    else 					         { pattern("0");  }
+    else 	       { pattern("0");  }
 };
 
 //Mapper definitions. 
@@ -526,22 +529,22 @@ p_new_rev = map (p_new)
 mapper newMapper1 (p_any)
 {
     if (p_any.note) 			 { return pattern("1"); }
-    else         					 { return pattern("");  }
+    else        	   	 { return pattern("");  }
 }
 
 mapper newMapper2 (p_any alternate_beats)
 {
-    if     (alternate_beats.rest) { return pattern("");  } // pattern of length 0
-    elseif (p_any.note)   				{ return pattern("1"); }
-    else                          { return pattern("0"); }
+    if (alternate_beats.rest) { return pattern("");} //pattern of length 0
+    elseif (p_any.note)       { return pattern("1");}
+    else                      { return pattern("0");}
 }
 
 mapper improved_newMapper2(p_any alternate_beats)
 {
-    if     (alternate_beats.rest)      { return pattern("");  } // still required
-    elseif (p_any.note)		             { return pattern("1"); }
-    elseif (p_any.next(1).note)				 { return pattern("1"); }
-    else                               { return pattern("0"); }
+    if (alternate_beats.rest)   { return pattern("");  }
+    elseif (p_any.note)         { return pattern("1"); }
+    elseif (p_any.next(1).note) { return pattern("1"); }
+    else                        { return pattern("0"); }
 }
 
 p_custom_new_notes 		 = map (p_custom_new) myMapper1;
@@ -563,10 +566,10 @@ print("END OF OUTPUT");
 
 clip_complete = clip
 (
-hihat		 = p_concat_new_downbeats
-bassdrum = p_custom_new_notes
-crash 	 = p_new_rev
-snare		 = p_new
+ hihat    = p_concat_new_downbeats 
+ bassdrum = p_custom_new_notes
+ crash    = p_new_rev
+ snare    = p_new
 );
 
 //output clip as a midi file
