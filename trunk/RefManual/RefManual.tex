@@ -84,10 +84,10 @@ All identifiers in a given scope, be they mapper names, variables, or built-in f
 \begin{table}[htb]
 \begin{center} 
 \begin{tabular}{llll} 
-  NULL   & rand    & clip       & mapper \\
+  return   & rand    & clip       & mapper \\
   if     & pattern & instrument & print  \\
-  elseif & concat  & length     & output \\
-  else   & slice   & map        & return
+  elseif & concat  & map     & output \\
+  else   & true    & false &
 \end{tabular}
 %\caption{\small{.}}
 \label{tab:keywords}
@@ -301,10 +301,9 @@ raise an error. Example:
 \textit{psub} is "010".
 
 
-
 Finally, you can have an empty pattern of length $0$:
 \begin{verbatim}
-p8 = pattern("");
+  p8 = pattern("");
 \end{verbatim}
 
 
@@ -327,11 +326,11 @@ p10 is ``11011''.
 
 \textbf{map} takes a sequence of pattern arguments and followed by a mapper function.  In the above example the mapper function is defined anonymously within curly braces.
 
-Within a mapper function, the current beat of each pattern argument is aliased to the special mapper variables \$1, \$2, \$3... and so on.  This notation is mandatory in anonymous mapper functions such as the example above.
+Within a mapper function, the current beat of each pattern argument is aliased to the special mapper variables \$1, \$2, \$3... and so on.  This notation is mandatory in anonymous mapper functions such as the example above. If you use \$N while there is fewer than N arguments, DruL will raise an error.
 
-DruL uses the \textbf{beat} methods \textbf{note} and \textbf{rest} to check whether
-the current beat is a note or a rest.  
-\textit{\$1.note} returns \textit{true} if there is a note on the current beat in the first pattern argument, and \textit{false} otherwise.
+DruL uses the \textbf{beat} methods \textbf{note}, \textbf{rest} and \textbf{null} to check whether
+the current beat is a note, a rest, or null.  
+\textit{\$1.note} returns \textbf{true} if there is a note on the current beat in the first pattern argument, and \textbf{false} otherwise.
 
 DruL uses the \textbf{beat} methods \textbf{prev} and \textbf{next} to access the previous and following beats of the pattern to which a given beat belongs. These methods can be passed a single argument which specifies how far forward or back in the pattern to go.  For example:
 \begin{verbatim}
@@ -378,13 +377,14 @@ A mapper function must be defined before it is used.
 \subsubsection{Instruments}
 
 Before we define any clips, we must tell the compiler what instruments they will use.
-This can only be done once per program, and uses the instruments function.  This function is unique in that it can take a variable number of arguments.  Each argument is the name of an instrument to be defined.  In the example below, four instruments are defined:
+This can only be done once per program, and uses the instruments function.  This function can take a variable number of arguments.  Each argument is the name of an instrument to be defined.  In the example below, four instruments are defined:
 
 \begin{verbatim}
 instruments(hihat bassdrum crash snare);
 \end{verbatim}
 
-Instruments must be defined at the beginning of a DruL program, before any clips have been defined.
+Instruments must be defined before any clips have been defined. This function 
+can only be called once.
 
 \subsubsection{Clips}
 
