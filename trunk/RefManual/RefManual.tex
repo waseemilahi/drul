@@ -437,7 +437,7 @@ P_concat_new = concat(p_concat p_custom);
 
 p_new_rev = map (p_new)
 {
-    if (p_custom.rest) { pattern("1"); }
+    if ($1.rest) { pattern("1"); }
     else 					         { pattern("0");  }
 };
 
