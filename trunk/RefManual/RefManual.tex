@@ -275,7 +275,7 @@ Patterns are iterated over from left to right. The output of a map is
 a pattern. For example:
 \begin{verbatim}
   p9 = pattern("101");
-  p10 = map(p9) {if (p9.note) {return pattern("11")'} else {return  pattern("0");}}
+  p10 = map(p9) {if (p9.note) {return pattern("11")'} else {return  pattern("0");}};
 \end{verbatim}
 p10 is "11011". DruL uses \textbf{p.note} or \textbf{p.rest} to check whether
 the current beat is a note or a rest, 'p' being the name of the input pattern.
@@ -436,7 +436,7 @@ p_new_rev = map (p_new)
 {
     if (p_custom.rest) { pattern("1"); }
     else 					         { pattern("0");  }
-}
+};
 
 //Mapper definitions. 
 
