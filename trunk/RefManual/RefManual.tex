@@ -419,8 +419,8 @@ The patterns passed into clips are passed by value, not by reference.
 
 \subsection{Outputs}
 
-DruL has two kinds of outputs, the first one display a straightforward
-representation of some data, the second one transform a clip into a
+DruL has two kinds of outputs, the first one displays a
+representation of some data, the second one transforms a clip into a
 more complex representation, like MIDI.
 
 \subsubsection{Standard output}
@@ -433,11 +433,13 @@ print pattern("01");
 \end{verbatim}
 
 The representation of a string is the string itself. The representation
-of a pattern is the string that would have been used to initialized
+of a pattern is the string that would have been used to initialize
 the pattern. For example, if we have a pattern
 \begin{verbatim}
-  p = pattern("01").repeat(2); //p = 0101
+  p = pattern("01").repeat(2);
+  print(p);
 \end{verbatim}
+The output is "0101";
 
 \subsubsection{Text}
 
