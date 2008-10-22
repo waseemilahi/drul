@@ -77,6 +77,8 @@ or an underscore, followed by any sequence of uppercase or lowercase characters,
 underscores, and digits ($0$ through $9$). The maximum length of an identifier
 is $64$ characters.
 
+In addition, within the context of a mapper, special variables \$1 through \$$n$ (where $n$ is the number of patterns passed to the mapper) are defined as read-only aliases (see section \ref{MapSection} for more details on this feature).
+
 All identifiers in a given scope, be they mapper names, variables, or built-in functions, belong to a single namespace.
 
 \subsubsection{Keywords}
@@ -93,8 +95,6 @@ All identifiers in a given scope, be they mapper names, variables, or built-in f
 \label{tab:keywords}
 \end{center} 
 \end{table}
-Also, the ``\$'' character is used to refer to arguments in mapper functions.
-
 
 
 
@@ -308,7 +308,7 @@ Finally, you can have an empty pattern of length $0$:
 
 
 
-\subsubsection{Map}
+\subsubsection{Map}\label{MapSection}
 
 The \textbf{map} construct is used to create new patterns from existing ones.
 \textbf{map} performs an operation iteratively on a set of patterns.
@@ -348,7 +348,7 @@ Each new pattern constructed by map begins as an empty string.  As the pattern a
 
 Variables defined in a mapper function are garbage collected at the end of the map.
 
-\subsubsection{Mapper}\label{MapSection}
+\subsubsection{Mapper}
 
 Mapper functions may also be defined with a name, to be used elsewhere in the program.
 
