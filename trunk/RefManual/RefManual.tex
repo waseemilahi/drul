@@ -114,6 +114,10 @@ Any sequence of digits ($0$ through $9$) is valid.  Leading $0$s are ignored, so
 
 A pattern is essentially an object that holds binary, discrete, time-series data.  At each discrete-time step, which will henceforth be referred to as a beat, there is either a note or a rest.  For the non-musically inclined, a note represents sound produced by the striking of a drum (or similar instrument) and a rest represents the absence of any such sound.  Patterns are immutable.  When a pattern is manipulated, the target pattern remains intact and a new copy is created.  The length of a patten can be any non-negative integer.
 
+\subsubsection{beat}
+
+A beat is a lightweight object that cannot be created directly by the user: it exists only within a mapper (for more discussion of which, see section \ref{MapSection} below).  It gives direct access to information about a single beat of a \textbf{pattern} object (including the beats surrounding it).
+
 \subsubsection{clip}
 
 An instrument is one of a pre-defined set of sounds (e.g. drum notes) that can occupy a single beat.
@@ -217,24 +221,14 @@ Selection statements in DruL take the following form: the string \textbf{if}, fo
 
 \emph{if-middle} : $\epsilon$ $|$   \textbf{elseif ( } \emph{boolean-expression} \textbf{ ) \{} \emph{statement-list} \textbf{\}} \emph{if-middle} 
 
-\subsubsection{Mapper Definition Statements}
+\subsubsection{Mapper Definition Statements}\label{MapperDefinitionStatement}
 
 A mapper definition consists of the word \textbf{Mapper}, followed by an identifier, followed by a parenthesized list of space-separated identifiers, followed by a block.
 
-\emph{mapper-definition} : \textbf{Mapper} \emph{identifier namelist block} \textbf{;}
+\emph{mapper-definition} : \textbf{mapper} \emph{identifier namelist block} 
 
 \emph{namelist}: \textbf ( \emph{identifier} \textbf ) $|$  \textbf ( \emph{identifier} 
 $<$SPACE$>$ \emph{namelist} \textbf )
-
-\begin{verbatim}
-Mapper name (arg1 arg2  arg3)
-{
-    statement-list
-};
-\end{verbatim}
-
-
-
 
 
 \subsection{Blocks, namespace and scoping}
@@ -322,13 +316,13 @@ p10 is ``11011''.
 
 \textbf{map} takes a sequence of pattern arguments and followed by a mapper function.  In the above example the mapper function is defined anonymously within curly braces.
 
-Within a mapper function, the values of the pattern arguments can be referenced using the special mapper variables \$1, \$2, \$3... and so on.  This notation is manadatory in anonymous mapper functions as in the example above.
+Within a mapper function, the current beat of each pattern argument is aliased to the special mapper variables \$1, \$2, \$3... and so on.  This notation is mandatory in anonymous mapper functions such as the example above.
 
-DruL uses the methods \textbf{note} and \textbf{rest} to check whether
+DruL uses the \textbf{beat} methods \textbf{note} and \textbf{rest} to check whether
 the current beat is a note or a rest.  
-\textit{\$1.note} returns \textit{true} if there is a note on the current beat in the first pattern arugment, and \textit{false} otherwise.
+\textit{\$1.note} returns \textit{true} if there is a note on the current beat in the first pattern argument, and \textit{false} otherwise.
 
-DruL uses the methods \textbf{prev} and \textbf{next} to access the previous and following beats of a pattern. These methods can be passed a single argument which specifies how far forward or back in the pattern to go.  For example:
+DruL uses the \textbf{beat} methods \textbf{prev} and \textbf{next} to access the previous and following beats of the pattern to which a given beat belongs. These methods can be passed a single argument which specifies how far forward or back in the pattern to go.  For example:
 \begin{verbatim}
 p11 = map(pattern("1101")
 {
@@ -337,7 +331,6 @@ p11 = map(pattern("1101")
 };
 \end{verbatim}
 p11 is ``1000''.  \textbf{next} may return a NULL beat as it does when called in the last iteration of the above example.  When used with a NULL beat, both the \textbf{note} and \textbf{rest} methods will return \textit{false}.  
-Note that the calling any of the pattern methods mentioned in this section (\textbf{next}, \textbf{prev}, \textbf{note}, and \textbf{rest}) outside the context of a mapper block is illegal.
 
 If you call map on multiple patterns that are not of the same length, the shorter patterns will be padded with \textit{NULL} beats.
 
@@ -345,7 +338,7 @@ Each new pattern constructed by map begins as an empty string.  As the pattern a
 
 Variables defined in a mapper function are garbage collected at the end of the map.
 
-\subsubsection{Mapper}
+\subsubsection{Mapper}\label{MapSection}
 
 Mapper functions may also be defined with a name, to be used elsewhere in the program.
 
@@ -358,9 +351,12 @@ mapper mymapper (p)
 }
 p10 = map(p9) mymapper;
 \end{verbatim}
-With non-anonymous mappers, the names of the pattern paratmers may be used intead of the ``\$n'' variables.
 
-A mapper function has to be defined before it is used.
+Recall from section \ref{MapperDefinitionStatement} that a  Mapper definition includes a name for the mapper and  a \emph{namelist} of formal arguments.
+When a named mapper is used in a \textbf{map} call, each pattern that is passed to the \textbf{map} is associated with the corresponding name in the \emph{namelist} in the mapper's definition.
+Then, within the body of the mapper, the current beat of each pattern is aliased to that name, as well as to ``\$$n$''.
+
+A mapper function must be defined before it is used.
 
 
 
@@ -514,14 +510,14 @@ mapper newMapper1 (p_any)
 {
     if (p_any.note) 			 { return pattern("1"); }
     else         					 { return pattern("");  }
-};
+}
 
 mapper newMapper2 (p_any alternate_beats)
 {
     if     (alternate_beats.rest) { return pattern("");  } // pattern of length 0
     elseif (p_any.note)   				{ return pattern("1"); }
     else                          { return pattern("0"); }
-};
+}
 
 mapper improved_newMapper2(p_any alternate_beats)
 {
@@ -529,7 +525,7 @@ mapper improved_newMapper2(p_any alternate_beats)
     elseif (p_any.note)		             { return pattern("1"); }
     elseif (p_any.next(1).note)				 { return pattern("1"); }
     else                               { return pattern("0"); }
-};
+}
 
 p_custom_new_notes 		 = map (p_custom_new) myMapper1;
 p_concat_new_downbeats = map (p_concat_new) newMapper2;
