@@ -32,11 +32,14 @@ COMS W4115: Programming Language and Translators}
 \end{center}
 \end{figure}
 
-
 \newpage
 
 
+
+
+
 \section{Introduction}
+
 DruL is a programming language designed for composing drum music.  Unlike other more general-purpose music programming languages (ChucK, SuperCollider, Nyquist, Haskore), DruL's focus is on defining and manipulating beat patterns and is unconcerned with pitches, sound durations, or audio effects.
 
 DruL is mainly an imperative programming language, however it borrows ideas (map and filter) from the functional paradigm.  In additions to integers, DruL's main datatypes are pattern and clip. Instruments are defined as constants.  See below for further details.
@@ -44,64 +47,77 @@ DruL is mainly an imperative programming language, however it borrows ideas (map
 DruL programs do not contain any loops or user-defined functions.  All pattern 
 and clip creation and manipulation is done using the map construct described below.
 
+
+
+
+
 \section{Language Manual}
 
 \subsection{Lexical Conventions}
 
 \subsubsection{Comments}
+
 Comments start with // and everything after them on that line
 is considered a comment and is ignored. New line marks the end
 of a comment.
+
 \subsubsection{Whitespace}
-Spaces, tab, end of line, and return are all considered the same 
-and their only used is to seperate the tokens.
+
+Space, tab, end of line, and return are all considered the same 
+and their only use is to seperate tokens.
 
 \subsubsection{Characters}
+
 DruL uses the ASCII character set.
 
 \subsubsection{Identifiers}
-An identifier may be defined using any uppercase or lowercase character
-or an underscore, followed by any set of uppercase or lowercase character,
-underscore, and digits ($0$ through $9$). The maximum length of an identifier
-is $64$.
+
+An identifier may be declared using any uppercase or lowercase character
+or an underscore, followed by any sequence of uppercase or lowercase characters,
+underscores, and digits ($0$ through $9$). The maximum length of an identifier
+is $64$ characters.
 
 All identifiers in a given scope, be they mapper names, variables, or built-in functions, belong to a single namespace.
 
 \subsubsection{Keywords}
 
-
 \begin{table}[htb]
 \begin{center} 
 \begin{tabular}{llll} 
-  NULL &    rand &    clip &        mapper \\
-  if &      pattern & instrument &  print \\
-  elseif &  concat &  length &      output \\
-  else &    slice &   map &         return
+  NULL   & rand    & clip       & mapper \\
+  if     & pattern & instrument & print  \\
+  elseif & concat  & length     & output \\
+  else   & slice   & map        & return
 \end{tabular}
 %\caption{\small{.}}
 \label{tab:keywords}
 \end{center} 
 \end{table}
+Also, the ``\$'' character is used to refer to arguments in mapper functions.
+
+
 
 
 \subsection{Types}
 
 There are $3$ basic types in DruL: \textbf{integer}s, \textbf{pattern}s,
-and \textbf{clip}s.  In addition, 'string' constants may be used in DruL source code, but there is no variable type to which they can be directly assigned.
-Likewise, boolean expressions exist, but can not be assigned to variables.
+and \textbf{clip}s.  In addition, `string' constants may be used in DruL source code, but there is no variable type to which they can be directly assigned.
+Likewise, boolean expressions exist, but cannot be assigned to variables.
 Values in DruL are strongly typed, but the type of a variable is determined dynamically.
 
 \subsubsection{integer}
+
 All integers are base 10, and may optionally be preceded by a sign ({\tt \textbf + -}).
 Any sequence of digits ($0$ through $9$) is valid.  Leading $0$s are ignored, so a sequence such as $0000123$  is interpreted as $123$.  Integers are mutable.
 
 \subsubsection{pattern}
-A pattern is essentially an object that holds binary, discrete, time-series data.  At each discrete-time step, which will henceforth refer to as a beat, there is either a note or a rest.  For the non-musically inclined, a note represents sound produced by the striking of a drum (or similar instrument) and a rest represents the absence of any such sound.  Patterns are immutable.  When a pattern is manipulated, the target pattern remains intact and a new copy is created.  The length of a patten can be any non-negative integer.
+
+A pattern is essentially an object that holds binary, discrete, time-series data.  At each discrete-time step, which will henceforth be referred to as a beat, there is either a note or a rest.  For the non-musically inclined, a note represents sound produced by the striking of a drum (or similar instrument) and a rest represents the absence of any such sound.  Patterns are immutable.  When a pattern is manipulated, the target pattern remains intact and a new copy is created.  The length of a patten can be any non-negative integer.
 
 \subsubsection{clip}
 
 An instrument is one of a pre-defined set of sounds (e.g. drum notes) that can occupy a single beat.
-A clip is a mapping of patterns to instruments. Clips are processed in sequence as the program runs to produce output which may be audio, sheet-music notation, or a MIDI file.  Clips are immutable.
+A clip is a mapping of patterns to instruments. Clips are processed in sequence as the program runs to produce output which may be plain-text, audio, sheet-music notation, or a MIDI file.  Clips are immutable.
 
 \subsubsection{string}
 
@@ -110,11 +126,13 @@ with an arbitrary sequence of ASCII characters other than $\backslash$ and $''$,
 and concludes with another $''$ character.  If a $\backslash$ or $''$ character is 
 desired, it can be escaped using the $\backslash$ character.
 
+
+
+
+
 \subsection{Statements}
 
 In the most common case, a statement consists of a single expression followed by a semicolon (``;'').  Importantly, unlike many languages with similar syntax, DruL does \emph{not} consider a block to be equivalent to a statement.  Instead, statements in DruL take one of the four forms below.
-
-
 
 \subsubsection{Expression Statements}
 
@@ -124,15 +142,15 @@ The precedence table for operators in DruL is given here:
 
 \begin{tabular}{ l |l| l}
 \hline\hline
-Operators & Notes & Associativity \\
-\hline $ . $ & Method call & left to right \\
-$-$  $!$ &Unary minus and logical negation & right to left \\
-$*$ $/$ $\%$ & Standard C meanings & left to right \\
-$+$ $-$ & Addition/subtraction & left to right \\
-$<$ $<=$ $>$ $>=$ &  &  \\
-$!=$ $==$ &  & \\
-$\&\&$ &  & \\
-$||$ &  & \\
+Operators         & Notes                            & Associativity \\
+\hline $ . $      & Method call                      & left to right \\
+$-$  $!$          & Unary minus and logical negation & right to left \\
+$*$ $/$ $\%$      & Standard C meanings              & left to right \\
+$+$ $-$           & Addition/subtraction             & left to right \\
+$<$ $<=$ $>$ $>=$ &                                  &               \\
+$!=$ $==$         &                                  &               \\
+$\&\&$            &                                  &               \\
+$||$              &                                  &
 \end{tabular}
 
 The subsections that follow use the model of the C Language Reference Manual to indicate the various types of expression.  As in that example. the highest-precedence forms of expression are listed first.  Since much of the material below is extremely straightforward, plain-English descriptions are supplemented by grammatical descriptions only when necessary.
@@ -142,8 +160,8 @@ The subsections that follow use the model of the C Language Reference Manual to 
 A primary expression consists of a constant (integer or string), an identifier, or a parenthesized expression.
 
 \paragraph{Function and Method calls}
-Functions and method calls associate right to left.  Depending on the function or method in question, they may return values of any type, including boolean values (which cannot be assigned to variables). Arguments to function and method
-calls are passed by value, not by reference.
+
+Functions and method calls associate right to left.  Depending on the function or method in question, they may return values of any type, including boolean values (which cannot be assigned to variables). Arguments to function and method calls are passed by value, not by reference.
 
 \emph{arglist}: \textbf ( \emph{expression} \textbf ) $|$  \textbf ( \emph{expression} 
 $<$SPACE$>$ \emph{arglist} \textbf )
@@ -158,9 +176,8 @@ $<$SPACE$>$ \emph{arglist} \textbf )
 
 \emph{statement-list}: \emph{statement} $|$ \emph{statement statement-list}
 
-
-
 \paragraph{Unary operations}
+
 The unary operations in DruL are arithmetic and logical negation (unary $-$ and $!$).  Since DruL is strictly typed, arithmetic negation can only be applied to integer values, and logical negation to boolean values.
 
 \paragraph{Standard arithmetic operations}
@@ -182,7 +199,7 @@ Here again we follow the conventions of C, and give $\&\&$ precedence over $||$.
 Assignment in DruL is not a simple operator to be placed in the middle of an expression.  Rather, it is a separate type of statement, which may appear anywhere another statement may appear.  
 
 \begin{center}
-\emph{assignment-statement}: \emph{identifier} \textbf{=}  \emph{expression-statement};
+\emph{assignment-statement}: \emph{identifier} \textbf{=}  \emph{expression-statement}
 \end{center}
 
 Assignment is polymorphic: the same syntax is used to assign variables to
@@ -209,7 +226,6 @@ A mapper definition consists of the word \textbf{Mapper}, followed by an identif
 \emph{namelist}: \textbf ( \emph{identifier} \textbf ) $|$  \textbf ( \emph{identifier} 
 $<$SPACE$>$ \emph{namelist} \textbf )
 
-
 \begin{verbatim}
 Mapper name (arg1 arg2  arg3)
 {
@@ -217,101 +233,137 @@ Mapper name (arg1 arg2  arg3)
 };
 \end{verbatim}
 
+
+
+
+
 \subsection{Blocks, namespace and scoping}
 
 \subsubsection{Blocks}
+
 DruL has a limited block structure: only in the context of an \textbf{if}/\textbf{elseif}/\textbf{else} sequence or a Mapper Definition statement is a new block needed or allowed.  In these cases, curly braces (``\{\}'') are used to delimit the statement-sequence that falls within the block, and they must contain one or more statements.
 
 Mapper definitions define a new closed scope (one from within which externally defined variables are not visible); \textbf{if} blocks do not define a new scope, so all variables used within them are visible to the enclosing  block, and vise-versa.
 
 \subsubsection{Namespace}
+
 DruL has a namespace shared by variables, built-in functions and 
 mapper names. Additionally, each type has an associated namespace for methods.
 
 \subsubsection{Scoping}
+
 DruL has one top level scope and one scope per each mapper
 (named or anonymous). Mapper scopes may be nested.
 Each scope has read-only access to all variables and mapper names
 defined in the scopes above it in the scope hierarchy.
 This allows for recursive mappers.
 
+
+
+
+
 \subsection{Patterns and pattern operations}
 
 \subsubsection{Patterns}
-A pattern is a set of beats, each beat can be a note or a rest.
+
+A pattern is a sequence of beats.  Each beat can be a note or a rest.
 To declare a pattern, DruL uses `0' for rests and `1' for notes.
 A pattern can be created in the following way:
 \begin{verbatim}
   p1 = pattern("101010");
 \end{verbatim}
 which represents the sequence {note, rest, note, rest, note, rest}.
-Its length is $6$. If the character is a 1, there is a note on the
-corresponding beat; if 0, a rest.
+Its length is $6$.
 
-There are simple operations of patterns included in DruL. We
-can repeat a pattern:
+There are built-in functions and methods on patterns included in DruL.
+
+Patterns can be concatenated to form new patterns.  The \textbf{concat} function can take any positive number of pattern arguments.  Patterns are concatenated from left to right.
 \begin{verbatim}
-  p2 = pattern("100");
-  p3 = p2.repeat(3);
-  p4 = pattern("100").repeat(3);
+pcat = concat(p1 pattern("111000") pattern("1"));
 \end{verbatim}
-p3 is "100100100" and so is p4. Two patterns can be concatenated:
+\textit{pcat} will be equal to 1010101110001.
+
+The \textbf{repeat} method is a shortcut to concatenate the same pattern many times:
 \begin{verbatim}
-  p5 = pattern("111");
-  p6 = pattern("000");
-  p7 = concat(p5 p6);
+pcat2 = concat(p1 p1 p1);
+pcat3 = pattern("101010").repeat(3);
+pcat4 = p1.repeat(3);
 \end{verbatim}
-p7 is "111000". \textbf{concat} can take any positive number of
-patters as argument, patterns are concatenated from left to right.
-Finally, you can have an empty pattern of length 0:
+Note that \textit{pcat2}, \textit{pcat3}, and \textit{pcat4} are all equivalent.
+
+The \textbf{length} method gives the length of a pattern.
 \begin{verbatim}
-  p8 = pattern("");
+len = p1.length();
 \end{verbatim}
+The value of \textit{len} is $6$.
+
+Finally, you can have an empty pattern of length $0$:
+\begin{verbatim}
+p8 = pattern("");
+\end{verbatim}
+
 
 
 \subsubsection{Map}
-A map is used to perform an operation iteratively on a set of patterns.
-Patterns are iterated over from left to right. The output of a map is
-a pattern. For example:
-\begin{verbatim}
-  p9 = pattern("101");
-  p10 = map(p9) {if ($1.note) {return pattern("11")'} else {return  pattern("0");}};
-\end{verbatim}
-p10 is "11011". Inside an anonymous mapper, DruL uses the symbol \$1 to refer
-to the first pattern (here p9), \$2 for the second, etc.
-DruL uses \textbf{\$1.note} or \textbf{\$1.rest} to check whether
-the current beat is a note or a rest, 'p' being the name of the input pattern.
-\textit{\$1.note} returns \textit{true} if there is a note on the current beat, 
-\textit{false} otherwise. We use map to create meaningful new patterns from 
-existing ones. If you call map on multiple patterns that are not of the same
-length, the shorter patterns will be padded with \textit{NULL} beats.
 
+The \textbf{map} construct is used to create new patterns from existing ones.
+\textbf{map} performs an operation iteratively on a set of patterns.
+The beats in the patterns are iterated over from left to right.
+The output of a map is a new pattern.  For example:
+\begin{verbatim}
+p9 = pattern("101");
+p10 = map(p9)
+{
+    if ($1.note()) { return pattern("11"); }
+    else           { return pattern("0");  }
+};
+\end{verbatim}
+p10 is ``11011''.
+
+\textbf{map} takes a sequence of pattern arguments and followed by a mapper function.  In the above example the mapper function is defined anonymously within curly braces.
+
+Within a mapper function, the values of the pattern arguments can be referenced using the special mapper variables \$1, \$2, \$3... and so on.  This notation is manadatory in anonymous mapper functions as in the example above.
+
+DruL uses the methods \textbf{note} and \textbf{rest} to check whether
+the current beat is a note or a rest.  
+\textit{\$1.note} returns \textit{true} if there is a note on the current beat in the first pattern arugment, and \textit{false} otherwise.
+
+DruL uses the methods \textbf{prev} and \textbf{next} to access the previous and following beats of a pattern. These methods can be passed a single argument which specifies how far forward or back in the pattern to go.  For example:
+\begin{verbatim}
+p11 = map(pattern("1101")
+{
+    if ($1.note() && $1.next(1).note()) { return pattern("1"); }
+    else                                { return pattern("0"); }
+};
+\end{verbatim}
+p11 is ``1000''.  \textbf{next} may return a NULL beat as it does when called in the last iteration of the above example.  When used with a NULL beat, both the \textbf{note} and \textbf{rest} methods will return \textit{false}.
+
+If you call map on multiple patterns that are not of the same length, the shorter patterns will be padded with \textit{NULL} beats.
+
+Each new pattern constructed by map begins as an empty string.  As the pattern arugments are iterated over, the return values of the mapper function (which are also patterns) are concatenated onto the end of the new pattern.
+
+Variables defined in a mapper function are garbage collected at the end of the map.
 
 \subsubsection{Mapper}
-A mapper is the body of a map. It is used when a same operation has to be
-used multiple times, over different sequences.
-For example, the previous example could have been written in the following
-way:
+
+Mapper functions may be declared and assigned to a variable for later use.
+
+For example, the above example could have been written in the following way:
 \begin{verbatim}
-  mapper mymapper (p)
-  {
-      if (p.note) { return pattern("11"); }
-      else        { return pattern("0");  }
-  };
-  p10 = map(p9) mymapper;
+mapper mymapper (p)
+{
+    if (p.note) { return pattern("11"); }
+    else        { return pattern("0");  }
+}
+p10 = map(p9) mymapper;
 \end{verbatim}
-Mapper has to be declared before it is used in the file.
-We introduce $2$ new features as built-in methods that can be used inside
-a \textit{map}: \textit{prev} and \textit{next}. They give you access to
-earlier and later beats in a pattern, using the syntax \textit{p.prev(n)}
-and \textit{p.next(n)}. 
+With non-anonymous mappers, the names of the pattern paratmers may be used intead of the ``\$'' variables.
 
-Not that the patterns are now referred by their name (in the argument list).
-However, one can still use \$1, \$2, \$3, ... as defined in the previous
-section.
+A mapper function has to be declared before it is used.
 
-%Also, for a pattern \textit{p}, \textit{p.rest} is
-%true if and only if we did not reach the end of this pattern.
+
+
+
 
 \subsection{Clips}
 
@@ -329,6 +381,7 @@ Instruments must be defined at the beginning of a DruL program, before any clips
 \subsubsection{Clips}
 
 A clip represents a collection of patterns to be played in parallel, where each pattern is played on a single instrument.
+
 Once the instruments are defined, we can create a clip from our existing patterns, using an
 associative-array notation:
 
@@ -341,10 +394,11 @@ clip1 = clip
 \end{verbatim}
 The same result can be achieved by simply listing the patterns for each instrument in the order they are defined in the \textit{instruments} declaration:
 \begin{verbatim}
-clip2 = clip				// remaining instruments have an empty beat-pattern
+clip2 = clip
 (
     alternate_beats
-    downbeats    
+    downbeats
+    // remaining instruments have an empty beat-pattern
 );
 
 \end{verbatim}
@@ -352,18 +406,23 @@ The patterns passed into clips are passed by value, not by reference.
 
 
 
+
+
 \subsection{Outputs}
+
 DruL has two kinds of outputs, the first one display a straightforward
 representation of some data, the second one transform a clip into a
 more complex representation, like MIDI.
 
 \subsubsection{Standard output}
+
 The \textbf{print} statement displays any type to the standard
 output, including strings. For example:
 \begin{verbatim}
-  print "DruL";
-  print pattern("01");
+print "DruL";
+print pattern("01");
 \end{verbatim}
+
 The representation of a string is the string itself. The representation
 of a pattern is the string that would have been used to initialized
 the pattern. For example, if we have a pattern
@@ -372,19 +431,25 @@ the pattern. For example, if we have a pattern
 \end{verbatim}
 
 \subsubsection{Text}
+
 Similar as \textbf{print}, DruL can output the representation of any type 
 to a file. The command is:
 \begin{verbatim}
-  output.file("myfile.txt","DruL");
-  output.file("myfile.txt",pattern("01"));
+output.file("myfile.txt","DruL");
+output.file("myfile.txt",pattern("01"));
 \end{verbatim}
 
 \subsubsection{MIDI}
+
 The function \textbf{output.midi("my.file",clip,tempo)} outputs a clip as a MIDI
 file with filename "my.file". \textbf{tempo} is a positive integer that
 represents the beat per minute (BPM). 
 The transformation from clip to MIDI may rely
 on external libraries as MIDGE\footnote{\url{http://www.undef.org.uk/code/midge/}}. There is no guarantee on which of the three existing MIDI formats is used.
+
+
+
+
 
 \clearpage
 
