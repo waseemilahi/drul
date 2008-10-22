@@ -451,9 +451,11 @@ ending.
 Similar as \textbf{print}, DruL can output the representation of any type 
 to a file. The command is:
 \begin{verbatim}
-output.file("myfile.txt","DruL");
-output.file("myfile.txt",pattern("01"));
+output.txtfile("myfile.txt","DruL");
+output.txtfile("myfile.txt",pattern("01"));
 \end{verbatim}
+
+The file being written to is truncated if it exists, and created if it does not exist.
 
 \subsubsection{MIDI}
 
