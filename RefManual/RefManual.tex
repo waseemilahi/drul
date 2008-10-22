@@ -239,7 +239,7 @@ This allows for recursive mappers.
 
 \subsubsection{Patterns}
 A pattern is a set of beats, each beat can be a note or a rest.
-To declare a pattern, DruL uses `0' for rests and `1' for note.
+To declare a pattern, DruL uses `0' for rests and `1' for notes.
 A pattern can be created in the following way:
 \begin{verbatim}
   p1 = pattern("101010");
@@ -261,7 +261,7 @@ p3 is "100100100" and so is p4. Two patterns can be concatenated:
   p6 = pattern("000");
   p7 = concat(p5 p6);
 \end{verbatim}
-p7 is "111000". \textbf{concat} can takes any positive number of
+p7 is "111000". \textbf{concat} can take any positive number of
 patters as argument, patterns are concatenated from left to right.
 Finally, you can have an empty pattern of length 0:
 \begin{verbatim}
@@ -275,11 +275,13 @@ Patterns are iterated over from left to right. The output of a map is
 a pattern. For example:
 \begin{verbatim}
   p9 = pattern("101");
-  p10 = map(p9) {if (p9.note) {return pattern("11")'} else {return  pattern("0");}};
+  p10 = map(p9) {if ($1.note) {return pattern("11")'} else {return  pattern("0");}};
 \end{verbatim}
-p10 is "11011". DruL uses \textbf{p.note} or \textbf{p.rest} to check whether
+p10 is "11011". Inside an anonymous mapper, DruL uses the symbol \$1 to refer
+to the first pattern (here p9), \$2 for the second, etc.
+DruL uses \textbf{\$1.note} or \textbf{\$1.rest} to check whether
 the current beat is a note or a rest, 'p' being the name of the input pattern.
-\textit{p1.note} returns\textit{true} if there is a note on the current beat, 
+\textit{\$1.note} returns \textit{true} if there is a note on the current beat, 
 \textit{false} otherwise. We use map to create meaningful new patterns from 
 existing ones. If you call map on multiple patterns that are not of the same
 length, the shorter patterns will be padded with \textit{NULL} beats.
@@ -303,6 +305,10 @@ We introduce $2$ new features as built-in methods that can be used inside
 a \textit{map}: \textit{prev} and \textit{next}. They give you access to
 earlier and later beats in a pattern, using the syntax \textit{p.prev(n)}
 and \textit{p.next(n)}. 
+
+Not that the patterns are now referred by their name (in the argument list).
+However, one can still use \$1, \$2, \$3, ... as defined in the previous
+section.
 
 %Also, for a pattern \textit{p}, \textit{p.rest} is
 %true if and only if we did not reach the end of this pattern.
