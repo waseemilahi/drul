@@ -273,21 +273,21 @@ There are built-in functions and methods on patterns included in DruL.
 
 Patterns can be concatenated to form new patterns.  The \textbf{concat} function can take any positive number of pattern arguments.  Patterns are concatenated from left to right.
 \begin{verbatim}
-pcat = concat(p1 pattern("111000") pattern("1"));
+  pcat = concat(p1 pattern("111000") pattern("1"));
 \end{verbatim}
 \textit{pcat} will be equal to 1010101110001.
 
 The \textbf{repeat} method is a shortcut to concatenate the same pattern many times:
 \begin{verbatim}
-pcat2 = concat(p1 p1 p1);
-pcat3 = pattern("101010").repeat(3);
-pcat4 = p1.repeat(3);
+  pcat2 = concat(p1 p1 p1);
+  pcat3 = pattern("101010").repeat(3);
+  pcat4 = p1.repeat(3);
 \end{verbatim}
 Note that \textit{pcat2}, \textit{pcat3}, and \textit{pcat4} are all equivalent.
 
 The \textbf{length} method gives the length of a pattern.
 \begin{verbatim}
-len = p1.length();
+  len = p1.length();
 \end{verbatim}
 The value of \textit{len} is $6$.
 
