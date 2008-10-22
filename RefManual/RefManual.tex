@@ -86,8 +86,8 @@ All identifiers in a given scope, be they mapper names, variables, or built-in f
 
 \subsection{Types}
 
-There are $3$ types in DruL: \textbf{integer}s, \textbf{pattern}s,
-and \textbf{clip}s.  In addition, string constants may be used in DruL source code, but there is no variable type to which they can be directly assigned.
+There are $3$ basic types in DruL: \textbf{integer}s, \textbf{pattern}s,
+and \textbf{clip}s.  In addition, 'string' constants may be used in DruL source code, but there is no variable type to which they can be directly assigned.
 Likewise, boolean expressions exist, but can not be assigned to variables.
 Values in DruL are strongly typed, but the type of a variable is determined dynamically.
 
@@ -221,7 +221,8 @@ A pattern can be created in the following way:
   p1 = pattern("101010");
 \end{verbatim}
 which represents the sequence {note, rest, note, rest, note, rest}.
-Its length is $6$.
+Its length is $6$. If the character is a 1, there is a note on the
+corresponding beat; if 0, a rest.
 
 There are simple operations of patterns included in DruL. We
 can repeat a pattern:
@@ -254,6 +255,10 @@ a pattern. For example:
 \end{verbatim}
 p10 is "11011". DruL uses \textbf{p.note} or \textbf{p.rest} to check whether
 the current beat is a note or a rest, 'p' being the name of the input pattern.
+\textit{p1.note} returns\textit{true} if there is a note on the current beat, 
+\textit{false} otherwise. We use map to create meaningful new patterns from 
+existing ones. If you call map on multiple patterns that are not of the same
+length, the shorter patterns will be padded with \textit{NULL} beats.
 
 
 \subsubsection{Mapper}
@@ -270,8 +275,13 @@ way:
   p10 = map(p9) mymapper;
 \end{verbatim}
 Mapper has to be declared before it is used in the file.
+We introduce $2$ new features that can be used inside a \textit{map}:
+\textit{prev} and \textit{next}. They give you access to earlier
+and later beats in a pattern, using the syntax \textit{p.prev(n)} and
+\textit{p.next(n)}. 
 
-
+%Also, for a pattern \textit{p}, \textit{p.rest} is
+%true if and only if we did not reach the end of this pattern.
 
 \subsection{Clips}
 
@@ -349,106 +359,124 @@ represents the beat per minute (BPM).
 The transformation from clip to MIDI may rely
 on external libraries as MIDGE\footnote{\url{http://www.undef.org.uk/code/midge/}}. There is no guarantee on which of the three existing MIDI formats is used.
 
+\clearpage
 
-\section{Examples}
-In this section we give examples of what DruL code will look like, in the form
-of a tutorial.
+\section{Example Code}
 
-\subsection{Integers}
-
-Integer values can be assigned to variables and used in expresisons as follows:
+Here is an Example code for drul that utilizes its basic drul funtionality.\\
+Consult the definitions above for verification purposes.
 
 \begin{verbatim}
-a = 3;
-b = a + 2;
-c = b * 12;
+//This code manipulates some patterns, associate them to instruments and
+//sends them to outputs.
+//First the Instrument declaration. It has to be done before 
+//any clip declaration, otherwise there will be a compile time error.
+
+instruments(hihat bassdrum crash snare); //declare four instruments
+
+//Integer variables used as tempos for clips.
+
+a = 250;
+b = 300;
+
+//Patterns.
+
+p1 = pattern("100100100");
+p2 = pattern("");//empty pattern
+p3 = pattern("0");//pattern with only one 'rest' in it.
+p4 = pattern("1");//pattern with only one 'note' in it.
+
+//pcat pcat is essentially concatenation of three patterns.
+
+p_concat = concat(p1 pattern("11110000") pattern("00011"));
+
+//Make a new pattern using above patterns and the library methods 'repeat' and 'slice'. 
+
+p_custom = concat(p2 p3.repeat(2) p4.repeat(3) p3.repeat(2) p4.repeat(4) p_concat );
+p_custom_new = concat(p_custom p3.repeat(2) p_concat p4.repeat(3));
+p_new = concat( p_custom_new.slice(4,10) p_concat.slice(5,p1.length) p3.repeat(7) );
+
 \end{verbatim}
+\clearpage
+\begin{verbatim}
+//Now some complex pattern manipulation.
 
-\subsection{Pattern}
-Patterns are the data type the programmer will likely spend most of their time dealing with.  For convenience, the programmer can supply a string constant made up of 1s and 0s, which will be translated into a pattern: if the character is a 1, there is a note on the corresponding beat; if 0, a rest.
-\begin{verbatim}
-p1 = pattern("101010");
-\end{verbatim}
-Patterns can be concatenated to form new patterns:
-\begin{verbatim}
-pcat = concat(p1 pattern("111000") pattern("1"));
-\end{verbatim}
-\textit{pcat} will be equal to 1010101110001.
+//New Patterns.
 
-There is also a shortcut to concatenate the same pattern many times:
-\begin{verbatim}
-pcat2 = concat(p1 p1 p1);
-pcat3 = pattern("101010").repeat(3);
-pcat4 = p1.repeat(3);
-\end{verbatim}
-\textit{pcat2}, \textit{pcat3}, and \textit{pcat4} are all equivalent.
+alternate_beats = pattern("10").repeat(8);
+P_concat_new = concat(p_concat p_custom);
 
-\subsection{Map}
-Of course, we will not hardcode every pattern we want to create. We use
-map to create meaningful new patterns from existing ones:
-\begin{verbatim}
-p2 = map (p1)
+//Anonymous mapping.
+
+p_new_rev = map (p_new)
 {
-    if (p1.note) { pattern("11"); }
-    else         { pattern("0");  }
-};
-\end{verbatim}
-This will create the following pattern: 110110110. The goal of a map
-is to easily iterate over a pattern. \textit{p1.note} returns
-\textit{true} if there is a note on the current beat, \textit{false} otherwise.
-If you call map on multiple patterns that are not of the same length,
-the shorter patterns will be padded with \textit{NULL} beats.\\
-
-\subsection{Mapper}
-For ease of use, you can define a \textit{mapper} that contains the behaviour
-used by \textit{map}. We create \textit{p3}, which is the same as
-\textit{p2}:
-\begin{verbatim}
-mapper myMapper (p1)
-{
-    if (p1.note) { return pattern("11"); }
-    else         { return pattern("0");  }
+    if (p_custom.rest) { pattern("1"); }
+    else 					         { pattern("0");  }
 }
 
-p3 = map (p1) myMapper;
-\end{verbatim}
-\textit{mapper} will be very important when building a standard library
-for the language.
+//Mapper definitions. 
 
-\subsection{More complex examples}
-Now that we have a proper syntax, let's get to more complicated examples.
-We introduce $2$ new features that can be used inside a \textit{map}:
-\textit{prev} and \textit{next}. They give you access to earlier
-and later beats in a pattern, using the syntax \textit{p.prev(n)} and
-\textit{p.next(n)}. 
-%Also, for a pattern \textit{p}, \textit{p.rest} is
-%true if and only if we did not reach the end of this pattern.
+mapper newMapper1 (p_any)
+{
+    if (p_any.note) 			 { return pattern("1"); }
+    else         					 { return pattern("");  }
+}
 
-\textbf{reduction}: accelerate by cutting one beat out of two
-\begin{verbatim}
-downbeats = pattern("1000100010001000");
-alternate_beats = pattern("10").repeat(8);
-downbeat_diminution = map(downbeats alternate_beats)
+mapper newMapper2 (p_any alternate_beats)
 {
     if     (alternate_beats.rest) { return pattern("");  } // pattern of length 0
-    elseif (downbeats.note)       { return pattern("1"); }
+    elseif (p_any.note)   				{ return pattern("1"); }
     else                          { return pattern("0"); }
 }
-\end{verbatim}
-output is: 10101010.
 
-\textbf{improved reduction}: putting a rest (0) only if the $2$ original beats were rest
-\begin{verbatim}
-// this will map "1001100110011001" to "11111111", rather than "10101010"
-one_and_four = pattern("1001100110011001");
-alternate_beats = pattern("10").repeat(8);
-improved_diminution = map(one_and_four alternate_beats)
+mapper improved_newMapper2(p_any alternate_beats)
 {
     if     (alternate_beats.rest)      { return pattern("");  } // still required
-    elseif (one_and_four.note)         { return pattern("1"); }
-    elseif (one_and_four.next(1).note) { return pattern("1"); }
+    elseif (p_any.note)		             { return pattern("1"); }
+    elseif (p_any.next(1).note)				 { return pattern("1"); }
     else                               { return pattern("0"); }
-};
+}
+
+p_custom_new_notes 		 = map (p_custom_new) myMapper1;
+p_concat_new_downbeats = map (p_concat_new) newMapper2;
+
+//print out the created patterns to Standard Output.
+
+print "Output from Sample DruL Code.\n"   //'\n' is for newline.
+print p_concat;
+print "\n";
+print p_custom;
+print "\n";
+print p_custom_new;
+print "\n";
+print p_new;
+print "\n\n";
+print p_new_rev;
+print "\n\n";
+print p_custom_new_notes;
+print "\n\n";
+print p_concat_new_downbeats;
+print "\n\n";
+print "END OF OUTPUT\n\n";
+
+//Pattern associations using clips.
+
+clip_complete = clip
+(
+hihat		 = p_concat_new_downbeats
+bassdrum = p_custom_new_notes
+crash 	 = p_new_rev
+snare		 = p_new
+);
+
+//output clip as a midi file
+out.midi("out_file1.midi",clip_complete,a);//a = tempo
+
+// Last instrument has an empty beat-pattern.
+clip_partial = clip(p_concat p_custom_new p_custom);
+
+//output clip as a midi file
+out.midi("out_file2.midi",clip_partial,b);//b = tempo
 \end{verbatim}
 
 \end{document}
