@@ -342,7 +342,7 @@ p11 = map(pattern("1101")
 \end{verbatim}
 p11 is ``1000''.  \textbf{next} may return a NULL beat as it does when called in the last iteration of the above example.  When used with a NULL beat, both the \textbf{note} and \textbf{rest} methods will return \textit{false}.  
 
-If you call map on multiple patterns that are not of the same length, the shorter patterns will be padded with \textit{NULL} beats.
+If you call map on multiple patterns that are not of the same length, the shorter patterns will be padded with NULL beats.
 
 Each new pattern constructed by map begins as an empty string.  As the pattern arugments are iterated over, the return values of the mapper function (which are also patterns) are concatenated onto the end of the new pattern.
 
