@@ -121,7 +121,7 @@ A beat is a lightweight object that cannot be created directly by the user: it e
 \subsubsection{clip}
 
 An instrument is one of a pre-defined set of sounds (e.g. drum notes) that can occupy a single beat.
-A clip is a mapping of patterns to instruments. Clips are processed in sequence as the program runs to produce output which may be plain-text, audio, sheet-music notation, or a MIDI file.  Clips are immutable.
+A clip is a mapping of patterns to instruments. Clips are processed in sequence as the program runs to produce output which may be plain-text or a MIDI file.  Clips are immutable.
 
 \subsubsection{string}
 
@@ -454,10 +454,11 @@ output.file("myfile.txt",pattern("01"));
 
 The function \textbf{output.midi("my.file",clip,tempo)} outputs a clip as a MIDI
 file with filename "my.file". \textbf{tempo} is a positive integer that
-represents the beat per minute (BPM). 
+represents the beats per minute (BPM). 
 The transformation from clip to MIDI may rely
-on external libraries as MIDGE\footnote{\url{http://www.undef.org.uk/code/midge/}}. There is no guarantee on which of the three existing MIDI formats is used.
-
+on external libraries like MIDGE\footnote{\url{http://www.undef.org.uk/code/midge/}}. There is no guarantee on which of the three existing MIDI formats is used.
+DruL tries to match its instrument definition with MIDI instruments definitions
+using the names. If no match can be found, DruL will use a default MIDI instrument (first one is cow bell).
 
 
 
