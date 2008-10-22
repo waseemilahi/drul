@@ -182,7 +182,7 @@ Here again we follow the conventions of C, and give $\&\&$ precedence over $||$.
 Assignment in DruL is not a simple operator to be placed in the middle of an expression.  Rather, it is a separate type of statement, which may appear anywhere another statement may appear.  
 
 \begin{center}
-\emph{assignment-statement}: \emph{identifier} \textbf{=}  \emph{expression-statement}
+\emph{assignment-statement}: \emph{identifier} \textbf{=}  \emph{expression-statement};
 \end{center}
 
 Assignment is polymorphic: the same syntax is used to assign variables to
@@ -295,14 +295,14 @@ way:
   {
       if (p.note) { return pattern("11"); }
       else        { return pattern("0");  }
-  }
+  };
   p10 = map(p9) mymapper;
 \end{verbatim}
 Mapper has to be declared before it is used in the file.
-We introduce $2$ new features that can be used inside a \textit{map}:
-\textit{prev} and \textit{next}. They give you access to earlier
-and later beats in a pattern, using the syntax \textit{p.prev(n)} and
-\textit{p.next(n)}. 
+We introduce $2$ new features as built-in methods that can be used inside
+a \textit{map}: \textit{prev} and \textit{next}. They give you access to
+earlier and later beats in a pattern, using the syntax \textit{p.prev(n)}
+and \textit{p.next(n)}. 
 
 %Also, for a pattern \textit{p}, \textit{p.rest} is
 %true if and only if we did not reach the end of this pattern.
@@ -323,7 +323,6 @@ Instruments must be defined at the beginning of a DruL program, before any clips
 \subsubsection{Clips}
 
 A clip represents a collection of patterns to be played in parallel, where each pattern is played on a single instrument.
-
 Once the instruments are defined, we can create a clip from our existing patterns, using an
 associative-array notation:
 
@@ -336,11 +335,10 @@ clip1 = clip
 \end{verbatim}
 The same result can be achieved by simply listing the patterns for each instrument in the order they are defined in the \textit{instruments} declaration:
 \begin{verbatim}
-clip2 = clip
+clip2 = clip				// remaining instruments have an empty beat-pattern
 (
     alternate_beats
-    downbeats
-    // remaining instruments have an empty beat-pattern
+    downbeats    
 );
 
 \end{verbatim}
@@ -364,9 +362,8 @@ The representation of a string is the string itself. The representation
 of a pattern is the string that would have been used to initialized
 the pattern. For example, if we have a pattern
 \begin{verbatim}
-  p = pattern("01").repeat(2);
+  p = pattern("01").repeat(2); //p = 0101
 \end{verbatim}
-it's representation is \textbf{0101}.
 
 \subsubsection{Text}
 Similar as \textbf{print}, DruL can output the representation of any type 
@@ -400,7 +397,7 @@ instruments(hihat bassdrum crash snare); //declare four instruments
 
 //Integer variables used as tempos for clips.
 
-a = 250;
+a = 350;
 b = 300;
 
 //Patterns.
@@ -444,14 +441,14 @@ mapper newMapper1 (p_any)
 {
     if (p_any.note) 			 { return pattern("1"); }
     else         					 { return pattern("");  }
-}
+};
 
 mapper newMapper2 (p_any alternate_beats)
 {
     if     (alternate_beats.rest) { return pattern("");  } // pattern of length 0
     elseif (p_any.note)   				{ return pattern("1"); }
     else                          { return pattern("0"); }
-}
+};
 
 mapper improved_newMapper2(p_any alternate_beats)
 {
@@ -459,7 +456,7 @@ mapper improved_newMapper2(p_any alternate_beats)
     elseif (p_any.note)		             { return pattern("1"); }
     elseif (p_any.next(1).note)				 { return pattern("1"); }
     else                               { return pattern("0"); }
-}
+};
 
 p_custom_new_notes 		 = map (p_custom_new) myMapper1;
 p_concat_new_downbeats = map (p_concat_new) newMapper2;
@@ -494,7 +491,7 @@ snare		 = p_new
 );
 
 //output clip as a midi file
-out.midi("out_file1.midi",clip_complete,a);//a = tempo
+out.midi("out_file1.midi",clip_complete,a);//a = tempo (Beats per minute)
 
 // Last instrument has an empty beat-pattern.
 clip_partial = clip(p_concat p_custom_new p_custom);
