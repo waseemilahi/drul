@@ -291,6 +291,17 @@ len = p1.length();
 \end{verbatim}
 The value of \textit{len} is $6$.
 
+The \textbf{slice} method gives you a subpattern from a pattern.
+It takes two arguments: first is index (starting at $1$) and second is
+length of the desired subpattern. Requesting a subpattern out of range will
+raise an error. Example:
+\begin{verbatim}
+  psub = pattern("101010").slice(2 3);
+\end{verbatim}
+\textit{psub} is "010".
+
+
+
 Finally, you can have an empty pattern of length $0$:
 \begin{verbatim}
 p8 = pattern("");
