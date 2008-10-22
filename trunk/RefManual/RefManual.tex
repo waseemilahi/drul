@@ -135,7 +135,7 @@ $\&\&$ &  & \\
 $||$ &  & \\
 \end{tabular}
 
-The subsections that follow use the model of the C Language Reference Manual to indicate the various types of expression.  As in that example. the highest-precedence forms of expression are listed first.
+The subsections that follow use the model of the C Language Reference Manual to indicate the various types of expression.  As in that example. the highest-precedence forms of expression are listed first.  Since much of the material below is extremely straightforward, plain-English descriptions are supplemented by grammatical descriptions only when necessary.
 
 \paragraph{Primary Expressions}
 
@@ -145,16 +145,33 @@ A primary expression consists of a constant (integer or string), an identifier, 
 Functions and method calls associate right to left.  Depending on the function or method in question, they may return values of any type, including boolean values (which cannot be assigned to variables). Arguments to function and method
 calls are passed by value, not by reference.
 
+\emph{arglist}: \textbf ( \emph{expression} \textbf ) $|$  \textbf ( \emph{expression} 
+$<$SPACE$>$ \emph{arglist} \textbf )
+
+\emph{method-call} : \emph{identifier} \textbf . \emph{identifier arglist} 
+
+\emph{function-call} : \emph{identifier} \emph{arglist} $|$ \textbf{map} \emph{arglist mapper}
+
+\emph{mapper} : \emph{identifier} $|$ \emph{block}
+
+\emph{block} : \textbf{\{} \emph{statement-list} \textbf{\}} 
+
+\emph{statement-list}: \emph{statement} $|$ \emph{statement statement-list}
+
 
 
 \paragraph{Unary operations}
-Arithmetic and logical negation.
+The unary operations in DruL are arithmetic and logical negation (unary $-$ and $!$).  Since DruL is strictly typed, arithmetic negation can only be applied to integer values, and logical negation to boolean values.
 
 \paragraph{Standard arithmetic operations}
+
+Expressions may use the standard binary arithmetic operators ($+$, $-$, $*$ and $/$), with their standard precedence.  It is required that both of the operands in such an expression be integer values.
 
 \paragraph{Comparison operations}
 
 As in most C-family languages (and as shown in the precedence table above), relational operators have precedence over equality tests.  These operators return boolean values, which can be used in \textbf{if} statements but cannot be assigned to variables.
+
+Relational tests may be used on integer values only; equality tests can be used on variables of any type, but in the case of patterns and clips, they will only report whether the two variables being tested are  aliases of the same object, not any deeper notion of equivalence.
 
 \paragraph{Logical combination operations}
 
@@ -176,15 +193,22 @@ a variable may be reassigned to a different type.
 
 Selection statements in DruL take the following form: the string \textbf{if}, followed by an expression that returns a boolean result, enclosed in parentheses, followed by an open-brace (``\{''), one or more statements, and a close-brace (``\}'').  This may optionally be followed by one or more \textbf{elseif}s, which are also followed by parentheses and a block of statements, and one (optional) \textbf{else}, which omits the test expression but is also followed by a block of statements.
 
-\begin{verbatim}
-if (expression) { statement-list } 
-[ elseif (expression) { statement-list } ]*
-else { statement-list }
-\end{verbatim}
+\emph{selection-statement} : \textbf{if ( } \emph{boolean-expression} \textbf{ )}\emph{block if-tail}
+
+\emph{if-tail} : $\epsilon$ $|$ \emph{if-middle} $|$
+	\emph{if-middle} \textbf{else \{} \emph{statement-list} \textbf{\}} 
+
+\emph{if-middle} : $\epsilon$ $|$   \textbf{elseif ( } \emph{boolean-expression} \textbf{ ) \{} \emph{statement-list} \textbf{\}} \emph{if-middle} 
 
 \subsubsection{Mapper Definition Statements}
 
 A mapper definition consists of the word \textbf{Mapper}, followed by an identifier, followed by a parenthesized list of space-separated identifiers, followed by a block.
+
+\emph{mapper-definition} : \textbf{Mapper} \emph{identifier namelist block} \textbf{;}
+
+\emph{namelist}: \textbf ( \emph{identifier} \textbf ) $|$  \textbf ( \emph{identifier} 
+$<$SPACE$>$ \emph{namelist} \textbf )
+
 
 \begin{verbatim}
 Mapper name (arg1 arg2  arg3)
