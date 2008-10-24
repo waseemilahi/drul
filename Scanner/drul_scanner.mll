@@ -23,8 +23,6 @@ rule token = parse
 
    | 	'\n'				{ print_endline "FINISH!"}
 
-   |	"NULL"				{incr num_tokens ;incr num_keywords ; token lexbuf }
-
    |	"elseif"			{incr num_tokens ;incr num_keywords ; token lexbuf }
 
    | 	"if"				{incr num_tokens ;incr num_keywords ; token lexbuf }
