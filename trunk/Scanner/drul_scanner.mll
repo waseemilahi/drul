@@ -1,7 +1,6 @@
 {
-    (* We will associate the input with tokens gotton from the parser
-	and also add restrictions to the ones we have. For now I am ending
-	the input with new line(if its not a comment. *)
+    (* We will associate the input with tokens gotton from the parser. For now I am
+	just counting and printing out number of tokens and other stuff. *)
 
 	let num_keywords = ref 0 (*pointer*)
 	let id		 = ref 0 (*pointer*)
@@ -61,7 +60,14 @@ rule token = parse
 
    |	'$'['0' - '9']+			{incr num_tokens ; incr s_id ; token lexbuf  	    }
 
-   |    identifier			{incr num_tokens ; incr id ; token lexbuf 	    }
+   |    identifier	as ide		{if((String.length ide) <= 64)
+					   then (token lexbuf ; incr num_tokens ; incr id)   
+					 else(print_endline ""  ;
+					      print_string "THIS ID IS TOO LONG : ";
+					      print_endline ide ; 
+					      print_string " Only first error in code is";
+					      print_endline " shown.";
+					      exit(1) )  		                    }
 
    |	digit				{incr num_tokens ; incr ints ; token lexbuf	    }
 
@@ -69,7 +75,11 @@ rule token = parse
 
    |    '"'				{incr num_tokens ; incr string_const; const lexbuf  }
  
-   | 	_				{ print_endline "DONE"				    }
+   | 	_	as wrong_token  	{ print_string "THIS IS A WRONG TOKEN: ";
+					  print_char wrong_token ; print_endline "";
+					  print_endline "Only first error is shown"; exit(1)}
+
+   |    eof				{ print_endline "END OF FILE"			    }
 
 
 and comment = parse
