@@ -7,6 +7,6 @@
 
 program:
 
-       program {}
+       program {(*dummy file: nothing in it so far*)}
 
 ;
