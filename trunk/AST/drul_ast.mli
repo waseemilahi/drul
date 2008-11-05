@@ -3,32 +3,37 @@
 type program =
 	statements
 
-type operator = Add | Sub | Mult | Div
+type intOp  = Add | Sub | Mult | Div | Mod
+
+type compOp  = EqualTo | NotEqual | LessThan | GreaterThan | LessEq | GreaterEq
+
+type boolOp = And | Or
 
 type expr = 
 		Lit of int
 	|	Var of string
-	| 	Binop of expr * operator * expr
+	|   UnaryMinus of expr
+	|   UnaryNot  of expr
+	|	ArithBinop of expr * arithOp * expr
+	| 	LogicBinop of expr * boolOp * expr
+	|   Comparison of expr * compOp * expr
 	|	FunCall of string * arglist
 	|	MapCall of mapper * arglist
 
 
 type mapper =
 	AnonyMap of statements
-	| NamedMap of string
+	| NamedMap of string * string list
 
 type arglist =
-	Args of List (* or something like that *)
-		(* list of expressions, yes? *)
+	Args of expr list (* or something like that *)
 
 type statements =
-	Oops of List (* we still don't remember exactly the syntax for this *)
+	Statements of statement list (* we still don't remember exactly the syntax for this *)
 
 type statement =
 	Expr of expr
-	| Statements of statement * statements
 	| Assign of Var * expr
-	| MapDef of string * arglist * statement
-	| IfBlock of expr * statement * statement option
-
+	| MapDef of string * string list * statement
+	| IfBlock of expr * statements * statements option
 
