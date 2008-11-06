@@ -24,8 +24,8 @@ type expr =
 type statement =
     Expr of expr
     | Assign of string * expr
-    | MapDef of string * string list * statement
+    | MapDef of string * string list * statement list
     | IfBlock of expr * statement list * statement list option
 
 type program =
-    statements
+    Content of statement list
