@@ -1,13 +1,14 @@
 (* AST scratch *)
 
-type program =
-    statements
-
 type intOp  = Add | Sub | Mult | Div | Mod
 
 type compOp  = EqualTo | NotEqual | LessThan | GreaterThan | LessEq | GreaterEq
 
 type boolOp = And | Or
+
+type mapper =
+    AnonyMap of statement list
+    | NamedMap of string * string list
 
 type expr = 
         Lit of int
@@ -17,23 +18,14 @@ type expr =
     |   ArithBinop of expr * intOp * expr
     |   LogicBinop of expr * boolOp * expr
     |   Comparison of expr * compOp * expr
-    |   FunCall of string * arglist
-    |   MapCall of mapper * arglist
-
-
-type mapper =
-    AnonyMap of statements
-    | NamedMap of string * string list
-
-type arglist =
-    Args of expr list (* or something like that *)
-
-type statements =
-    Statements of statement list (* we still don't remember exactly the syntax for this *)
+    |   FunCall of string * expr list
+    |   MapCall of mapper * expr list
 
 type statement =
     Expr of expr
     | Assign of string * expr
     | MapDef of string * string list * statement
-    | IfBlock of expr * statements * statements option
+    | IfBlock of expr * statement list * statement list option
 
+type program =
+    statements
