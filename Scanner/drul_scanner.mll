@@ -1,12 +1,12 @@
 {
         let num_keywords = ref 0 (*pointer*)
-	let id		 = ref 0 (*pointer*)
-	let ints	 = ref 0 (*pointer*)
+        let id           = ref 0 (*pointer*)
+        let ints         = ref 0 (*pointer*)
         let num_comments = ref 0 (*pointer*)
-	let num_tokens   = ref 0 (*pointer*)
-	let s_id         = ref 0 (*pointer*)
-	let string_const = ref 0 (*pointer*)
-	
+        let num_tokens   = ref 0 (*pointer*)
+        let s_id         = ref 0 (*pointer*)
+        let string_const = ref 0 (*pointer*)
+        
 }
 
 let digit         =  ['0' - '9']+
@@ -15,118 +15,81 @@ let identifier    =  ['a'-'z' 'A'-'Z' '_']['a'-'z' 'A'-'Z' '_' '0'-'9']*
 
 rule token = parse
 
-	[' ' '\t' '\r' '\n'] 	        { token lexbuf 					    }
+        [' ' '\t' '\r' '\n']    { token lexbuf                                  }
+   |    '('                             { LPAREN                                            } 
+   |    ')'                             { RPAREN                                            } 
+   |    '{'                             { LBRACE                                            } 
+   |    '}'                             { RBRACE                                            }
+   |    ';'                             { SEMI                                              } 
+   |    ','                             { COMMA                                             }
+   |    '+'                             { PLUS                                              } 
+   |    '-'                             { MINUS                                             }
+   |    '*'                             { TIMES                                             } 
+   |    '/'                             { DIVIDE                                            }
+   |    '='                             { ASSIGN                                            } 
+   |    "=="                            { EQ                                                }
+   |    "!="                            { NEQ                                               } 
+   |    '!'                             { NOT                                               }
+   |    '%'                             { MOD                                               }
+   |    '<'                             { LT                                                }
+   |    "<="                            { LEQ                                               } 
+   |    '>'                             { GT                                                }
+   |    ">="                            { GEQ                                               }
+   |    "&&"                            { AND                                               }
+   |    "||"                            { OR                                                }
+   |    '.'                             { MCALL                                             }
+   |    "//"                            { incr num_comments ; comment lexbuf                }
+   |    "elseif"                        { incr num_tokens ; incr num_keywords ; token lexbuf}
+   |    "if"                            { incr num_tokens ; incr num_keywords ; token lexbuf}
+   |    "else"                          { incr num_tokens ; incr num_keywords ; token lexbuf}
+   |    "rand"                          { incr num_tokens ; incr num_keywords ; token lexbuf}
+   |    "pattern"                       { incr num_tokens ; incr num_keywords ; token lexbuf}
+   |    "true"                          { incr num_tokens ; incr num_keywords ; token lexbuf}
+   |    "false"                         { incr num_tokens ; incr num_keywords ; token lexbuf}
+   |    "concat"                        { incr num_tokens ; incr num_keywords ; token lexbuf}
+   |    "slice"                         { incr num_tokens ; incr num_keywords ; token lexbuf}
+   |    "clip"                          { incr num_tokens ; incr num_keywords ; token lexbuf}
+   |    "instrument"                    { incr num_tokens ; incr num_keywords ; token lexbuf}
+   |    "length"                        { incr num_tokens ; incr num_keywords ; token lexbuf}
+   |    "mapper"                        { incr num_tokens ; incr num_keywords ; token lexbuf}
 
-   |	'(' 				{ LPAREN 					    } 
-   	
-   |	')' 				{ RPAREN					    } 
-   
-   | 	'{' 				{ LBRACE					    } 
-   
-   |	'}' 				{ RBRACE 					    }
-   	
-   | 	';' 				{ SEMI						    } 
-   	
-   | 	',' 				{ COMMA						    }
-   	
-   |	'+' 				{ PLUS 						    } 
-   
-   | 	'-'  				{ MINUS 					    }
-   
-   | 	'*' 				{ TIMES 					    } 
-   
-   | 	'/' 				{ DIVIDE 					    }
-   
-   | 	'=' 				{ ASSIGN 					    } 
-   
-   |	"==" 				{ EQ 						    }
-   	
-   | 	"!=" 				{ NEQ						    } 
-   
-   | 	'!' 				{ NOT						    }
+   |    "map"                           { incr num_tokens ; incr num_keywords ; token lexbuf}
 
-   | 	'%' 				{ MOD						    }
+   |    "print"                         { incr num_tokens ; incr num_keywords ; token lexbuf}
 
-   | 	'<' 				{ LT 						    }
-   
-   | 	"<=" 				{ LEQ 						    } 
-   	
-   | 	'>' 				{ GT 						    }
-
-   | 	">=" 				{ GEQ 						    }
-
-   | 	"&&" 				{ AND						    }
-
-   | 	"||" 				{ OR						    }
-
-   |	'.'				{ MCALL 					    }
-
-   |	"//"				{ incr num_comments ; comment lexbuf		    }
-
-   |	"elseif"			{ incr num_tokens ; incr num_keywords ; token lexbuf}
-
-   | 	"if"				{ incr num_tokens ; incr num_keywords ; token lexbuf}
-
-   |	"else"				{ incr num_tokens ; incr num_keywords ; token lexbuf}
-
-   |	"rand"				{ incr num_tokens ; incr num_keywords ; token lexbuf}
-
-   |	"pattern"			{ incr num_tokens ; incr num_keywords ; token lexbuf}
-
-   |	"true" 				{ incr num_tokens ; incr num_keywords ; token lexbuf}
-
-   |	"false" 			{ incr num_tokens ; incr num_keywords ; token lexbuf}
-
-   |	"concat"			{ incr num_tokens ; incr num_keywords ; token lexbuf}
-
-   | 	"slice"				{ incr num_tokens ; incr num_keywords ; token lexbuf}
-
-   |	"clip"				{ incr num_tokens ; incr num_keywords ; token lexbuf}
-
-   |	"instrument"			{ incr num_tokens ; incr num_keywords ; token lexbuf}
-
-   | 	"length"			{ incr num_tokens ; incr num_keywords ; token lexbuf}
-
-   |	"mapper"			{ incr num_tokens ; incr num_keywords ; token lexbuf}
-
-   |	"map"				{ incr num_tokens ; incr num_keywords ; token lexbuf}
-
-   |	"print"				{ incr num_tokens ; incr num_keywords ; token lexbuf}
-
-   |	"output"			{ incr num_tokens ; incr num_keywords ; token lexbuf}
+   |    "output"                        { incr num_tokens ; incr num_keywords ; token lexbuf}
  
-   | 	"return"			{ incr num_tokens ; incr num_keywords ; token lexbuf}
+   |    "return"                        { incr num_tokens ; incr num_keywords ; token lexbuf}
 
-   |	'$'digit			{ incr num_tokens ; incr s_id ; token lexbuf  	    }
-
-   |    identifier	as ide		{ if((String.length ide) <= 64)then ID(ide) 					  
-					  else
-					     (
-					       raise (Failure("ID TOO LONG: " ^
-				                          Char.escaped ide))
-					     )  		            	            }
+   |    '$'digit                        { incr num_tokens ; incr s_id ; token lexbuf        }
+   |    identifier      as ide          { if((String.length ide) <= 64)then ID(ide)                                       
+                                          else
+                                             (
+                                               raise (Failure("ID TOO LONG: " ^
+                                                          Char.escaped ide))
+                                             )                                              }
 
  
-   |	digit		as dig		{ LITERAL(int_of_string dig)	    		    }
+   |    digit           as dig          { LITERAL(int_of_string dig)                        }
 
-   |    '"'				{ const lexbuf					    }
+   |    '"'                             { const lexbuf                                      }
 
-   |    eof				{ EOF						    }
+   |    eof                             { EOF                                               }
 
-   | 	_	       	as char 	{ raise (Failure("illegal character " ^
-				                          Char.escaped char)) 		    }
+   |    _               as char         { raise (Failure("illegal character " ^
+                                                          Char.escaped char))               }
 
 and comment = parse
 
-       	'\n'				{ token lexbuf					    }
+        '\n'                            { token lexbuf                                      }
       
-   |	_				{ comment lexbuf				    }
+   |    _                               { comment lexbuf                                    }
 
 
 and const  = parse
-	'"'				{ token lexbuf					    }
+        '"'                             { token lexbuf                                      }
 
-   |   	_				{ const lexbuf	(* NEED TO CAPTURE THE STRING*)     }
+   |    _                               { const lexbuf  (* NEED TO CAPTURE THE STRING*)     }
 
 
 {
