@@ -9,8 +9,7 @@ type boolOp = And | Or
 type mapper =
     AnonyMap of statement list
     | NamedMap of string * string list
-
-type expr = 
+and expr = 
         Lit of int
     |   Var of string
     |   UnaryMinus of expr
@@ -20,8 +19,7 @@ type expr =
     |   Comparison of expr * compOp * expr
     |   FunCall of string * expr list
     |   MapCall of mapper * expr list
-
-type statement =
+and statement =
     Expr of expr
     | Assign of string * expr
     | MapDef of string * string list * statement list
