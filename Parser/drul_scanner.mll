@@ -1,4 +1,4 @@
-{
+{	open Drul_parser
         let num_keywords = ref 0 (*pointer*)
         let id           = ref 0 (*pointer*)
         let ints         = ref 0 (*pointer*)
@@ -65,8 +65,7 @@ rule token = parse
    |    identifier      as ide          { if((String.length ide) <= 64)then ID(ide)                                       
                                           else
                                              (
-                                               raise (Failure("ID TOO LONG: " ^
-                                                          Char.escaped ide))
+                                               raise (Failure("ID TOO LONG: " ^ ide))
                                              )                                              }
 
  
