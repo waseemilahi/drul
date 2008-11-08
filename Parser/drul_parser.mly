@@ -14,7 +14,7 @@
 %left LT GT LEQ GEQ
 %left PLUS MINUS
 %left TIMES DIVIDE MOD
-%noassoc UMINUS NOT
+%nonassoc UMINUS NOT
 
 %start program
 %type<Ast.program> program
@@ -38,9 +38,12 @@ expr:
     |   expr OR expr { LogicBinop($1,Or,$3) }
     |   MINUS expr  %prec UMINUS { UnaryMinus($2) }
     |   NOT expr   { UnaryNot($2) }
+    |   ID LPAREN expr RPAREN { Funcall($1, [$3]) }
     
-
+statement:
+        expr SEMI { Expr($1) } /* that'll do for now */
+    
 program:
-       EOF {(*dummy file: nothing in it so far*)}
+       program statement { Content($2 :: $1) }
 
 ;
