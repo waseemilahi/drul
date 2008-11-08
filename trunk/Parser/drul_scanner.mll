@@ -83,7 +83,7 @@ and const  = parse
 {
    let main () =
 	 let lexbuf = Lexing.from_channel stdin in
-	 token lexbuf;
+	 ignore(token lexbuf);
 	 Printf.printf "\n There were %d keywords and %d identifiers in the input" !num_keywords !id;
 	 Printf.printf "\n There were %d integers and %d comments" !ints !num_comments;
 	 Printf.printf "\n There were %d special variables in all." !s_id;
