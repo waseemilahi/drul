@@ -1,4 +1,4 @@
-%{ open Ast %}
+%{ open Drul_ast %}
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA PLUS MINUS TIMES DIVIDE
 %token ASSIGN EQ NEQ LT LEQ GT GEQ EOF MCALL AND OR NOT MOD
@@ -17,7 +17,7 @@
 %nonassoc UMINUS NOT
 
 %start program
-%type<Ast.program> program
+%type<Drul_ast.program> program
 
 %%
 expr:
@@ -38,12 +38,12 @@ expr:
     |   expr OR expr { LogicBinop($1,Or,$3) }
     |   MINUS expr  %prec UMINUS { UnaryMinus($2) }
     |   NOT expr   { UnaryNot($2) }
-    |   ID LPAREN expr RPAREN { Funcall($1, [$3]) }
+    |   ID LPAREN expr RPAREN { FunCall($1, [$3]) }
     
 statement:
         expr SEMI { Expr($1) } /* that'll do for now */
     
 program:
-       program statement { Content($2 :: $1) }
+       program statement { match $1 with Content(a)->Content($2 :: a) }
 
 ;
