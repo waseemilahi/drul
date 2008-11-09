@@ -1,9 +1,15 @@
-%{ open Drul_ast %}
+%{ open Drul_ast 
+let debug str =  if (true) then ignore(print_endline str) else ignore()
+%}
 
+%token IF ELSE ELSEIF RETURN
+%token TRUE FALSE
+%token MAP MAPDEF
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA PLUS MINUS TIMES DIVIDE
 %token ASSIGN EQ NEQ LT LEQ GT GEQ EOF MCALL AND OR NOT MOD
 %token <int> LITERAL
 %token <string> ID
+%token <string> STRCONST
 
 %nonassoc NOELSE /* which we define somehow, somewhere */
 %nonassoc ELSE
@@ -18,10 +24,13 @@
 
 %start program
 %type<Drul_ast.program> program
-
 %%
+
 expr:
-        LITERAL     { Lit($1) }
+        LITERAL     { CInt($1) }
+    |   STRCONST    { CStr($1) }
+    |   TRUE        { CBool(true) }
+    |   FALSE       { CBool(false)}
     |   ID          { Var($1) }
     |   expr PLUS expr { ArithBinop($1,Add,$3)  }
     |   expr MINUS expr { ArithBinop($1,Sub,$3) }
@@ -44,6 +53,8 @@ statement:
         expr SEMI { Expr($1) } /* that'll do for now */
     
 program:
-       program statement { match $1 with Content(a)->Content($2 :: a) }
+        /* nada */ { Content([]) }
+    | program statement { match $1 with Content(a)->Content($2 :: a) }
+      
 
 ;
