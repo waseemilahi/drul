@@ -10,7 +10,9 @@ type mapper =
     AnonyMap of statement list
     | NamedMap of string * string list
 and expr = 
-        Lit of int
+        CInt of int
+    |   CStr of string
+    |   CBool of bool
     |   Var of string
     |   UnaryMinus of expr
     |   UnaryNot  of expr
