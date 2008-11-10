@@ -8,7 +8,7 @@ type boolOp = And | Or
 
 type mapper =
     AnonyMap of statement list
-    | NamedMap of string * string list
+    | NamedMap of string
 and expr = 
         CInt of int
     |   CStr of string
