@@ -50,11 +50,23 @@ expr:
     |   ID LPAREN expr RPAREN { FunCall($1, [$3]) }
     
 statement:
-        expr SEMI { Expr($1) } /* that'll do for now */
+        expr SEMI { Expr($1) }
+    |   MAPDEF ID LPAREN id_list RPAREN LBRACE st_list RBRACE
+            { MapDef($2, List.rev $4, List.rev $7) }
+    |   ID ASSIGN expr { Assign($1,$3) }
+    |   IF LPAREN expr RPAREN LBRACE st_list RBRACE
+        { IfBlock($3,List.rev $6, None) } /* no else yet */
+id_list:
+    /* invalid empty argument list */ { [] }
+    | id_list ID { $2::$1 }
+
+st_list:
+    /* staring into the abyss */ { [] }
+    | st_list statement { $2::$1 } /* build statement list backward */
     
 program:
-        /* nada */ { Content([]) }
-    | program statement { match $1 with Content(a)->Content($2 :: a) }
+    st_list { Content(List.rev $1) }
+
       
 
 ;
