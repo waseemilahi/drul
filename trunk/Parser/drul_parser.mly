@@ -54,17 +54,17 @@ expr:
 statement:
         expr SEMI { Expr($1) }
     |   MAPDEF ID LPAREN id_list RPAREN block
-            { MapDef($2, List.rev $4, List.rev $6) }
+            { MapDef($2, List.rev $4, $6) }
     |   ID ASSIGN expr { Assign($1,$3) }
     |   IF LPAREN expr RPAREN block
-        { IfBlock($3,List.rev $5, None) }
+        { IfBlock($3, $5, None) }
     |   IF LPAREN expr RPAREN block ELSE block
-    	{ IfBlock($3, List.rev $5, Some($7)) }
+    	{ IfBlock($3, $5, Some($7)) }
     	/* TODO : ELSEIF */
     	/* May require AST change */
 
 block:
-	LBRACE st_list RBRACE { $2 }
+	LBRACE st_list RBRACE { List.rev $2 }
 
 id_list:
     ID { [$1] }
