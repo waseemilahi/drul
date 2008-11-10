@@ -47,17 +47,27 @@ expr:
     |   expr OR expr { LogicBinop($1,Or,$3) }
     |   MINUS expr  %prec UMINUS { UnaryMinus($2) }
     |   NOT expr   { UnaryNot($2) }
-    |   ID LPAREN expr RPAREN { FunCall($1, [$3]) }
-    
+    |   ID LPAREN expr RPAREN { FunCall($1, [$3]) } 
+    /* making this an expr_list causes a conflict */
+/*    |   LPAREN expr RPAREN { $2} */
+    /* this has a shift-reduce conflict with function calls */
 statement:
         expr SEMI { Expr($1) }
-    |   MAPDEF ID LPAREN id_list RPAREN LBRACE st_list RBRACE
-            { MapDef($2, List.rev $4, List.rev $7) }
+    |   MAPDEF ID LPAREN id_list RPAREN block
+            { MapDef($2, List.rev $4, List.rev $6) }
     |   ID ASSIGN expr { Assign($1,$3) }
-    |   IF LPAREN expr RPAREN LBRACE st_list RBRACE
-        { IfBlock($3,List.rev $6, None) } /* no else yet */
+    |   IF LPAREN expr RPAREN block
+        { IfBlock($3,List.rev $5, None) }
+    |   IF LPAREN expr RPAREN block ELSE block
+    	{ IfBlock($3, List.rev $5, Some($7)) }
+    	/* TODO : ELSEIF */
+    	/* May require AST change */
+
+block:
+	LBRACE st_list RBRACE { $2 }
+
 id_list:
-    /* invalid empty argument list */ { [] }
+    ID { [$1] }
     | id_list ID { $2::$1 }
 
 st_list:
@@ -67,6 +77,6 @@ st_list:
 program:
     st_list { Content(List.rev $1) }
 
-      
+
 
 ;
