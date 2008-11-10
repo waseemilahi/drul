@@ -11,6 +11,7 @@ let debug str =  if (true) then ignore(print_endline str) else ignore()
 %token <string> ID
 %token <string> STRCONST
 
+%left LIST /* is this correct? I mean, it *works*, but... */
 %nonassoc NOELSE /* which we define somehow, somewhere */
 %nonassoc ELSE
 %left ASSIGN /* needs no associativity, may need no precedence? */
@@ -47,10 +48,13 @@ expr:
     |   expr OR expr { LogicBinop($1,Or,$3) }
     |   MINUS expr  %prec UMINUS { UnaryMinus($2) }
     |   NOT expr   { UnaryNot($2) }
-    |   ID LPAREN expr RPAREN { FunCall($1, [$3]) } 
-    /* making this an expr_list causes a conflict */
+    |   ID LPAREN expr_list RPAREN { FunCall($1, List.rev $3) } 
 /*    |   LPAREN expr RPAREN { $2} */
     /* this has a shift-reduce conflict with function calls */
+    |   MAP LPAREN expr_list RPAREN block
+    	{ MapCall(AnonyMap($5),List.rev $3)}
+    |   MAP LPAREN expr_list RPAREN ID
+    	{ MapCall(NamedMap($5), List.rev $3)}
 statement:
         expr SEMI { Expr($1) }
     |   MAPDEF ID LPAREN id_list RPAREN block
@@ -69,6 +73,10 @@ block:
 id_list:
     ID { [$1] }
     | id_list ID { $2::$1 }
+
+expr_list:
+	/* epsilon */ { [] }
+	| expr_list expr %prec LIST { $2::$1 }
 
 st_list:
     /* staring into the abyss */ { [] }
