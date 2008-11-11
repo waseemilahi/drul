@@ -1,5 +1,7 @@
+#! /usr/bin/env python
 """
 DruL team, Columbia (2008) PLT class
+copyright DruL team
 
 contact: tb2332@columbia.edu
 
@@ -15,3 +17,141 @@ import os
 import sys
 import glob
 import time
+import tempfile
+#import subprocess
+
+
+drulpath = "../"
+testspath = "./Tests/"
+
+
+
+# returns a list of file in current dir
+# to use with os.walk
+def grab_tests(arg=list(),path="",names=""):
+    tests = glob.glob(os.path.join(os.path.abspath(path),'*.drultest'))
+    for t in tests:
+        arg.append(t)
+    return arg
+
+
+# make sure that all tests found have a corresponding output
+# if not, program exits
+def make_sure_tests_have_outputs(tests):
+    noout = list()
+    for t in tests :
+        if not os.path.exists(t + 'out'):
+            print (t+'out')
+            noout.append(t)
+        if len(noout) > 0:
+            print 'problem,',len(noout),'tests have no corresponding output'
+            print 'we stop testing......... go solve it! and grab a beer'
+            print 'files that cause problems:'
+            for t in noout:
+                print t
+            sys.exit(0)
+
+
+# launch any command, return outputs
+def command_with_output(cmd):
+    if not type(cmd) == unicode :
+        cmd = unicode(cmd,'utf-8')
+    #should this be a part of slashify or command_with_output?
+    #if sys.platform=='darwin' :
+    #    cmd = unicodedata.normalize('NFC',cmd)
+    child = os.popen(cmd.encode('utf-8'))
+    data = child.read()
+    err = child.close()
+    return data
+
+
+# launch one test, given a test path, returns output lines
+# (output is first written to a file, than read)
+def launch_one_test(tpath):
+    cmd = 'head -20 ' + tpath
+    #cmd = 'musicboost'
+    out = command_with_output(cmd)
+    # write to a tempfile, then read it
+    # dumb, but easier to compare with a saved output file
+    tempfname = "tempfileTODELETE.txt"
+    tempf = open(tempfname,'w')
+    tempf.write(out)
+    tempf.close()
+    outlines = read_file(tempfname)
+    os.unlink(tempfname)
+    return outlines
+
+
+
+# read file given a path, return lines
+def read_file(p):
+    fIn = open(p,'r')
+    res = fIn.readlines()
+    fIn.close()
+    return res
+
+
+# compare two list of lines, returns true or false
+def compare_2set_of_lines(lines1,lines2):
+    if len(lines1) != len(lines2):
+        return False
+    for k in range(len(lines1)):
+        if lines1[k] != lines2[k]:
+            return False
+    return True
+
+
+# create_log_file, returns a path
+def create_log_file():
+    res = "LOG_tests_"
+    res += str(time.ctime()).replace(' ','_')
+    res += '.log'
+    return res
+
+
+
+# help menu
+def die_with_usage():
+    print '*********************************************************'
+    print 'Welcome to DruL test suite'
+    print 'to launch test, type:'
+    print '   LaunchTests.py -go'
+    print ''
+    print 'test files should end in: .drultest'
+    print 'and corresponding outputs: .drultestout'
+    print 'Of course, test names must match, like:'
+    print "'testpattern1.drultest' and 'testpattern1.drultestout'"
+    print '*********************************************************'
+    sys.exit(0)
+
+
+#**************************************************************
+# MAIN
+
+if __name__ == '__main__' :
+
+    # launch help menu if needed
+    if len(sys.argv) < 2 or sys.argv[1] != "-go":
+        die_with_usage()
+
+
+    # grab all tests
+    tests = list()
+    os.path.walk(testspath,grab_tests,tests)
+
+    # make sure all tests have an output
+    make_sure_tests_have_outputs(tests)
+
+    # make sure we found tests
+    if len(tests) == 0:
+        print "dummass, there's no tests"
+        sys.exit(0)
+    else :
+        print 'launching',len(tests),'tests'
+
+    # launch every test
+    for t in tests:
+        newout = launch_one_test(t)
+        goodout = read_file(t + 'out')
+        print compare_2set_of_lines(newout,goodout)
+
