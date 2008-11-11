@@ -23,7 +23,7 @@ import tempfile
 
 drulpath = "../"
 testspath = "./Tests/"
-
+logspath = "./LOGS/"
 
 
 # returns a list of file in current dir
@@ -102,11 +102,36 @@ def compare_2set_of_lines(lines1,lines2):
 
 
 # create_log_file, returns a path
+# if path already exists, add something at the end
 def create_log_file():
     res = "LOG_tests_"
     res += str(time.ctime()).replace(' ','_')
     res += '.log'
+    res = os.path.abspath(os.path.join(logspath,res))
+    if os.path.exists(res):
+        counter = 1
+        while os.path.exists(res):
+            counter = counter + 1
+            res = res[:-4] + '(' + str(counter) + ').log'
     return res
+
+
+# add lines to a log path, can pass in one string or list of string
+def add_to_log(logf,lines):
+    # open log file, creates it if needed
+    #if os.path.exists(logf):
+    #    flog = open(logf,'w')
+    #else:
+    #    flog = open(logf,'a')
+    flog = open(logf,'a')
+    # if string
+    if type(lines) == type(" "):
+        flog.write(lines + '\n')
+    else:
+        for l in lines:
+            flog.write(l + '\n')
+    # close
+    flog.close()
 
 
 
@@ -149,9 +174,33 @@ if __name__ == '__main__' :
     else :
         print 'launching',len(tests),'tests'
 
+    # get logfile
+    logfile = create_log_file()
+
+
     # launch every test
+    counter = 0
+    countpassed = 0
+    countfailed = 0
     for t in tests:
+        counter = counter + 1
         newout = launch_one_test(t)
         goodout = read_file(t + 'out')
-        print compare_2set_of_lines(newout,goodout)
+        isOK = compare_2set_of_lines(newout,goodout)
+        if isOK:
+            countpassed = countpassed + 1
+            add_to_log(logfile,str(counter) + ') test PASSED: '+t)
+        else :
+            countfailed += 1
+            add_to_log(logfile,str(counter) + ') test FAILED: '+t)
+            add_to_log(logfile,'******************************************')
+            add_to_log(logfile,'should be:')
+            add_to_log(logfile,goodout)
+            add_to_log(logfile,'and it is:')
+            add_to_log(logfile,newout)
+            add_to_log(logfile,'******************************************')
 
+    # results
+    print 'passed',countpassed,'tests out of',counter
+    add_to_log(logfile,'########## SUMMARY:')
+    add_to_log(logfile,'passed '+str(countpassed)+' tests out of '+str(counter))
