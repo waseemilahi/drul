@@ -32,7 +32,7 @@ expr:
     |   STRCONST    { CStr($1) }
     |   TRUE        { CBool(true) }
     |   FALSE       { CBool(false)}
-    |   ID          { Var($1) }
+    |   ID          { Var($1) }   
     |   expr PLUS expr { ArithBinop($1,Add,$3)  }
     |   expr MINUS expr { ArithBinop($1,Sub,$3) }
     |   expr TIMES expr { ArithBinop($1,Mult,$3) }
@@ -48,9 +48,10 @@ expr:
     |   expr OR expr { LogicBinop($1,Or,$3) }
     |   MINUS expr  %prec UMINUS { UnaryMinus($2) }
     |   NOT expr   { UnaryNot($2) }
+    
     |   ID LPAREN expr_list RPAREN { FunCall($1, List.rev $3) } 
 /*    |   LPAREN expr RPAREN { $2} */
-    /* this has a shift-reduce conflict with function calls */
+  /* this has a shift-reduce conflict with function calls */
     |   MAP LPAREN expr_list RPAREN block
     	{ MapCall(AnonyMap($5),List.rev $3)}
     |   MAP LPAREN expr_list RPAREN ID
@@ -59,7 +60,7 @@ statement:
         expr SEMI { Expr($1) }
     |   MAPDEF ID LPAREN id_list RPAREN block
             { MapDef($2, List.rev $4, $6) }
-    |   ID ASSIGN expr { Assign($1,$3) }
+    |   ID ASSIGN expr SEMI{ Assign($1,$3) }
     |   IF LPAREN expr RPAREN block
         { IfBlock($3, $5, None) }
     |   IF LPAREN expr RPAREN block ELSE block
