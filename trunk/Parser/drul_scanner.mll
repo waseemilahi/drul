@@ -62,7 +62,7 @@ rule token = parse
 										}
 
    |    digit           as dig          { debug ("digits " ^ dig); LITERAL(int_of_string dig)     }
-   |    '"' (([^'"'] | '\\' '"')* as str) '"' { debug(("string constant " ^ str)); STRCONST(str) } 
+   |    '"' (( ('\\' [ '"' '\\' ] ) | [^  '\\' '"'] )* as str) '"' { debug(("string constant " ^ str)); STRCONST(str) } 
    |    eof                             { debug "EOF"; EOF                               }
    |    _               as char         { raise (Failure("illegal character " ^ Char.escaped char)) }
 
