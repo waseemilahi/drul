@@ -25,7 +25,9 @@ let run = function
 *)
 
 let evaluate e = match e with
-	FunCall("print", [CStr(x)]) -> print_endline x
+(*	FunCall("print", [CStr(x)]) -> print_endline x *)
+	CStr(x) -> print_endline x
+
 
 in
 let exec s = match s with
