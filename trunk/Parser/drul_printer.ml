@@ -29,7 +29,7 @@ let rec string_of_expr = function
         CInt(x) -> "Constant integer " ^ string_of_int(x)
     |   CStr(s) -> "Constant string [" ^  s ^"]"
     |   CBool(b)-> "Constant " ^ if b then "TRUE" else "FALSE"
-    |   Var(id) -> "Variable name" ^ id
+    |   Var(id) -> "Variable name " ^ id
     |   UnaryMinus(neg) -> "Arithmetic negation of " ^ string_of_expr(neg)
     |   UnaryNot(bool)  -> "Logical negation of " ^ string_of_expr(bool)
     |   ArithBinop(a,op,b) ->"Arithmetic operation: " ^ string_of_intop(op)
@@ -51,8 +51,17 @@ and  string_of_mapper = function
     |   AnonyMap(list) -> "a statement list we can't evaluate yet"
 and string_of_statement = function
         Expr(e) -> "Simple statement: " ^ string_of_expr(e)
-    |   _ -> "Something not simple."
-  
+    |   IfBlock(exp,stlist,None) -> "If block.  Condition: " ^ string_of_expr(exp)
+            ^ string_of_block "TRUE" stlist ^ "\t(No else)\n"
+    |   IfBlock(exp,stlist,Some(elses)) ->"If block.  Condition: " ^ string_of_expr(exp)
+            ^ string_of_block "TRUE" stlist 
+            ^ string_of_block "FALSE" elses
+    |   _ -> "Something not yet covered."
+and string_of_block name stlist =  
+    "\tStatements in block "^ name^ ":\n" 
+    ^ List.fold_left (fun s x -> s ^ "\t" ^string_of_statement(x) ^ "\n") "" stlist
+
+
 let string_of_program = function
     Content(l) -> "Statements in this program:\n" 
         ^ List.fold_left (fun s x -> s ^ string_of_statement( x ) ^ "\n" ) "" l
