@@ -2,7 +2,11 @@
 " yo ";
 "drul rocks!";
 "17681217298190@#$%^&*()_#";
-"//";
+  "//";
+"";
+
 a = "01010101"; // may be bad
 b = "";         // may be bad
-c = a + b;      // may be bad
+ c = a + b;      // may be bad
+
+
