@@ -52,32 +52,30 @@ expr:
     |   LPAREN expr RPAREN { $2} 
   /* this has a shift-reduce conflict with function calls */
     |   MAP LPAREN expr_list RPAREN block
-    	{ MapCall(AnonyMap($5), $3)}
+        { MapCall(AnonyMap($5), $3)}
     |   MAP LPAREN expr_list RPAREN ID
-    	{ MapCall(NamedMap($5), $3)}
+        { MapCall(NamedMap($5), $3)}
 
 statement:
         expr SEMI { Expr($1) }
     |   MAPDEF ID LPAREN id_list RPAREN block
             { MapDef($2, List.rev $4, $6) }
     |   ID ASSIGN expr SEMI{ Assign($1,$3) }
-    |   IF LPAREN expr RPAREN block
-        { IfBlock($3, $5, None) }
-    |   IF LPAREN expr RPAREN block ELSE block
-    	{ IfBlock($3, $5, Some($7)) }
-    	/* TODO : ELSEIF */
-    	/* May require AST change */
+    |   IF LPAREN expr RPAREN block iftail
+        { IfBlock($3, $5, $6) }
+        /* TODO : ELSEIF */
+        /* May require AST change */
 
 block:
-	LBRACE st_list RBRACE { List.rev $2 }
+    LBRACE st_list RBRACE { List.rev $2 }
 
 id_list:
     ID { [$1] }
     | id_list ID { $2::$1 }
 
 expr_list:
-	 expr { [$1] }
-	| expr COMMA expr_list { $1::$3 }
+     expr { [$1] }
+    | expr COMMA expr_list { $1::$3 }
 
 st_list:
     /* staring into the abyss */ { [] }
@@ -86,6 +84,9 @@ st_list:
 program:
     st_list { Content(List.rev $1) }
 
-
-
+iftail:
+        ELSEIF LPAREN expr RPAREN block iftail
+            { Some([ IfBlock($3,$5,$6)  ]) }
+    |   ELSE block { Some($2) }
+    |  /* nothing */ { None }
 ;
