@@ -1,0 +1,5 @@
+
+a = pattern("001");
+
+b = pattern("01").repeat(4);
+d = a.repeat(3);
