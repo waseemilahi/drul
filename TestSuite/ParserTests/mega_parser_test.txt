@@ -8,6 +8,20 @@ d=1;
 d = 3;
 a      =    d;
 
+//************ SIMPLE STRING DECLARATION ********************
+
+"allo";
+" yo ";
+"drul rocks!";
+"17681217298190@#$%^&*()_#";
+"//";
+a = "01010101"; // may be bad
+b = "";         // may be bad
+c = a + b;      // may be bad
 
 
-//************ SIMPLE INT DECLARATIONS *********************
+//************ SIMPLE PATTERN DECLARATIONS *********************
+
+a = pattern("01");
+b = pattern("01").repeat(4);
+d = a.repeat(3);
