@@ -131,6 +131,12 @@ if __name__ == '__main__' :
         die_with_usage()
 
 
+    # check if testing program exists and can be found
+    if not os.path.exists(testingprog):
+        print "you didn't install the testing program, make testing"
+        sys.exit(0)
+    
+
     # grab all tests
     tests = list()
     os.path.walk(testspath,grab_tests,tests)
