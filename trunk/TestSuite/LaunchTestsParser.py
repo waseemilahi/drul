@@ -55,7 +55,7 @@ def command_with_output(cmd):
 # launch one test, given a test path, returns stdout or stderr
 # (output is first written to a file, than read)
 def launch_one_test(tpath):
-    cmd = testingprog + ' < ' + tpath
+    cmd = testingprog + " < '" + tpath + "'"
     (outdata,outerr) = command_with_output(cmd)
     return (outdata,outerr)
 
