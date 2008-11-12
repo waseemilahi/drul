@@ -1,0 +1,13 @@
+// reminder: this is a comment!!!
+
+//************ SIMPLE INT DECLARATIONS *********************
+a;
+b;
+a;c;
+d=1;
+d = 3;
+a      =    d;
+
+
+
+//************ SIMPLE INT DECLARATIONS *********************
