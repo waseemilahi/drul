@@ -1,34 +1,42 @@
 open Drul_ast
 
-module NameMap = Map.Make(string)
+(* module NameMap = Map.Make(String) *)
 
-type t = Int | String | Bool | Pattern | Clip
-type tval = expr * t
+(* type t = Void | Int | Str | Bool | Pattern | Clip *)
 
+(*
 let rec execPrint env = function
-	  []       -> print_endline ""
-	| head::[] -> print_endline (eval head)
-	| _        -> raise (Failure ("ERROR: Print can take a single argument"))
+	  []       -> print_endline ""; (CInt(0), Void)
+	| head::[] -> let (exprVal, typeVal) = (eval env head) in match (exprVal, typeVal) with
+			(expr, Str) -> print_endline expr; (CInt(0), Void)
+		  | _           -> raise (Failure ("ERROR: Print can only be used on strings"))
+	| _ -> raise (Failure ("ERROR: Print can take a single argument"))
 
-and execFun env = function
-	("print", eList) -> execPrint env eList
-
-and eval env = function
-	  CInt(x)  -> (x, Int)
-	| CStr(x)  -> (x, String)
-	| CBool(x) -> (x, Bool)
-	| FunCall(name, eList) -> execFun name env eList
-
+let evaluate env = function
+	  CStr(x)                     -> (CStr(x), Str)
+	| FunCall("print", [CStr(x)]) -> print_endline x; 0
 in
-let rec exec env = function
-	Expr(e) -> eval env e
+let exec env = function
+	Expr(e) -> let _ = evaluate env e; ignore()
 
 in
 let run = function
-	Content(statements) -> List.fold_left exec StringMap.empty statements
+	Content(statements) -> List.fold_left exec NameMap.empty statements; ignore()
+*)
 
+let evaluate e = match e with
+	FunCall("print", [CStr(x)]) -> print_endline x
+
+in
+let exec s = match s with
+	Expr(e) -> evaluate e
+
+in
+let run p = match p with
+	Content(statements) -> List.iter exec statements
+
+in
 let _ =
 let lexbuf = Lexing.from_channel stdin in
-let program = Drul_parser.program Drul_scanner.token lexbuf in
-let result = run program in
-print_endline (string_of_int result)
+let programAst = Drul_parser.program Drul_scanner.token lexbuf in
+ignore (run programAst)
