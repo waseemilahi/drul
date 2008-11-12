@@ -25,20 +25,17 @@ let run = function
 *)
 
 let evaluate e = match e with
-(*	FunCall("print", [CStr(x)]) -> print_endline x *)
-	CStr(x) -> print_endline x
+	FunCall("print", [CStr(x)]) -> print_endline x;;
 
+let execute s = match s with
+	Expr(e) -> evaluate e;;
 
-in
-let exec s = match s with
-	Expr(e) -> evaluate e
-
-in
 let run p = match p with
-	Content(statements) -> List.iter exec statements
+	Content(statements) -> List.iter execute statements;;
 
-in
+
 let _ =
 let lexbuf = Lexing.from_channel stdin in
 let programAst = Drul_parser.program Drul_scanner.token lexbuf in
-ignore (run programAst)
+ignore (run programAst);;
+
