@@ -18,7 +18,7 @@ import sys
 import glob
 import time
 import tempfile
-#import subprocess
+
 
 
 drulpath = "../"
@@ -69,7 +69,6 @@ def command_with_output(cmd):
 # (output is first written to a file, than read)
 def launch_one_test(tpath):
     cmd = 'head -20 ' + tpath
-    #cmd = 'musicboost'
     out = command_with_output(cmd)
     # write to a tempfile, then read it
     # dumb, but easier to compare with a saved output file
