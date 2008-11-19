@@ -33,6 +33,7 @@ expr:
     |   TRUE        { CBool(true) }
     |   FALSE       { CBool(false)}
     |   ID          { Var($1) }
+    |   ID MCALL ID LPAREN RPAREN { MemberCall($1,$3,[]) }
     |   ID MCALL ID LPAREN expr_list RPAREN  { MemberCall($1,$3,$5) }
     |   expr PLUS expr { ArithBinop($1,Add,$3)  }
     |   expr MINUS expr { ArithBinop($1,Sub,$3) }
