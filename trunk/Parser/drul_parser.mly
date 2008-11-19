@@ -4,7 +4,7 @@ let debug str =  if (true) then ignore(print_endline str) else ignore()
 
 %token IF ELSE ELSEIF RETURN
 %token TRUE FALSE
-%token MAP MAPDEF RAND
+%token MAP MAPDEF
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA PLUS MINUS TIMES DIVIDE
 %token ASSIGN EQ NEQ LT LEQ GT GEQ EOF MCALL AND OR NOT MOD
 %token <int> LITERAL
@@ -33,7 +33,6 @@ expr:
     |   TRUE        { CBool(true) }
     |   FALSE       { CBool(false)}
     |   ID          { Var($1) }
-    |   RAND 	    { Rand }
     |   expr MCALL ID LPAREN RPAREN { MemberCall($1,$3,[]) }
     |   expr MCALL ID LPAREN expr_list RPAREN  { MemberCall($1,$3,$5) }
     |   expr PLUS expr { ArithBinop($1,Add,$3)  }
@@ -51,7 +50,8 @@ expr:
     |   expr OR expr { LogicBinop($1,Or,$3) }
     |   MINUS expr  %prec UMINUS { UnaryMinus($2) }
     |   NOT expr   { UnaryNot($2) }
-    |   ID LPAREN expr_list RPAREN { FunCall($1, $3) } 
+    |   ID LPAREN expr_list RPAREN { FunCall($1, $3) }     
+    |   ID LPAREN RPAREN { FunCall($1,[]) }
     |   LPAREN expr RPAREN { $2} 
   /* this has a shift-reduce conflict with function calls */
     |   MAP LPAREN expr_list RPAREN block
