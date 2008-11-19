@@ -3,7 +3,7 @@ CFLAGS = # none for now
 
 OBJS = drul_scanner.cmo drul_parser.cmo
 
-all : $(OBJS) drul_ast.cmi
+all : $(OBJS) interpret
 
 testing: test.cmo $(OBJS)
 	$(OC) $(CFLAGS) -o testing $(OBJS) test.cmo
@@ -14,7 +14,7 @@ treedump: treedump.cmo $(OBJS)
 scantest: drul_scanner.cmo scantest.cmo
 	$(OC) $(CFLAGS) -o scantest $<
 
-interpret: drul_interpreter.cmo $(OBJS)
+interpret: drul_interpreter.cmo $(OBJS) drul_ast.cmi
 	$(OC) $(CFLAGS) -o interpret $(OBJS) drul_interpreter.cmo
 
 drul_scanner.ml : drul_scanner.mll
