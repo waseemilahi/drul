@@ -1,0 +1,15 @@
+
+print ("1");
+print(        "allo");
+print ("yo!3748473222937`1-232-/._(*&^%$#@");
+
+print(pattern(""));
+print( pattern ("010111001"));
+
+a = pattern("11110");
+print (a);
+b = 3;
+print( b );
+
+c = clip(a);
+print (c);

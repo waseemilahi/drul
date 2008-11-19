@@ -1,0 +1,17 @@
+
+mapper mymapper (p)
+{
+	return pattern("1");
+}
+
+p = pattern("01");
+p2 = map (p) mymapper;
+
+
+mapper mymapper2 (bla)
+{
+	a = 3;
+	b = 4;
+	res = pattern ("010101");
+	return res;
+}

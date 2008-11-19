@@ -1,0 +1,7 @@
+
+// not sure of the syntax, no examples in the Reference Manual
+
+rand();
+
+a = rand();
+
