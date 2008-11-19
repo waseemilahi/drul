@@ -1,0 +1,107 @@
+
+// copied/paste from the RefManual, current version on 11/19/2008
+
+//This code manipulates some patterns, associate them to instruments and
+//sends them to outputs.
+//First the Instrument definition. It has to be done before
+//any clips are created, otherwise there will be an error.
+
+instruments(hihat bassdrum crash snare); //define four instruments
+
+//Integer variables used as tempos for clips.
+
+a = 350;
+b = 300;
+
+//Patterns.
+
+p1 = pattern("100100100");
+p2 = pattern("");//empty pattern
+p3 = pattern("0");//pattern with only one ¡Çrest¡Ç in it.
+p4 = pattern("1");//pattern with only one ¡Çnote¡Ç in it.
+
+//p_concat is essentially concatenation of three patterns.
+
+p_concat = concat(p1 pattern("11110000") pattern("00011"));
+
+//Make a new pattern using above patterns and
+//the library methods ¡Çrepeat¡Ç and ¡Çslice¡Ç.
+
+p_custom = concat( p2 p3.repeat(2) p4.repeat(3)
+    p3.repeat(2) p4.repeat(4) p_concat );
+p_custom_new = concat(p_custom p3.repeat(2) p_concat p4.repeat(3));
+p_new = concat( p_custom_new.slice(4,10)
+    p_concat.slice(5,p1.length) p3.repeat(7) );
+                                  14
+//Now some complex pattern manipulation.
+//New Patterns.
+
+alternate_beats = pattern("10").repeat(8);
+P_concat_new = concat(p_concat p_custom);
+
+//Anonymous mapping.
+
+p_new_rev = map (p_new)
+{
+    if ($1.rest) { pattern("1"); }
+    else         { pattern("0"); }
+};
+
+//Mapper definitions.
+
+mapper newMapper1 (p_any)
+{
+    if (p_any.note)   { return pattern("1"); }
+    else              { return pattern(""); }
+}
+
+mapper newMapper2 (p_any alternate_beats)
+{
+    if (alternate_beats.rest) { return pattern("");} //pattern of length 0
+    elseif (p_any.note)       { return pattern("1");}
+    else                      { return pattern("0");}
+}
+
+mapper improved_newMapper2(p_any alternate_beats)
+{
+    if (alternate_beats.rest)   { return pattern("");  }
+    elseif (p_any.note)         { return pattern("1"); }
+    elseif (p_any.next(1).note) { return pattern("1"); }
+    else                        { return pattern("0"); }
+}
+p_custom_new_notes   = map (p_custom_new) myMapper1;
+p_concat_new_downbeats = map (p_concat_new) newMapper2;
+                                  15
+//print out the created patterns to Standard Output.
+
+print("Output from Sample DruL Code:");
+print(p_concat);
+print(p_custom);
+print(p_custom_new);
+print(p_new);
+print(p_new_rev);
+print(p_custom_new_notes);
+print(p_concat_new_downbeats);
+print("END OF OUTPUT");
+
+//Pattern associations using clips.
+
+clip_complete = clip
+(
+ hihat    = p_concat_new_downbeats
+ bassdrum = p_custom_new_notes
+ crash    = p_new_rev
+ snare    = p_new
+);
+
+//output clip as a midi file
+
+out.midi("out_file1.midi",clip_complete,a);//a = tempo (Beats per minute)
+
+// Last instrument has an empty beat-pattern.
+
+clip_partial = clip(p_concat p_custom_new p_custom);
+
+//output clip as a midi file
+
+out.midi("out_file2.midi",clip_partial,b);//b = tempo
