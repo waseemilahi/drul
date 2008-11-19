@@ -14,6 +14,7 @@ and expr =
     |   CStr of string
     |   CBool of bool
     |   Var of string
+    |   MemberCall of string * string * expr list
     |   UnaryMinus of expr
     |   UnaryNot  of expr
     |   ArithBinop of expr * intOp * expr
