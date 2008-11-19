@@ -2,6 +2,8 @@ open Drul_ast
 
 module NameMap = Map.Make(String)
 
+exception Type_error of string
+
 type pattern = bool list
 
 type t = Void
@@ -43,17 +45,53 @@ let rec evaluate e env = match e with
 	|	CStr(x) -> Str(x)
 	|   CBool(x) -> Bool(x)
 	|   CInt(x) -> Int(x)
-	|	ArithBinop(aExp, operator, bExp) -> let aVal = evaluate aExp env in
-											let bVal = evaluate bExp env in
-											(
-												match (aVal, operator, bVal) with
-												(Int(a), Add, Int(b)) -> Int(a + b)
-												| (Int(a), Sub, Int(b)) -> Int(a - b)
-												| (Int(a), Mult, Int(b)) -> Int(a * b)
-												| (Int(a), Div, Int(b)) -> Int(a / b)
-												| (Int(a), Mod, Int(b)) -> Int(a mod b)
-												| _ -> raise (Failure("TYPE ERROR: cannot do arithmetic on non-integers"))
-											)
+	|	UnaryMinus(xE) -> let xV = evaluate xE env in
+		( 
+			match xV with
+				Int(x) -> Int(-x)
+			| _ -> raise (Type_error "you can't negate that, dorkface")
+		)
+	|   UnaryNot(xE) ->  let xV = evaluate xE env in
+		(
+			match xV with
+				Bool(x) -> Bool(not x)
+			| _ -> raise (Type_error "you can't contradict that, dorkface")
+		)
+	|	ArithBinop(aExp, operator, bExp) ->
+		let aVal = evaluate aExp env in
+		let bVal = evaluate bExp env in
+		(
+			match (aVal, operator, bVal) with
+				(Int(a), Add, Int(b)) -> Int(a + b)
+			|	(Int(a), Sub, Int(b)) -> Int(a - b)
+			|	(Int(a), Mult, Int(b)) -> Int(a * b)
+			|	(Int(a), Div, Int(b)) -> Int(a / b)
+			|	(Int(a), Mod, Int(b)) -> Int(a mod b)
+			| _ -> raise (Type_error("cannot do arithmetic on non-integers"))
+		)
+	|	LogicBinop(aExp, operator, bExp) -> 
+		let aVal = evaluate aExp env in
+		let bVal = evaluate bExp env in
+		(
+			match (aVal, operator, bVal) with
+				(Bool(x), And, Bool(y)) -> Bool(x && y)
+			|	(Bool(x), Or,  Bool(y)) -> Bool(x || y)
+			| _ -> raise (Type_error "cannot do logical operations except on booleans")
+		)
+	|	Comparison(aExp, operator, bExp) ->
+		let aVal = evaluate aExp env in
+		let bVal = evaluate bExp env in
+		(
+			match (aVal, operator, bVal) with
+				(Int(a), LessThan, Int(b)) -> Bool(a < b)
+			|	(Int(a), GreaterThan, Int(b)) -> Bool(a > b)
+			|	(Int(a), LessEq, Int(b)) -> Bool(a <= b)
+			|	(Int(a), GreaterEq, Int(b)) -> Bool(a >= b)
+			|	(Int(a), EqualTo, Int(b)) -> Bool(a == b)
+			|	(Int(a), NotEqual, Int(b)) -> Bool(a != b)
+			| _ -> raise (Type_error "cannot do that comparison operation")
+		)
+		
 	| _ -> Void
 
 let execute s env = match s with
