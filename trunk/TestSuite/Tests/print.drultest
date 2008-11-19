@@ -3,3 +3,5 @@ print("thierry");
 print (   "rulzzzzz!");
 print("!@#$%^&*()__)*&%^_+HSVWUO@_@");
 print("//");
+print(123456);
+print(true); print(false);
