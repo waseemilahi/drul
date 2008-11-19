@@ -59,10 +59,13 @@ def command_with_output(cmd):
     #should this be a part of slashify or command_with_output?
     #if sys.platform=='darwin' :
     #    cmd = unicodedata.normalize('NFC',cmd)
-    child = os.popen(cmd.encode('utf-8'))
-    data = child.read()
-    err = child.close()
-    return data
+
+    (child_stdin,child_stdout,child_stderr) = os.popen3(cmd.encode('utf-8'))
+    data1 = child_stdout.read()
+    data2 = child_stderr.read()
+    child_stdout.close()
+    child_stderr.close()
+    return (data1,data2)
 
 
 # launch one test, given a test path, returns output lines
@@ -70,12 +73,13 @@ def command_with_output(cmd):
 def launch_one_test(tpath):
     #cmd = 'head -20 ' + tpath
     cmd = mainprog + " < '" + tpath + "'"
-    out = command_with_output(cmd)
+    (outdata,outerr) = command_with_output(cmd)
     # write to a tempfile, then read it
     # dumb, but easier to compare with a saved output file
     tempfname = "tempfileTODELETE.txt"
     tempf = open(tempfname,'w')
-    tempf.write(out)
+    tempf.write(outdata)
+    tempf.write(outerr)
     tempf.close()
     outlines = read_file(tempfname)
     os.unlink(tempfname)
