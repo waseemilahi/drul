@@ -32,7 +32,7 @@ p_custom = concat( p2, p3.repeat(2), p4.repeat(3),
 p_custom_new = concat(p_custom ,p3.repeat(2) ,p_concat ,p4.repeat(3));
 p_new = concat( p_custom_new.slice(4,10),
     p_concat.slice(5,p1.length), p3.repeat(7) );
-                                  14
+
 //Now some complex pattern manipulation.
 //New Patterns.
 
@@ -71,7 +71,7 @@ mapper improved_newMapper2(p_any, alternate_beats)
 }
 p_custom_new_notes   = map (p_custom_new) myMapper1;
 p_concat_new_downbeats = map (p_concat_new) newMapper2;
-                                  15
+                                  
 //print out the created patterns to Standard Output.
 
 print("Output from Sample DruL Code:");
@@ -86,13 +86,13 @@ print("END OF OUTPUT");
 
 //Pattern associations using clips.
 
-clip_complete = clip
-(
- hihat    = p_concat_new_downbeats
- bassdrum = p_custom_new_notes
- crash    = p_new_rev
- snare    = p_new
-);
+//clip_complete = clip
+//(
+// hihat    = p_concat_new_downbeats,
+// bassdrum = p_custom_new_notes,
+// crash    = p_new_rev,
+// snare    = p_new
+//);
 
 //output clip as a midi file
 

@@ -51,7 +51,6 @@ rule token = parse
    |    "mapper"                        { debug "MAPDEF"; MAPDEF }
    |    "map"                           { debug "MAP"; MAP }
    |    "return"                        { debug "RETURN"; RETURN }
-   |    "rand"                          { debug "RAND"; RAND }
    |    '$'(digit as numbers)           { debug("index variable " ^ numbers); ID(numbers)   }
    |    identifier      as ide          {
 											if ((String.length ide) <= 64) 
