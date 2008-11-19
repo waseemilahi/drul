@@ -33,8 +33,8 @@ expr:
     |   TRUE        { CBool(true) }
     |   FALSE       { CBool(false)}
     |   ID          { Var($1) }
-    |   ID MCALL ID LPAREN RPAREN { MemberCall($1,$3,[]) }
-    |   ID MCALL ID LPAREN expr_list RPAREN  { MemberCall($1,$3,$5) }
+    |   expr MCALL ID LPAREN RPAREN { MemberCall($1,$3,[]) }
+    |   expr MCALL ID LPAREN expr_list RPAREN  { MemberCall($1,$3,$5) }
     |   expr PLUS expr { ArithBinop($1,Add,$3)  }
     |   expr MINUS expr { ArithBinop($1,Sub,$3) }
     |   expr TIMES expr { ArithBinop($1,Mult,$3) }
@@ -57,10 +57,10 @@ expr:
         { MapCall(AnonyMap($5), $3)}
     |   MAP LPAREN expr_list RPAREN ID
         { MapCall(NamedMap($5), $3)}
-    |   RETURN expr SEMI { Return($2) }
 
 statement:
         expr SEMI { Expr($1) }
+    |   RETURN expr SEMI { Return($2) }
     |   MAPDEF ID LPAREN id_list RPAREN block
             { MapDef($2, List.rev $4, $6) }
     |   ID ASSIGN expr SEMI{ Assign($1,$3) }

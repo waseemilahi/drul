@@ -14,7 +14,7 @@ and expr =
     |   CStr of string
     |   CBool of bool
     |   Var of string
-    |   MemberCall of string * string * expr list
+    |   MemberCall of expr * string * expr list
     |   UnaryMinus of expr
     |   UnaryNot  of expr
     |   ArithBinop of expr * intOp * expr
@@ -22,9 +22,10 @@ and expr =
     |   Comparison of expr * compOp * expr
     |   FunCall of string * expr list
     |   MapCall of mapper * expr list
-    |	Return of expr
+
 and statement =
     Expr of expr
+    | Return of expr
     | Assign of string * expr
     | MapDef of string * string list * statement list
     | IfBlock of expr * statement list * statement list option
