@@ -14,6 +14,7 @@ and expr =
     |   CStr of string
     |   CBool of bool
     |   Var of string
+    |   Rand
     |   MemberCall of expr * string * expr list
     |   UnaryMinus of expr
     |   UnaryNot  of expr
