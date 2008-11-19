@@ -76,7 +76,7 @@ block:
 
 id_list:
     ID { [$1] }
-    | id_list ID { $2::$1 }
+    | id_list COMMA ID { $3::$1 }
 
 expr_list:
      expr { [$1] }
