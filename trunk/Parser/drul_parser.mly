@@ -4,7 +4,7 @@ let debug str =  if (true) then ignore(print_endline str) else ignore()
 
 %token IF ELSE ELSEIF RETURN
 %token TRUE FALSE
-%token MAP MAPDEF
+%token MAP MAPDEF LARROW CLIP
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA PLUS MINUS TIMES DIVIDE
 %token ASSIGN EQ NEQ LT LEQ GT GEQ EOF MCALL AND OR NOT MOD
 %token <int> LITERAL
@@ -58,6 +58,7 @@ expr:
         { MapCall(AnonyMap($5), $3)}
     |   MAP LPAREN expr_list RPAREN ID
         { MapCall(NamedMap($5), $3)}
+    |   CLIP LPAREN clip_list RPAREN { MakeClip($3) }
 
 statement:
         expr SEMI { Expr($1) }
@@ -70,6 +71,15 @@ statement:
         /* TODO : ELSEIF */
         /* May require AST change */
     | 	SEMI { EmptyStat }
+
+clip_elem :
+        ID	{ InstrAssign("",$1) }
+    |   ID LARROW ID	{ InstrAssign ($1,$3) }
+
+
+clip_list:
+    clip_elem { [$1] }
+    | clip_elem COMMA clip_list { $1::$3 }
 
 block:
     LBRACE st_list RBRACE { List.rev $2 }

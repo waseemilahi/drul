@@ -22,6 +22,7 @@ and expr =
     |   Comparison of expr * compOp * expr
     |   FunCall of string * expr list
     |   MapCall of mapper * expr list
+    |   MakeClip of clip_elem list
 
 and statement =
     Expr of expr
@@ -30,6 +31,10 @@ and statement =
     | MapDef of string * string list * statement list
     | IfBlock of expr * statement list * statement list option
     | EmptyStat
+
+
+and clip_elem = 
+    InstrAssign of string * string
 
 type program =
     Content of statement list
