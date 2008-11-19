@@ -1,0 +1,6 @@
+
+// are there other use possibles?
+// is p.note() or p.note ? samething for rest
+
+p.note();
+p.rest();
