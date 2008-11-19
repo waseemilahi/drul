@@ -87,13 +87,13 @@ print("END OF OUTPUT");
 //Pattern associations using clips.
 
 // CLIP SYNTAX HAS TO BE REDEFINED
-//clip_complete = clip
-//(
-// hihat    = p_concat_new_downbeats,
-// bassdrum = p_custom_new_notes,
-// crash    = p_new_rev,
-// snare    = p_new
-//);
+clip_complete = clip
+(
+ hihat    <- p_concat_new_downbeats,
+ bassdrum <- p_custom_new_notes,
+ crash    <- p_new_rev,
+ snare    <- p_new
+);
 
 //output clip as a midi file
 
