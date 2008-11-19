@@ -94,8 +94,17 @@ let rec evaluate e env = match e with
 		
 	| _ -> Void
 
-let execute s env = match s with
+let rec execute s env = match s with
 	Expr(e) -> ignore(evaluate e env)
+	| IfBlock(tExpr,iftrue,iffalse) -> let tVal = evaluate tExpr env
+		in (match tVal with 
+				Bool(true) -> List.iter (fun s -> execute s env) iftrue
+			| 	Bool(false) -> (match iffalse with
+					Some(stlist) -> List.iter (fun s -> execute s env) stlist
+				|	None -> ignore()
+				)
+			|	_	-> raise ( Type_error "test of if block must be a boolean")
+		)
 	| _ -> ignore()
 
 let run p env = match p with

@@ -1,0 +1,12 @@
+if (true) {print("yes");} else {print("no");}
+//yes
+if(false) { print("nope") ; } print("got here");
+// got here
+
+if(false) { 
+	print("death everywhere"); 
+} elseif (true) {
+	print("got it!"); 
+} else { 
+	print("noooo!");
+}
