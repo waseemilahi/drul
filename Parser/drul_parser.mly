@@ -32,7 +32,8 @@ expr:
     |   STRCONST    { CStr($1) }
     |   TRUE        { CBool(true) }
     |   FALSE       { CBool(false)}
-    |   ID          { Var($1) }   
+    |   ID          { Var($1) }
+    |   ID MCALL ID LPAREN expr_list RPAREN  { MemberCall($1,$3,$5) }
     |   expr PLUS expr { ArithBinop($1,Add,$3)  }
     |   expr MINUS expr { ArithBinop($1,Sub,$3) }
     |   expr TIMES expr { ArithBinop($1,Mult,$3) }
