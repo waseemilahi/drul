@@ -1,0 +1,11 @@
+
+if (false && true) {pattern("01");}
+
+elseif ( pattern("01") == pattern("001") )
+	{ if ( 3 != 2 ) {print("allo");}
+        }
+
+elseif (true || false || (pattern("0101").repeat(4) >= pattern("0101") ))
+{ print ("yo!!!!!!!!!!");}
+
+else { a =2;;;;;}
