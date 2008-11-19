@@ -1,6 +1,6 @@
 open Drul_ast
 
-(* module NameMap = Map.Make(String) *)
+module NameMap = Map.Make(String)
 
 (* type t = Void | Int | Str | Bool | Pattern | Clip *)
 
@@ -24,21 +24,22 @@ let run = function
 	Content(statements) -> List.fold_left exec NameMap.empty statements; ignore()
 *)
 
-let evaluate e = match e with
+let evaluate e env = match e with
 		FunCall("print", [CStr(x)]) -> print_endline x
 	|	FunCall("print", [CInt(y)]) -> print_endline (string_of_int y)
 	|	FunCall("print", [CBool(z)]) -> print_endline( if z then "TRUE" else "FALSE" )
-	;;
+	
 
-let execute s = match s with
-	Expr(e) -> evaluate e;;
+let execute s env = match s with
+	Expr(e) -> evaluate e env
 
-let run p = match p with
-	Content(statements) -> List.iter execute statements;;
+let run p env = match p with
+	Content(statements) -> List.iter (fun s -> execute s env)  statements
 
 
 let _ =
+let unscoped_env = NameMap.empty in
 let lexbuf = Lexing.from_channel stdin in
 let programAst = Drul_parser.program Drul_scanner.token lexbuf in
-ignore (run programAst);;
+ignore (run programAst (unscoped_env, None))
 
