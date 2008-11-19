@@ -45,6 +45,7 @@ let rec evaluate e env = match e with
 	|	CStr(x) -> Str(x)
 	|   CBool(x) -> Bool(x)
 	|   CInt(x) -> Int(x)
+	|	Var(name) -> let symTab = fst(env) in NameMap.find name symTab  (* TODO: Multiple scopes *)
 	|	UnaryMinus(xE) -> let xV = evaluate xE env in
 		( 
 			match xV with
@@ -95,20 +96,28 @@ let rec evaluate e env = match e with
 	| _ -> Void
 
 let rec execute s env = match s with
-	Expr(e) -> ignore(evaluate e env)
+	Expr(e) -> ignore(evaluate e env); env
 	| IfBlock(tExpr,iftrue,iffalse) -> let tVal = evaluate tExpr env
 		in (match tVal with 
-				Bool(true) -> List.iter (fun s -> execute s env) iftrue
+				Bool(true) -> execlist iftrue env
 			| 	Bool(false) -> (match iffalse with
-					Some(stlist) -> List.iter (fun s -> execute s env) stlist
-				|	None -> ignore()
+					Some(stlist) -> execlist stlist env
+				|	None -> env
 				)
 			|	_	-> raise ( Type_error "test of if block must be a boolean")
 		)
-	| _ -> ignore()
+	| Assign(varName,valExpr) -> 
+		let valVal = evaluate valExpr env in
+		let symbolTable = fst(env) in				
+		 (* XXX mask variables in outer scope?  Or error? *)
+		 ( (NameMap.add varName valVal symbolTable), snd(env))
+	| _ -> env
+
+and execlist slist env =
+	List.fold_left (fun env s -> execute s env) env slist
 
 let run p env = match p with
-	Content(statements) -> List.iter (fun s -> execute s env) statements
+	Content(statements) -> ignore(execlist statements env)
 
 let _ =
 let unscoped_env = NameMap.empty in
