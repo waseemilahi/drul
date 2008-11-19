@@ -24,7 +24,7 @@ import tempfile
 drulpath = "../"
 testspath = "./Tests/"
 logspath = "./LOGS/"
-
+mainprog = "../Parser/interpret"
 
 # returns a list of file in current dir
 # to use with os.walk
@@ -68,7 +68,8 @@ def command_with_output(cmd):
 # launch one test, given a test path, returns output lines
 # (output is first written to a file, than read)
 def launch_one_test(tpath):
-    cmd = 'head -20 ' + tpath
+    #cmd = 'head -20 ' + tpath
+    cmd = mainprog + " < '" + tpath + "'"
     out = command_with_output(cmd)
     # write to a tempfile, then read it
     # dumb, but easier to compare with a saved output file
@@ -157,6 +158,12 @@ if __name__ == '__main__' :
     # launch help menu if needed
     if len(sys.argv) < 2 or sys.argv[1] != "-go":
         die_with_usage()
+
+
+    # check if testing program exists and can be found
+    if not os.path.exists(mainprog):
+        print "you didn't install the main program, make interpret"
+        sys.exit(0)
 
 
     # grab all tests
