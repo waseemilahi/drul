@@ -25,7 +25,10 @@ let run = function
 *)
 
 let evaluate e = match e with
-	FunCall("print", [CStr(x)]) -> print_endline x;;
+		FunCall("print", [CStr(x)]) -> print_endline x
+	|	FunCall("print", [CInt(y)]) -> print_endline (string_of_int y)
+	|	FunCall("print", [CBool(z)]) -> print_endline( if z then "TRUE" else "FALSE" )
+	;;
 
 let execute s = match s with
 	Expr(e) -> evaluate e;;
