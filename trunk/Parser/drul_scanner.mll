@@ -1,6 +1,6 @@
 {
 		open Drul_parser
-		let debugging = ref true
+		let debugging = ref false
 		let standalone = ref false
 		let num_keywords = ref 0 (* pointer *)
 		let id           = ref 0 (* pointer *)
