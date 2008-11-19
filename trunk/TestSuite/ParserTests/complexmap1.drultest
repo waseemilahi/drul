@@ -1,0 +1,10 @@
+
+map (hi , you)
+{
+    $1.note();
+    $2.rest();
+    a = pattern("01");
+    if ($1.rest()) { return pattern(""); }
+    elseif ($2.note()) {return a;}
+    else { return a.repeat(2); }
+};

@@ -1,13 +1,12 @@
 
 p_new_rev = map (p_new)
 {
-    // is it rest or rest()
-    if ($1.rest()) { return pattern("1"); }
-    else         { return pattern("0"); }
+    $1.rest();
 };
 
 
-map (hi you)
+map (hi , you)
 {
-	if ($1.rest() && $2.note()) {return pattern("1");}
-}
+    $1.note();
+    $2.rest();
+};

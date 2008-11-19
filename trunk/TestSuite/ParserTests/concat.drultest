@@ -1,4 +1,4 @@
 
 p1 = pattern("01");
-p2 = concat(p1 p1);
-p3 = concat(p1 p2 p1);
+p2 = concat(p1 , p1);
+p3 = concat(p1,p2,p1);
