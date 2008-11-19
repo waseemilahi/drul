@@ -1,0 +1,11 @@
+
+a = 1;
+b = 2;
+a || b;
+true || true;
+false || false;
+true || false;
+false || true;
+true || false || true;
+false || false || true || true;
+(false || true) || ((false || false) || true);
