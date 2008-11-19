@@ -57,6 +57,7 @@ expr:
         { MapCall(AnonyMap($5), $3)}
     |   MAP LPAREN expr_list RPAREN ID
         { MapCall(NamedMap($5), $3)}
+    |   RETURN expr SEMI { Return($2) }
 
 statement:
         expr SEMI { Expr($1) }
@@ -67,6 +68,7 @@ statement:
         { IfBlock($3, $5, $6) }
         /* TODO : ELSEIF */
         /* May require AST change */
+    | 	SEMI { EmptyStat }
 
 block:
     LBRACE st_list RBRACE { List.rev $2 }
