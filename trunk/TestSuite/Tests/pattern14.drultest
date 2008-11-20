@@ -1,0 +1,8 @@
+
+p0 = map(pattern("110110110"))
+{
+ if ($1.prev(1).note() || $1.next(1).note()) { return pattern("1"); }
+ else { return pattern("0"); }
+};
+
+print(p0); // should return 111111111
