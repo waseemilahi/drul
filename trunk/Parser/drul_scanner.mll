@@ -2,13 +2,6 @@
 		open Drul_parser
 		let debugging = ref false
 		let standalone = ref false
-		let num_keywords = ref 0 (* pointer *)
-		let id           = ref 0 (* pointer *)
-		let ints         = ref 0 (* pointer *)
-		let num_comments = ref 0 (* pointer *)
-		let num_tokens   = ref 0 (* pointer *)
-		let s_id         = ref 0 (* pointer *)
-		let string_const = ref 0 (* pointer *)
 		let set_debug() = debugging := true
 		let debug str =  if (!debugging) then ignore(print_endline str) else ignore()
 
