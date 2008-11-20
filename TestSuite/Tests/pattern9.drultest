@@ -1,0 +1,7 @@
+
+p9 = map(pattern("1101"))
+{
+    if ($1.note() && $1.next(1).note()) { return pattern("1"); }
+    else                                { return pattern("0"); }
+};
+print(p9);
