@@ -4,6 +4,9 @@
 		let standalone = ref false
 		let set_debug() = debugging := true
 		let debug str =  if (!debugging) then ignore(print_endline str) else ignore()
+		let escape_re = Str.regexp "\\\\\\(\\\\\\|\"\\)"
+		    (* "\\\\\\([\\\"]\\)" also works, almost as ugly *)
+		let escape_repl = "\\1"
 
 }
 
@@ -57,7 +60,11 @@ rule token = parse
 										}
 
    |    digit           as dig          { debug ("digits " ^ dig); LITERAL(int_of_string dig)     }
-   |    '"' (( ('\\' [ '"' '\\' ] ) | [^  '\\' '"'] )* as str) '"' { debug(("string constant " ^ str)); STRCONST(str) } 
+   |    '"' (( ('\\' [ '"' '\\' ] ) | [^  '\\' '"'] )* as rawstr) '"' 
+                                        { let fixedstr = Str.global_replace escape_re escape_repl rawstr
+                                          in 
+                                          debug(("string constant [" ^ fixedstr ^ "]")); 
+                                          STRCONST(fixedstr) } 
    |    eof                             { debug "EOF"; EOF                               }
    |    _               as char         { raise (Failure("illegal character " ^ Char.escaped char)) }
 

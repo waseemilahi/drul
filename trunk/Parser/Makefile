@@ -2,20 +2,21 @@ OC = ocamlc
 CFLAGS = # none for now
 
 OBJS = drul_scanner.cmo drul_parser.cmo
+LIBS = str.cma
 
 all : $(OBJS) interpret
 
 testing: test.cmo $(OBJS)
-	$(OC) $(CFLAGS) -o testing $(OBJS) test.cmo
+	$(OC) $(CFLAGS) -o testing $(LIBS) $(OBJS) test.cmo
 
 treedump: treedump.cmo $(OBJS)
-	$(OC) $(CFLAGS) -o treedump $(OBJS) drul_printer.cmo treedump.cmo
+	$(OC) $(CFLAGS) -o treedump $(LIBS) $(OBJS) drul_printer.cmo treedump.cmo
 
 scantest: drul_scanner.cmo scantest.cmo
-	$(OC) $(CFLAGS) -o scantest $<
+	$(OC) $(CFLAGS) -o scantest $(LIBS) $<
 
 interpret: drul_interpreter.cmo $(OBJS) drul_ast.cmi
-	$(OC) $(CFLAGS) -o interpret $(OBJS) drul_interpreter.cmo
+	$(OC) $(CFLAGS) -o interpret $(LIBS) $(OBJS) drul_interpreter.cmo
 
 drul_scanner.ml : drul_scanner.mll
 	ocamllex $<
