@@ -12,6 +12,7 @@ type t = Void
 	   | Bool of bool
 	   | Pattern of pattern
 	   | Clip of pattern array
+	   | Mapper of (string * string list * statement list)
 
 let rec evaluate e env = match e with
 		FunCall(fname, fargs) -> function_call fname fargs env
@@ -68,10 +69,14 @@ let rec evaluate e env = match e with
 		
 	| _ -> Void
 and function_call fname fargs env = match (fname, fargs) with
-		"pattern",[arg] -> let v = evaluate arg env in
-			(
-				match v with
-				Str(x) -> Str(x)
+		("pattern",[arg]) -> let v = evaluate arg env in
+			(	match v with Str(x) ->
+				let charlist = Str.split (Str.regexp "") x
+				in let revlist = List.fold_left 
+					(fun bl str -> 
+						(match str with "0" -> false | "1" -> true)::bl) 
+					[] charlist
+				in Pattern(List.rev revlist)
 			)
 	|	("print", [arg]) -> let v = evaluate arg env in
 			(
@@ -79,9 +84,14 @@ and function_call fname fargs env = match (fname, fargs) with
 				Str(x) -> print_endline x; Void
 				| Int(y) -> print_endline (string_of_int y); Void
 				| Bool(z) -> print_endline( if z then "TRUE" else "FALSE" ); Void
+				| Pattern(p) -> 
+					List.iter (fun x -> print_string (if (x) then "1" else "0")) p;
+					print_string "\n";
+					Void
 				| _ -> print_endline("Dunno how to print this yet."); Void
 			)
-	|	(other,_)	-> 
+	|	(other,_)	-> (* TODO: currently also catches invalid argument-counts, which
+					      should probably be intercepted further up the line *)
 			let msg =  "Function name '"^ other ^"' is not a valid function." in
 				raise (Invalid_function msg)
 
@@ -101,6 +111,13 @@ let rec execute s env = match s with
 		let symbolTable = fst(env) in				
 		 (* XXX mask variables in outer scope?  Or error? *)
 		 ( (NameMap.add varName valVal symbolTable), snd(env))
+	| MapDef(mapname, formal_params, contents) ->
+		let symbolTable = fst(env) in
+		if (NameMap.mem mapname symbolTable) then raise (Failure"don't do that")
+		else 
+			let newMapper = Mapper(mapname,formal_params,contents) in
+			let newST = NameMap.add mapname newMapper symbolTable  in
+			(newST,snd(env))
 	| _ -> env
 
 and execlist slist env =
