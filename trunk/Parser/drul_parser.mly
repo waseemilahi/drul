@@ -11,6 +11,7 @@ let debug str =  if (true) then ignore(print_endline str) else ignore()
 %token <string> ID
 %token <string> STRCONST
 
+%right MCALL
 %left LIST /* is this correct? I mean, it *works*, but... */
 %nonassoc NOELSE /* which we define somehow, somewhere */
 %nonassoc ELSE
