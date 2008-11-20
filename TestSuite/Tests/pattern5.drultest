@@ -1,0 +1,3 @@
+
+p1 = concat( pattern("01") , pattern("10") , pattern() , pattern("") );
+print ( p1 );

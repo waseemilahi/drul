@@ -1,0 +1,4 @@
+
+p1 = pattern("01110").repeat(5);
+a = p1.length();
+print(a);
