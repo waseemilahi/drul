@@ -1,0 +1,10 @@
+
+
+mapper mymapper (p)
+{
+    if (p.note) { return pattern("11"); }
+    else        { return pattern("0"); }
+}
+p1 = pattern("010");
+p2 = map (p1) mymapper;
+print (p2) ; // should be 0110
