@@ -1,0 +1,8 @@
+
+p1 = pattern("1110111");
+p2 = map(p1)
+{
+    if ($1.note()) { return pattern(""); }
+    else           { return pattern("1"); }
+};
+print(p2);

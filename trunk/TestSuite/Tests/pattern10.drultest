@@ -1,0 +1,22 @@
+
+p0 = map(pattern("1101"))
+{
+    if ($1.note() && $1.next(1).note()) { return pattern(""); }
+    elseif ($1. note())                 { return pattern("1"); }
+    else                                { return pattern("0"); }
+};
+
+print(p0); // should be 101
+
+p1 = map( map(pattern("1101"))
+          {
+            if ($1.note() && $1.next(1).note()) { return pattern(""); }
+            elseif ($1. note())                 { return pattern("1"); }
+            else                                { return pattern("0"); }
+          };)
+{
+	if ($1.note()) { return pattern("1"); }
+        else { return pattern(); }
+}
+
+print(p1); // should return 11
