@@ -23,8 +23,8 @@ let rec evaluate e env = match e with
 			| _ -> print_endline("Dunno how to print this yet."); Void
 		)
 	|	CStr(x) -> Str(x)
-	|   CBool(x) -> Bool(x)
-	|   CInt(x) -> Int(x)
+	|       CBool(x) -> Bool(x)
+	|       CInt(x) -> Int(x)
 	|	Var(name) -> let symTab = fst(env) in NameMap.find name symTab  (* TODO: Multiple scopes *)
 	|	UnaryMinus(xE) -> let xV = evaluate xE env in
 		( 
@@ -32,7 +32,7 @@ let rec evaluate e env = match e with
 				Int(x) -> Int(-x)
 			| _ -> raise (Type_error "you can't negate that, dorkface")
 		)
-	|   UnaryNot(xE) ->  let xV = evaluate xE env in
+        |       UnaryNot(xE) ->  let xV = evaluate xE env in
 		(
 			match xV with
 				Bool(x) -> Bool(not x)
