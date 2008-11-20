@@ -14,7 +14,13 @@ type t = Void
 	   | Clip of pattern array
 
 let rec evaluate e env = match e with
-		FunCall("print", [arg]) -> let v = evaluate arg env in
+                FunCall("pattern",[arg]) -> let v = evaluate arg env in
+                (
+                        match v with
+                        Str(x) -> Str(x)
+                 )
+                     
+       |	FunCall("print", [arg]) -> let v = evaluate arg env in
 		(
 			match v with
 			Str(x) -> print_endline x; Void
