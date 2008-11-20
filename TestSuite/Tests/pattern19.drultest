@@ -1,0 +1,20 @@
+
+
+// takes every even index, starting at 0
+
+
+pat = pattern("0010111010001"); // even indexes: 0111101
+
+helper = pattern("10").repeat( pat.length() / 2 );
+
+p0 = map( pat , helper)
+{
+   if ( $2.note() )
+    {
+	if ( $1.note() ) { return pattern("1"); }
+        else             { return pattern("0"); }
+    }
+   else   { return pattern(""); }
+}
+
+print(p0); // should return 0111101
