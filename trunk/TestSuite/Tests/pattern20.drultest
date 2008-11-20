@@ -1,0 +1,11 @@
+
+// copy
+
+
+p0 = map( pattern("000111010101") )
+{
+	if ( $1.note() ) { return pattern("1"); }
+        else             { return pattern("0"); }
+}
+
+print(p0); // should return 000111010101
