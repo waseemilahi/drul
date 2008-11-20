@@ -1,0 +1,7 @@
+
+p1 = pattern("001");
+p2 = pattern("111");
+p3 = pattern("101");
+
+p4 = concat(p2,p3,p1);
+print(p4);

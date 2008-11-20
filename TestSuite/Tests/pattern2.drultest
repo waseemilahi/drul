@@ -1,0 +1,5 @@
+
+
+p1 = pattern("0101");
+p2 = p1.repeat(3);
+print(p2);

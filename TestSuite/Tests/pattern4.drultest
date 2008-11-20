@@ -1,0 +1,6 @@
+
+p1 = pattern();
+print(p1);
+p2 = pattern("");
+print(p2);
+print("end");
