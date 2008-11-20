@@ -204,9 +204,9 @@ if __name__ == '__main__' :
             countfailed += 1
             add_to_log(logfile,str(counter) + ') test FAILED: '+t)
             add_to_log(logfile,'******************************************')
-            add_to_log(logfile,'should be:')
+            add_to_log(logfile,'*should be:*')
             add_to_log(logfile,goodout)
-            add_to_log(logfile,'and it is:')
+            add_to_log(logfile,'*and it is:*')
             add_to_log(logfile,newout)
             add_to_log(logfile,'******************************************')
 
