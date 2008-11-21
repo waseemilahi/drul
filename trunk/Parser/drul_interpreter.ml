@@ -120,9 +120,10 @@ and function_call fname fargs env = match (fname, fargs) with
 							)
 							[] charlist
 						in Pattern(List.rev revlist)
-				)
+				)			
 				| _ -> raise (Type_error "Pattern definitions take a string argument")
 			)
+	|	("pattern", []) -> Pattern([])
 	|	("print", [arg]) -> let v = evaluate arg env in
 			(
 				match v with
@@ -131,10 +132,11 @@ and function_call fname fargs env = match (fname, fargs) with
 				| Bool(z) -> print_endline( if z then "TRUE" else "FALSE" ); Void
 				| Pattern(p) ->
 					List.iter (fun x -> print_string (if (x) then "1" else "0")) p;
-					print_string "\n";
+					if(List.length p > 0)then print_string "\n";
 					Void
 				| _ -> print_endline("Dunno how to print this yet."); Void
 			)
+
 	|	(other,_)	-> (* TODO: currently also catches invalid argument-counts, which
 						  should probably be intercepted further up the line *)
 			let msg =  "Function name '"^ other ^"' is not a valid function." in
@@ -161,6 +163,7 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 					[]  ->  Int(List.length x)
 				|	_   -> raise (Invalid_function "Member function length expects no arguments")   
 		)
+
 	| _ -> raise (Invalid_function "Undefined member function")
 
 
