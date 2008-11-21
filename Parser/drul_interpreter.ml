@@ -5,6 +5,7 @@ module NameMap = Map.Make(String)
 exception Type_error         of string
 exception Invalid_function   of string
 exception PatternParse_error of string
+exception Invalid_argument   of string
 type pattern = bool list
 
 type t = Void
@@ -150,7 +151,8 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 			[argExpr] -> let argVal = evaluate argExpr env in
 			(
 				match argVal with
-				  Int(y) -> let rec repeatPattern p n = if n == 1 then p else p @ repeatPattern p (n-1) in
+				  Int(y) -> if(y <= 0)then raise (Invalid_argument "Repeat can only accept non zero positive integers")
+							else let rec repeatPattern p n = if n == 1 then p else p @ repeatPattern p (n-1) in
 					  Pattern(repeatPattern x y)
 				| _ -> raise (Invalid_function "Member function repeat expects an integer argument")
 			)
