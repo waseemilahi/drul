@@ -46,6 +46,7 @@ let init_mapper_st p_list a_list =
 
 let rec evaluate e env = match e with
 		FunCall(fname, fargs) -> function_call fname fargs env
+	|	MemberCall(objectExpr, mname, margs) -> member_call objectExpr mname margs env
 	|	CStr (x) -> Str (x)
 	|   CBool(x) -> Bool(x)
 	|	CInt (x) -> Int (x)
