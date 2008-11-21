@@ -154,6 +154,13 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 			)
 			| _ -> raise (Invalid_function "Member function repeat expects a single arguments")
 	)
+
+	|	(Pattern(x),"length",margs) -> 
+		(
+			 match margs with
+					[]  ->  Int(List.length x)
+				|	_   -> raise (Invalid_function "Member function length expects no arguments")   
+		)
 	| _ -> raise (Invalid_function "Undefined member function")
 
 
