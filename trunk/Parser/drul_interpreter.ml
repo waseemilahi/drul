@@ -15,6 +15,35 @@ type t = Void
 	   | Clip    of pattern array
 	   | Mapper  of (string * string list * statement list)
 
+(* turn a pattern object (list of booleans) into an array, and add the 
+	appropriate alias to the symbol table
+*)
+let rec get_alias_list p_list a_list counter =	
+	let newcounter = counter + 1 in
+		match (p_list,a_list) with
+		([],[]) -> []
+	|	([],oops) -> raise (Failure "not enough patterns provided to mapper")
+	|	(thispat::rest,[]) -> 
+(thispat, "$" ^ string_of_int counter) :: get_alias_list rest [] newcounter
+	|	(thispat::rest,thisalias::other_aliases) ->
+			let dollar_alias =  "$" ^ (string_of_int counter) in
+			[(thispat, dollar_alias); (thispat, thisalias)]
+			@ get_alias_list rest other_aliases newcounter
+
+(* given a NameMap and a (pattern, alias) pair, add the appropriate
+information to the NameMap (at this point, an array of the beats in the pattern) *)
+let add_pattern_alias  symbol_table pair =
+	let p_list = fst(pair) in
+	let alias = snd(pair) in 
+	let p_array = Array.of_list p_list
+	in NameMap.add alias p_array symbol_table
+	
+(* use the above functions to add the correct entries to a new symbol table
+	before entering a "map" block *)
+let init_mapper_st p_list a_list =
+	let alias_list = get_alias_list p_list a_list 1
+	in List.fold_left add_pattern_alias NameMap.empty alias_list
+
 let rec evaluate e env = match e with
 		FunCall(fname, fargs) -> function_call fname fargs env
 	|	CStr (x) -> Str (x)
