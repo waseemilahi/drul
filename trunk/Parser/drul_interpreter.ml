@@ -8,16 +8,17 @@ exception PatternParse_error of string
 exception Invalid_argument   of string
 type pattern = bool list
 
-type t = Void
+type drul_t = Void
 	   | Int     of int
 	   | Str     of string
 	   | Bool    of bool
 	   | Pattern of pattern
 	   | Clip    of pattern array
 	   | Mapper  of (string * string list * statement list)
+	   | BeatAlias of bool array
 
-(* turn a pattern object (list of booleans) into an array, and add the 
-	appropriate alias to the symbol table
+(* turn a pattern object (list of booleans) into an array, and return
+	pairs of (array, alias) to be added to the symbol table
 *)
 let rec get_alias_list p_list a_list counter =	
 	let newcounter = counter + 1 in
@@ -36,8 +37,9 @@ information to the NameMap (at this point, an array of the beats in the pattern)
 let add_pattern_alias  symbol_table pair =
 	let p_list = fst(pair) in
 	let alias = snd(pair) in 
-	let p_array = Array.of_list p_list
-	in NameMap.add alias p_array symbol_table
+	let p_array = Array.of_list p_list in
+	let beat_holder = BeatAlias(p_array)
+	in NameMap.add alias beat_holder symbol_table
 	
 (* use the above functions to add the correct entries to a new symbol table
 	before entering a "map" block *)
@@ -45,7 +47,46 @@ let init_mapper_st p_list a_list =
 	let alias_list = get_alias_list p_list a_list 1
 	in List.fold_left add_pattern_alias NameMap.empty alias_list
 
-let rec evaluate e env = match e with
+(* create a new symbol table with the appropriate aliases, and link it to the parent *)
+let get_map_env parent_env p_list a_list =
+	let new_symbol_table = init_mapper_st p_list a_list 
+	in (new_symbol_table, Some(parent_env))
+
+let maxlen_helper currmax newlist =
+	let currlen = List.length newlist in
+	if (currlen > currmax) then currlen else currmax
+
+let find_longest_list patternlist =
+	List.fold_left maxlen_helper 0 patternlist
+	
+let add_key_to_env env key value = 
+	match env with (old_st,whatever) -> 
+		let new_st = NameMap.add key value old_st
+		in (new_st,whatever)
+
+let rec one_mapper_step maxiters current st_list env current_pattern =
+	if (maxiters == current) then Pattern(current_pattern)
+	else
+		let retval = Pattern([]) in 
+		let env = add_key_to_env env "return" retval 	in 
+		let env = add_key_to_env env "$current" (Int(current)) in 
+		let newenv = execlist st_list env in
+		let new_st = fst(newenv) in
+		let return = NameMap.find "return" new_st in
+		let current_pattern = (match return with 
+			Pattern(bools) -> current_pattern @ bools 
+			| _ -> (raise (Failure "Jerks")) )
+		in
+		let current = current + 1 in
+		one_mapper_step maxiters current st_list newenv current_pattern
+
+and run_mapper statement_list arg_list env = 
+	let map_env = get_map_env env arg_list [] in (* FIXME: alias list from mapdef *)
+	let max_iters = find_longest_list arg_list in
+one_mapper_step max_iters 0 statement_list map_env []
+
+
+and evaluate e env = match e with
 		FunCall(fname, fargs) -> function_call fname fargs env
 	|	MemberCall(objectExpr, mname, margs) -> member_call objectExpr mname margs env
 	|	CStr (x) -> Str (x)
@@ -98,7 +139,9 @@ let rec evaluate e env = match e with
 			|	(Int(a), NotEqual, Int(b)) -> Bool(a != b)
 			| _ -> raise (Type_error "cannot do that comparison operation")
 		)
-
+	| MapCall(someMapper,argList) -> match someMapper with 
+			AnonyMap(stList) -> run_mapper stList argList env
+		|	NamedMap(mapname) -> (raise Failure "Not yet implemented.")
 	| _ -> Void
 
 and function_call fname fargs env = match (fname, fargs) with
@@ -170,7 +213,7 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 
 
 
-let rec execute s env = match s with
+and execute s env = match s with
 	Expr(e) -> ignore(evaluate e env); env
 	| IfBlock(tExpr,iftrue,iffalse) -> let tVal = evaluate tExpr env
 		in (match tVal with
