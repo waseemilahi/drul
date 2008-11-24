@@ -8,112 +8,50 @@ exception PatternParse_error of string
 exception Invalid_argument   of string
 type pattern = bool list
 
-type drul_t = Void
+type t = Void
 	   | Int     of int
 	   | Str     of string
 	   | Bool    of bool
 	   | Pattern of pattern
 	   | Clip    of pattern array
 	   | Mapper  of (string * string list * statement list)
-	   | BeatAlias of bool array
 
-
-
-(* turn a pattern object (list of booleans) into an array, and return
-	pairs of (array, alias) to be added to the symbol table
+(*
+	turn a pattern object (list of booleans) into an array,
+	and add the appropriate alias to the symbol table
 *)
-let rec get_alias_list p_list a_list counter =	
+let rec get_alias_list p_list a_list counter =
 	let newcounter = counter + 1 in
 		match (p_list,a_list) with
 		([],[]) -> []
 	|	([],oops) -> raise (Failure "not enough patterns provided to mapper")
-	|	(thispat::rest,[]) -> 
+	|	(thispat::rest,[]) ->
 (thispat, "$" ^ string_of_int counter) :: get_alias_list rest [] newcounter
 	|	(thispat::rest,thisalias::other_aliases) ->
 			let dollar_alias =  "$" ^ (string_of_int counter) in
 			[(thispat, dollar_alias); (thispat, thisalias)]
 			@ get_alias_list rest other_aliases newcounter
 
-(* given a NameMap and a (pattern, alias) pair, add the appropriate
-information to the NameMap (at this point, an array of the beats in the pattern) *)
+(*
+	given a NameMap and a (pattern, alias) pair,
+	add the appropriate information to the NameMap
+	(at this point, an array of the beats in the pattern)
+*)
 let add_pattern_alias  symbol_table pair =
 	let p_list = fst(pair) in
-	let alias = snd(pair) in 
-	let p_array = Array.of_list p_list in
-	let beat_holder = BeatAlias(p_array)
-	in NameMap.add alias beat_holder symbol_table
-	
-(* use the above functions to add the correct entries to a new symbol table
-	before entering a "map" block *)
+	let alias = snd(pair) in
+	let p_array = Array.of_list p_list
+	in NameMap.add alias p_array symbol_table
+
+(*
+	use the above functions to add the correct entries to a new symbol table
+	before entering a "map" block
+*)
 let init_mapper_st p_list a_list =
 	let alias_list = get_alias_list p_list a_list 1
 	in List.fold_left add_pattern_alias NameMap.empty alias_list
 
-(* create a new symbol table with the appropriate aliases, and link it to the parent *)
-let get_map_env parent_env p_list a_list =
-	let new_symbol_table = init_mapper_st p_list a_list 
-	in (new_symbol_table, Some(parent_env))
-
-(* is called by find_longest_list *)
-let maxlen_helper currmax newlist =
-	let currlen = List.length newlist in
-	if (currlen > currmax) then currlen else currmax
-
-(* find the length of the longest list *)
-let find_longest_list patternlist =
-	List.fold_left maxlen_helper 0 patternlist
-	
-(* add a given key & value to env in (env,parentenv) *)
-let add_key_to_env env key value = 
-	match env with (old_st,whatever) -> 
-		let new_st = NameMap.add key value old_st
-		in (new_st,whatever)
-
-(* inside a map, do one step!
-   return is saved as "return" in the env
-   current index is saved as "$current" in the env
-*)
-let rec one_mapper_step maxiters current st_list env current_pattern =
-	if (maxiters == current) then Pattern(current_pattern)
-	else
-		let retval = Pattern([]) in 
-		let env = add_key_to_env env "return" retval 	in 
-		let env = add_key_to_env env "$current" (Int(current)) in 
-		let newenv = execlist st_list env in
-		let new_st = fst(newenv) in
-		let return = NameMap.find "return" new_st in
-		let current_pattern = (match return with 
-			Pattern(bools) -> current_pattern @ bools 
-			| _ -> (raise (Failure "Jerks")) )
-		in
-		let current = current + 1 in
-		one_mapper_step maxiters current st_list newenv current_pattern
-
-
-
-(* TBM: stupid function to use List.fold_left with 'evaluate', 
-see eval_arg_list *)
-and rev_evaluate env e = 
-  evaluate e env
-
-(* evaluate an expr_list when we know that they're all patterns *)
-(* harder than I was expected!!!!!!!!!!!!!! TBM 
-we must evaluate each pattern, keep it in a list, and also the new env *)
-and eval_arg_list arg_list env p_list = match arg_list with
-    [] -> (env , arg_list)
-  | let match arg_list with (head::tail)  in
-(* AHHHHHHHHHHHHHHHH!!!!!!!! *)
-
-
-
-and run_mapper statement_list arg_list env = 
-        let arg_list_evaled = eval_arg_list arg_list env in
-	let map_env = get_map_env env arg_list_evaled [] in (* FIXME: alias list from mapdef *)
-	let max_iters = find_longest_list arg_list in
-one_mapper_step max_iters 0 statement_list map_env []
-
-
-and evaluate e env = match e with
+let rec evaluate e env = match e with
 		FunCall(fname, fargs) -> function_call fname fargs env
 	|	MemberCall(objectExpr, mname, margs) -> member_call objectExpr mname margs env
 	|	CStr (x) -> Str (x)
@@ -126,7 +64,7 @@ and evaluate e env = match e with
 				Int(x) -> Int(-x)
 			| _ -> raise (Type_error "you can't negate that, dorkface")
 		)
-		|       UnaryNot(xE) ->  let xV = evaluate xE env in
+	|	UnaryNot(xE) ->  let xV = evaluate xE env in
 		(
 			match xV with
 				Bool(x) -> Bool(not x)
@@ -166,13 +104,12 @@ and evaluate e env = match e with
 			|	(Int(a), NotEqual, Int(b)) -> Bool(a != b)
 			| _ -> raise (Type_error "cannot do that comparison operation")
 		)
-	| MapCall(someMapper,argList) -> match someMapper with 
-			AnonyMap(stList) -> run_mapper stList argList env
-		|	NamedMap(mapname) -> (raise Failure "Not yet implemented.")
+
 	| _ -> Void
 
 and function_call fname fargs env = match (fname, fargs) with
-		("pattern", [arg]) -> let v = evaluate arg env in
+		("pattern", []) -> Pattern([])
+	|	("pattern", [arg]) -> let v = evaluate arg env in
 			(
 				match v with
 				Str(x) ->
@@ -191,26 +128,33 @@ and function_call fname fargs env = match (fname, fargs) with
 							)
 							[] charlist
 						in Pattern(List.rev revlist)
-				)			
+				)
 				| _ -> raise (Type_error "Pattern definitions take a string argument")
 			)
-	|	("pattern", []) -> Pattern([])
+	|	("print", []) -> print_endline ""; Void
 	|	("print", [arg]) -> let v = evaluate arg env in
 			(
 				match v with
-				Str(x) -> print_endline x; Void
-				| Int(y) -> print_endline (string_of_int y); Void
-				| Bool(z) -> print_endline( if z then "TRUE" else "FALSE" ); Void
+				  Str(x)  -> print_endline x; Void
+				| Int(y)  -> print_endline(string_of_int y); Void
+				| Bool(z) -> print_endline(if z then "TRUE" else "FALSE"); Void
 				| Pattern(p) ->
-					List.iter (fun x -> print_string (if (x) then "1" else "0")) p;
-					if(List.length p > 0)then print_string "\n";
+					List.iter (fun x -> print_string (if x then "1" else "0")) p;
+					print_string "\n";
 					Void
 				| _ -> print_endline("Dunno how to print this yet."); Void
 			)
-
-	|	(other,_)	-> (* TODO: currently also catches invalid argument-counts, which
-						  should probably be intercepted further up the line *)
-			let msg =  "Function name '"^ other ^"' is not a valid function." in
+	|	("concat", []) -> Pattern([])
+	|	("concat", head::tail) -> let headVal = evaluate head env in
+			let tailVal = function_call "concat" tail env in
+		(
+			match (headVal, tailVal) with
+				(Pattern(headP), Pattern(tailP)) -> Pattern(headP @ tailP)
+			|	(_, _)                           -> raise (Invalid_argument "concat can inly be used on patterns")
+		)
+	|	(other, _)	-> (* TODO: currently also catches invalid argument-counts,
+							which should probably be intercepted further up the line *)
+			let msg =  "Function name '" ^ other ^ "' is not a valid function." in
 				raise (Invalid_function msg)
 
 and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr env in
@@ -221,26 +165,39 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 			[argExpr] -> let argVal = evaluate argExpr env in
 			(
 				match argVal with
-				  Int(y) -> if(y <= 0)then raise (Invalid_argument "Repeat can only accept non zero positive integers")
-							else let rec repeatPattern p n = if n == 1 then p else p @ repeatPattern p (n-1) in
-					  Pattern(repeatPattern x y)
+				  Int(y) -> if (y < 0) then raise (Invalid_argument "Repeat can only accept non-negative integers")
+							else if (y == 0) then Pattern([])
+							else let rec repeatPattern p n = if n == 1 then p else p @ repeatPattern p (n-1)
+								in Pattern(repeatPattern x y)
 				| _ -> raise (Invalid_function "Member function repeat expects an integer argument")
 			)
 			| _ -> raise (Invalid_function "Member function repeat expects a single arguments")
 	)
 
-	|	(Pattern(x),"length",margs) -> 
+	|	(Pattern(x), "length", margs) ->
 		(
 			 match margs with
 					[]  ->  Int(List.length x)
-				|	_   -> raise (Invalid_function "Member function length expects no arguments")   
+				|	_   -> raise (Invalid_function "Member function length expects no arguments")
 		)
-
+	|	(Pattern(x), "slice", [startExpr; lenExpr]) -> let startVal = evaluate startExpr env in
+													   let lenVal   = evaluate lenExpr   env in
+			(
+				match (startVal, lenVal) with
+				(Int(s), Int(l)) -> (*   if s < 1 || s       > List.length x then raise (Invalid_argument "the start position is out of bounds")
+									else if l < 0 || (s+l-1) > List.length x then raise (Invalid_argument "the length is out of bounds")
+									else *) let rec subList inList i minPos maxPos = match inList with
+										  []         -> []
+										| head::tail -> if      i < minPos then subList tail (i+1) minPos maxPos
+														else if i = maxPos then [head]
+														else if i > maxPos then []
+														else                    head :: (subList tail (i+1) minPos maxPos)
+									in Pattern(subList x 1 s (s+l-1))
+				| (_, _) -> raise (Invalid_argument "slice must be given integers values for the start position and length")
+			)
 	| _ -> raise (Invalid_function "Undefined member function")
 
-
-
-and execute s env = match s with
+let rec execute s env = match s with
 	Expr(e) -> ignore(evaluate e env); env
 	| IfBlock(tExpr,iftrue,iffalse) -> let tVal = evaluate tExpr env
 		in (match tVal with
