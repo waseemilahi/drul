@@ -17,6 +17,8 @@ type drul_t = Void
 	   | Mapper  of (string * string list * statement list)
 	   | BeatAlias of bool array
 
+
+
 (* turn a pattern object (list of booleans) into an array, and return
 	pairs of (array, alias) to be added to the symbol table
 *)
@@ -52,18 +54,25 @@ let get_map_env parent_env p_list a_list =
 	let new_symbol_table = init_mapper_st p_list a_list 
 	in (new_symbol_table, Some(parent_env))
 
+(* is called by find_longest_list *)
 let maxlen_helper currmax newlist =
 	let currlen = List.length newlist in
 	if (currlen > currmax) then currlen else currmax
 
+(* find the length of the longest list *)
 let find_longest_list patternlist =
 	List.fold_left maxlen_helper 0 patternlist
 	
+(* add a given key & value to env in (env,parentenv) *)
 let add_key_to_env env key value = 
 	match env with (old_st,whatever) -> 
 		let new_st = NameMap.add key value old_st
 		in (new_st,whatever)
 
+(* inside a map, do one step!
+   return is saved as "return" in the env
+   current index is saved as "$current" in the env
+*)
 let rec one_mapper_step maxiters current st_list env current_pattern =
 	if (maxiters == current) then Pattern(current_pattern)
 	else
@@ -80,8 +89,19 @@ let rec one_mapper_step maxiters current st_list env current_pattern =
 		let current = current + 1 in
 		one_mapper_step maxiters current st_list newenv current_pattern
 
+
+(* stupid function, see eval_arg_list *)
+and rev_evaluate env e = 
+  evaluate e env
+
+(* evaluate an expr_list when we know that they're all patterns *)
+and eval_arg_list arg_list env =
+  List.fold_left rev_evaluate arg_list env (*bad order*)
+
+
 and run_mapper statement_list arg_list env = 
-	let map_env = get_map_env env arg_list [] in (* FIXME: alias list from mapdef *)
+        let arg_list_evaled = eval_arg_list arg_list env in
+	let map_env = get_map_env env arg_list_evaled [] in (* FIXME: alias list from mapdef *)
 	let max_iters = find_longest_list arg_list in
 one_mapper_step max_iters 0 statement_list map_env []
 
