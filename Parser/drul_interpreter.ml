@@ -6,6 +6,7 @@ exception Type_error         of string
 exception Invalid_function   of string
 exception PatternParse_error of string
 exception Invalid_argument   of string
+
 type pattern = bool list
 
 (*      type of every object in DruL
@@ -30,6 +31,7 @@ type drul_env =
 		parent:  drul_env option
 	}
 
+exception Return_value of drul_env
 (*
 	turn a pattern object (list of booleans) into an array, and return
 	pairs of (array, alias) to be added to the symbol table
@@ -101,7 +103,7 @@ let rec one_mapper_step maxiters current st_list env current_pattern =
 		let retval = Pattern([]) in 
 		let env = add_key_to_env env "return" retval 	in 
 		let env = add_key_to_env env "$current" (Int(current)) in 
-		let newenv = execlist st_list env in
+		let newenv = execlist_returning st_list env in
 		let new_st = newenv.symbols in
 		let return = NameMap.find "return" new_st in
 		let current_pattern = (match return with 
@@ -187,6 +189,7 @@ and evaluate e env = match e with
 		|	NamedMap(mapname) -> (raise (Failure "Not yet implemented."))
 		)
 	| _ -> Void
+		
 
 and function_call fname fargs env = match (fname, fargs) with
 		("pattern", []) -> Pattern([])
@@ -300,10 +303,25 @@ and execute s env = match s with
 			let newMapper = Mapper(mapname,formal_params,contents) in
 			let newST = NameMap.add mapname newMapper env.symbols  in
 			{symbols = newST;parent=env.parent}
-	| _ -> env
+	| Return(retExpr) -> 
+		(match env.parent with 
+				None -> raise(Failure "no you don't")
+			| 	_ -> if (not (NameMap.mem "return" env.symbols)) then
+					raise (Failure "still don't")
+				else
+				let retVal = evaluate retExpr env in 
+				let newenv = add_key_to_env env "return" retVal in
+				raise (Return_value newenv)
+		)
+	| EmptyStat -> env
 
 and execlist slist env =
 	List.fold_left (fun env s -> execute s env) env slist
+and execlist_returning slist env =
+	try List.fold_left (fun env s -> execute s env) env slist
+	with 
+			Return_value(newenv) -> newenv
+		| 	other -> raise other
 
 let run p env = match p with
 	Content(statements) -> ignore(execlist statements env)
