@@ -31,7 +31,12 @@ type drul_env =
 		parent:  drul_env option
 	}
 
+(* exception used to handle returns statement, similar to MicroC from Edwards
+*)
 exception Return_value of drul_env
+
+
+
 (*
 	turn a pattern object (list of booleans) into an array, and return
 	pairs of (array, alias) to be added to the symbol table
