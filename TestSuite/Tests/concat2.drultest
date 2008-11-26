@@ -1,0 +1,5 @@
+
+p1 = pattern("1");
+p2 = pattern("0");
+p3 = concat(p1 , p2);
+print(p3); // should print 10

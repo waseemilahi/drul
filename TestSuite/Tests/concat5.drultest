@@ -1,0 +1,3 @@
+
+p = concat(pattern(),pattern("10"),concat(pattern("0"),pattern("1")));
+print (p); // should get 1001
