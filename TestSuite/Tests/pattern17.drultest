@@ -1,5 +1,5 @@
 
-p0 = map(pattern("010101") , pattern("111000") , pattern(000001) )
+p0 = map(pattern("010101") , pattern("111000") , pattern("000001") )
 
 {
   if (($1.note() || $2.note()) && $3.rest() ) { return pattern("1"); }
