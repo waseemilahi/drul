@@ -111,7 +111,10 @@ let rec one_mapper_step maxiters current st_list env current_pattern =
 		let current = current + 1 in
 		one_mapper_step maxiters current st_list newenv current_pattern
 
-
+(* main function of a map, takes a list of statement (body of the mapper)
+   evaluate the arg_list, which should be a list of patterns
+   launches the iteration (one_mapper_step)
+*)
 and run_mapper statement_list arg_list env = 
     let arg_list_evaled = eval_arg_list arg_list env in
 	let map_env = get_map_env env arg_list_evaled [] in (* FIXME: alias list from mapdef *)
