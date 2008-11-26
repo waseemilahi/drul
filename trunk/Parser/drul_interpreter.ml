@@ -308,9 +308,14 @@ and execute s env = match s with
 		)
 	| Assign(varName,valExpr) ->
 		let valVal = evaluate valExpr env in
-		let symbolTable = env.symbols in
-		 (* XXX mask variables in outer scope?  Or error? *)
-		  {symbols = NameMap.add varName valVal symbolTable; parent=env.parent}
+		(match valVal with 
+		    Bool(x) -> raise(Failure "do you try to assign a boolean? 20$ and I don't tell")
+		  | Str(x) -> raise(Failure "do you try to assign a string? pfffff....")
+		  | _ ->
+		      let symbolTable = env.symbols in
+			(* XXX mask variables in outer scope?  Or error? *)
+			{symbols = NameMap.add varName valVal symbolTable; parent=env.parent}
+		)
 	| MapDef(mapname, formal_params, contents) ->
 		if (NameMap.mem mapname env.symbols) then raise (Failure"don't do that")
 		else
