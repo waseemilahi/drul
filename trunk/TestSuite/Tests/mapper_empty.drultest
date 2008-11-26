@@ -1,0 +1,2 @@
+map( pattern("1010") ) {print("beat");};
+map(pattern(""), pattern("10101") ) { print("counting to five");};
