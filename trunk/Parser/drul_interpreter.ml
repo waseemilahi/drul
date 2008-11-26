@@ -8,17 +8,24 @@ exception PatternParse_error of string
 exception Invalid_argument   of string
 type pattern = bool list
 
-type t = Void
+type drul_t = Void
 	   | Int     of int
 	   | Str     of string
 	   | Bool    of bool
 	   | Pattern of pattern
 	   | Clip    of pattern array
 	   | Mapper  of (string * string list * statement list)
+	   | BeatAlias of bool array
+
+type drul_env = 
+	{
+		symbols: drul_t NameMap.t;
+		parent:  drul_env option
+	}
 
 (*
-	turn a pattern object (list of booleans) into an array,
-	and add the appropriate alias to the symbol table
+	turn a pattern object (list of booleans) into an array, and return
+	pairs of (array, alias) to be added to the symbol table
 *)
 let rec get_alias_list p_list a_list counter =
 	let newcounter = counter + 1 in
@@ -38,11 +45,13 @@ let rec get_alias_list p_list a_list counter =
 	(at this point, an array of the beats in the pattern)
 *)
 let add_pattern_alias  symbol_table pair =
-	let p_list = fst(pair) in
+	let p_obj = fst(pair) in
 	let alias = snd(pair) in
-	let p_array = Array.of_list p_list
-	in NameMap.add alias p_array symbol_table
-
+	let p_list = (match p_obj with Pattern(pat)->pat | _ -> raise (Failure "erp")) in
+	let p_array = Array.of_list p_list in
+	let beat_holder = BeatAlias(p_array)
+	in NameMap.add alias beat_holder symbol_table
+ 
 (*
 	use the above functions to add the correct entries to a new symbol table
 	before entering a "map" block
@@ -51,13 +60,73 @@ let init_mapper_st p_list a_list =
 	let alias_list = get_alias_list p_list a_list 1
 	in List.fold_left add_pattern_alias NameMap.empty alias_list
 
-let rec evaluate e env = match e with
+(* create a new symbol table with the appropriate aliases, and link it to the parent *)
+let get_map_env parent_env p_list a_list =
+	let new_symbol_table = init_mapper_st p_list a_list 
+	in {symbols = new_symbol_table; parent = Some(parent_env)}
+
+(* is called by find_longest_list *)
+let maxlen_helper currmax newlist =
+	match newlist with Pattern(patlist) -> 
+(	let currlen = List.length patlist in
+	if (currlen > currmax) then currlen else currmax )
+	| _ -> raise (Failure "asshole")
+
+(* find the length of the longest list *)
+let find_longest_list patternlist =
+	List.fold_left maxlen_helper 0 patternlist
+	
+(* add a given key & value to env in (env,parentenv) *)
+let add_key_to_env env key value = 
+	match env with {symbols=old_st;parent=whatever} -> 
+		let new_st = NameMap.add key value old_st
+		in {symbols = new_st; parent = whatever}
+
+(* inside a map, do one step!
+   return is saved as "return" in the env
+   current index is saved as "$current" in the env
+*)
+let rec one_mapper_step maxiters current st_list env current_pattern =
+	if (maxiters == current) then Pattern(current_pattern)
+	else
+		let retval = Pattern([]) in 
+		let env = add_key_to_env env "return" retval 	in 
+		let env = add_key_to_env env "$current" (Int(current)) in 
+		let newenv = execlist st_list env in
+		let new_st = newenv.symbols in
+		let return = NameMap.find "return" new_st in
+		let current_pattern = (match return with 
+			Pattern(bools) -> current_pattern @ bools 
+			| _ -> (raise (Failure "Jerks")) )
+		in
+		let current = current + 1 in
+		one_mapper_step maxiters current st_list newenv current_pattern
+
+
+and run_mapper statement_list arg_list env = 
+    let arg_list_evaled = eval_arg_list arg_list env in
+	let map_env = get_map_env env arg_list_evaled [] in (* FIXME: alias list from mapdef *)
+	let max_iters = find_longest_list arg_list_evaled in
+	one_mapper_step max_iters 0 statement_list map_env []
+
+(* evaluate an expr_list when we know that they're all patterns *)
+(* harder than I was expected!!!!!!!!!!!!!! TBM 
+we must evaluate each pattern, keep it in a list, and also the new env *)
+(* Actually, no--we just need the new list, not the new env
+	(since expressions cannot modify their environment) -BW
+*)
+and eval_arg_list arg_list env = match arg_list with
+		[] -> []
+	| headExp::tail -> (let headVal =  evaluate headExp env
+		in headVal :: (eval_arg_list tail env))
+
+and evaluate e env = match e with
 		FunCall(fname, fargs) -> function_call fname fargs env
 	|	MemberCall(objectExpr, mname, margs) -> member_call objectExpr mname margs env
 	|	CStr (x) -> Str (x)
 	|   CBool(x) -> Bool(x)
 	|	CInt (x) -> Int (x)
-	|	Var(name) -> let symTab = fst(env) in NameMap.find name symTab  (* TODO: Multiple scopes *)
+	|	Var(name) -> NameMap.find name env.symbols  (* TODO: Multiple scopes *)
 	|	UnaryMinus(xE) -> let xV = evaluate xE env in
 		(
 			match xV with
@@ -104,7 +173,10 @@ let rec evaluate e env = match e with
 			|	(Int(a), NotEqual, Int(b)) -> Bool(a != b)
 			| _ -> raise (Type_error "cannot do that comparison operation")
 		)
-
+	| MapCall(someMapper,argList) -> (match someMapper with 
+			AnonyMap(stList) -> run_mapper stList argList env
+		|	NamedMap(mapname) -> (raise (Failure "Not yet implemented."))
+		)
 	| _ -> Void
 
 and function_call fname fargs env = match (fname, fargs) with
@@ -197,7 +269,7 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 			)
 	| _ -> raise (Invalid_function "Undefined member function")
 
-let rec execute s env = match s with
+and execute s env = match s with
 	Expr(e) -> ignore(evaluate e env); env
 	| IfBlock(tExpr,iftrue,iffalse) -> let tVal = evaluate tExpr env
 		in (match tVal with
@@ -210,16 +282,15 @@ let rec execute s env = match s with
 		)
 	| Assign(varName,valExpr) ->
 		let valVal = evaluate valExpr env in
-		let symbolTable = fst(env) in
+		let symbolTable = env.symbols in
 		 (* XXX mask variables in outer scope?  Or error? *)
-		 ( (NameMap.add varName valVal symbolTable), snd(env))
+		  {symbols = NameMap.add varName valVal symbolTable; parent=env.parent}
 	| MapDef(mapname, formal_params, contents) ->
-		let symbolTable = fst(env) in
-		if (NameMap.mem mapname symbolTable) then raise (Failure"don't do that")
+		if (NameMap.mem mapname env.symbols) then raise (Failure"don't do that")
 		else
 			let newMapper = Mapper(mapname,formal_params,contents) in
-			let newST = NameMap.add mapname newMapper symbolTable  in
-			(newST,snd(env))
+			let newST = NameMap.add mapname newMapper env.symbols  in
+			{symbols = newST;parent=env.parent}
 	| _ -> env
 
 and execlist slist env =
@@ -229,9 +300,8 @@ let run p env = match p with
 	Content(statements) -> ignore(execlist statements env)
 
 let _ =
-let unscoped_env = NameMap.empty in
+let unscoped_env = {symbols = NameMap.empty; parent= None} in
 let lexbuf = Lexing.from_channel stdin in
 let programAst = Drul_parser.program Drul_scanner.token lexbuf in
-
-ignore (run programAst (unscoped_env, None));;
+ignore (run programAst unscoped_env);;
 
