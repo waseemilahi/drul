@@ -1,0 +1,4 @@
+
+p1 = pattern("1");
+p2 = concat(p1);
+print(p2); // should print 1
