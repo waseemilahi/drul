@@ -7,6 +7,7 @@ exception Invalid_function   of string
 exception PatternParse_error of string
 exception Invalid_argument   of string
 exception Undefined_identifier of string
+exception Illegal_assignment of string
 
 type pattern = bool list
 type pattern_alias = bool array
@@ -309,8 +310,8 @@ and execute s env = match s with
 	| Assign(varName,valExpr) ->
 		let valVal = evaluate valExpr env in
 		(match valVal with 
-		    Bool(x) -> raise(Failure "do you try to assign a boolean? 20$ and I don't tell")
-		  | Str(x) -> raise(Failure "do you try to assign a string? pfffff....")
+		    Bool(x) -> raise(Illegal_assignment "do you try to assign a boolean? 20$ and I don't tell")
+		  | Str(x) -> raise(Illegal_assignment "do you try to assign a string? pfffff....")
 		  | _ ->
 		      let symbolTable = env.symbols in
 			(* XXX mask variables in outer scope?  Or error? *)
