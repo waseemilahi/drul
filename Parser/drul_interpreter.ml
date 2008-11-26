@@ -8,6 +8,8 @@ exception PatternParse_error of string
 exception Invalid_argument   of string
 type pattern = bool list
 
+(*      type of every object in DruL
+*)
 type drul_t = Void
 	   | Int     of int
 	   | Str     of string
@@ -17,6 +19,11 @@ type drul_t = Void
 	   | Mapper  of (string * string list * statement list)
 	   | BeatAlias of bool array
 
+
+(*      symbol table for DruL
+        the current environment in 'symbols', a map from string to drul_t
+        the parent is another drul_env
+*)   
 type drul_env = 
 	{
 		symbols: drul_t NameMap.t;
