@@ -4,5 +4,5 @@ p2 = map (p1)
 {
 	if ($1.note()) { return pattern("11"); }
         else           { return pattern("0"); }
-}
+};
 print(p1);
