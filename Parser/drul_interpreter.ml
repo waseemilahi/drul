@@ -67,9 +67,11 @@ let get_map_env parent_env p_list a_list =
 
 (* is called by find_longest_list *)
 let maxlen_helper currmax newlist =
-	match newlist with Pattern(patlist) -> 
-(	let currlen = List.length patlist in
-	if (currlen > currmax) then currlen else currmax )
+	match newlist with 
+	Pattern(patlist) -> (
+		let currlen = List.length patlist in
+		if (currlen > currmax) then currlen else currmax 
+	)
 	| _ -> raise (Failure "asshole")
 
 (* find the length of the longest list *)
@@ -110,15 +112,12 @@ and run_mapper statement_list arg_list env =
 	one_mapper_step max_iters 0 statement_list map_env []
 
 (* evaluate an expr_list when we know that they're all patterns *)
-(* harder than I was expected!!!!!!!!!!!!!! TBM 
-we must evaluate each pattern, keep it in a list, and also the new env *)
-(* Actually, no--we just need the new list, not the new env
-	(since expressions cannot modify their environment) -BW
-*)
 and eval_arg_list arg_list env = match arg_list with
 		[] -> []
-	| headExp::tail -> (let headVal =  evaluate headExp env
-		in headVal :: (eval_arg_list tail env))
+	| 	headExp::tail -> (
+			let headVal =  evaluate headExp env
+			in headVal :: (eval_arg_list tail env)
+		)
 
 and evaluate e env = match e with
 		FunCall(fname, fargs) -> function_call fname fargs env
@@ -270,7 +269,7 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 	| _ -> raise (Invalid_function "Undefined member function")
 
 and execute s env = match s with
-	Expr(e) -> ignore(evaluate e env); env
+		Expr(e) -> ignore(evaluate e env); env
 	| IfBlock(tExpr,iftrue,iffalse) -> let tVal = evaluate tExpr env
 		in (match tVal with
 				Bool(true) -> execlist iftrue env
