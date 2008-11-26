@@ -1,5 +1,7 @@
 CHANGES:
 	changed argument list to comma separated from space-separated
+	scoping - dynamic
+	string values for variables?
 
 ERRATA:
 	"return" statement
