@@ -4,6 +4,6 @@ p0 = map(pattern("010101") , pattern("111000") , pattern("000001") )
 {
   if (($1.note() || $2.note()) && $3.rest() ) { return pattern("1"); }
   else                                        { return pattern("0"); }
-}
+};
 
 print(p0); // should return 111100

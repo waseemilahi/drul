@@ -17,6 +17,6 @@ p1 = map( map(pattern("1101"))
 {
 	if ($1.note()) { return pattern("1"); }
         else { return pattern(); }
-}
+};
 
 print(p1); // should return 11
