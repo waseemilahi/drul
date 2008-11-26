@@ -6,8 +6,10 @@ exception Type_error         of string
 exception Invalid_function   of string
 exception PatternParse_error of string
 exception Invalid_argument   of string
+exception Undefined_identifier of string
 
 type pattern = bool list
+type pattern_alias = bool array
 
 (*      type of every object in DruL
 *)
@@ -18,7 +20,8 @@ type drul_t = Void
 	   | Pattern of pattern
 	   | Clip    of pattern array
 	   | Mapper  of (string * string list * statement list)
-	   | BeatAlias of bool array
+	   | PatternAlias of pattern_alias
+	   | Beat of pattern_alias * int
 
 
 (*      symbol table for DruL
@@ -63,7 +66,7 @@ let add_pattern_alias  symbol_table pair =
 	let alias = snd(pair) in
 	let p_list = (match p_obj with Pattern(pat)->pat | _ -> raise (Failure "erp")) in
 	let p_array = Array.of_list p_list in
-	let beat_holder = BeatAlias(p_array)
+	let beat_holder = PatternAlias(p_array)
 	in NameMap.add alias beat_holder symbol_table
  
 (*
@@ -97,6 +100,12 @@ let add_key_to_env env key value =
 	match env with {symbols=old_st;parent=whatever} -> 
 		let new_st = NameMap.add key value old_st
 		in {symbols = new_st; parent = whatever}
+		
+let rec get_key_from_env env key =
+	if NameMap.mem key env.symbols then NameMap.find key env.symbols
+	else match env.parent with 
+			Some(parent_env) -> get_key_from_env parent_env key
+		|	None -> raise (Undefined_identifier key)
 
 (* inside a map, do one step!
    return is saved as "return" in the env
@@ -142,7 +151,7 @@ and evaluate e env = match e with
 	|	CStr (x) -> Str (x)
 	|   CBool(x) -> Bool(x)
 	|	CInt (x) -> Int (x)
-	|	Var(name) -> NameMap.find name env.symbols  (* TODO: Multiple scopes *)
+	|	Var(name) -> get_key_from_env env name
 	|	UnaryMinus(xE) -> let xV = evaluate xE env in
 		(
 			match xV with
