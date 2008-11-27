@@ -2,6 +2,7 @@ open Drul_ast
 
 module NameMap = Map.Make(String)
 
+(* most of the exceptions *)
 exception Type_error         of string
 exception Invalid_function   of string
 exception PatternParse_error of string
@@ -294,6 +295,7 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 									in Pattern(subList x 1 s (s+l-1))
 				| (_, _) -> raise (Invalid_argument "slice must be given integers values for the start position and length")
 			)
+	| (Pattern(x), "tbm", margs) -> print_endline "Thierry rulzzzzzzzzzz!!!!" ;Void;
 	| _ -> raise (Invalid_function "Undefined member function")
 
 and execute s env = match s with
