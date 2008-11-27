@@ -57,7 +57,7 @@ type drul_env =
 		parent:  drul_env option
 	}
 
-(* exception used to handle returns statement, similar to MicroC from Edwards
+(* exception used to handle return statement, similar to MicroC from Edwards
 *)
 exception Return_value of drul_env
 
