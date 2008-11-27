@@ -1,3 +1,24 @@
+(*
+******************************************************************
+*       DruL - Drumming Language
+*
+* cration of R. Stewart, T. Bertin-Mahieux, W. Ilahi and B. Warfield
+*            rs2660      tb2332             wki2001      bbw2108
+*
+* for the class COMS W4115: Programming Language and Translators
+*
+* file: drul_interpreter.ml
+*
+*       INTERPRETER
+*
+* This file contains the interpreter of DruL. It receiveves an AST
+* and interpret the code.
+* This code is written in OCaml.
+*
+******************************************************************
+*)
+
+
 open Drul_ast
 
 module NameMap = Map.Make(String)
