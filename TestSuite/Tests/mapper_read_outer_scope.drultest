@@ -1,3 +1,3 @@
-a = "foo";
+a = pattern("1001");
 b = pattern("10");
 map (b) {print(a);};

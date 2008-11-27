@@ -2,4 +2,4 @@
 p1 = pattern("1");
 p2 = pattern("0");
 p3 = concat( p1 , pattern("") , p2);
-print(p1); // should print 10
+print(p3); // should print 10
