@@ -12,7 +12,7 @@
 *       INTERPRETER
 *
 * This file contains the interpreter for DruL. It receives an AST
-* and interpret the code.
+* and interprets the code.
 * This code is written in OCaml.
 *
 *************************************************************************
@@ -48,7 +48,7 @@ type drul_t = Void
 
 
 (*      symbol table for DruL
-        the current environment in 'symbols', a map from string to drul_t
+        the current environment is 'symbols': a map from string to drul_t,
         the parent is another drul_env
 *)   
 type drul_env = 
@@ -82,7 +82,7 @@ let rec get_alias_list p_list a_list counter =
 (*
 	given a NameMap and a (pattern, alias) pair,
 	add the appropriate information to the NameMap
-	(at this point, an array of the beats in the pattern)
+	(at this point, an array of the beats is the pattern)
 *)
 let add_pattern_alias  symbol_table pair =
 	let p_obj = fst(pair) in
@@ -305,9 +305,9 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 													   let lenVal   = evaluate lenExpr   env in
 			(
 				match (startVal, lenVal) with
-				(Int(s), Int(l)) -> (*   if s < 1 || s       > List.length x then raise (Invalid_argument "the start position is out of bounds")
-									else if l < 0 || (s+l-1) > List.length x then raise (Invalid_argument "the length is out of bounds")
-									else *) let rec subList inList i minPos maxPos = match inList with
+				(Int(s), Int(l)) ->    if s < 1 || (s > List.length x && List.length x > 0) then raise (Invalid_argument "the start position is out of bounds")
+									else if l < 0  then raise (Invalid_argument "the length must be non-negative") 
+									else  let rec subList inList i minPos maxPos = match inList with
 										  []         -> []
 										| head::tail -> if      i < minPos then subList tail (i+1) minPos maxPos
 														else if i = maxPos then [head]
