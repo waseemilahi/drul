@@ -13,7 +13,7 @@ p1 = map( map(pattern("1101"))
             if ($1.note() && $1.next(1).note()) { return pattern(""); }
             elseif ($1. note())                 { return pattern("1"); }
             else                                { return pattern("0"); }
-          };)
+          })
 {
 	if ($1.note()) { return pattern("1"); }
         else { return pattern(); }
