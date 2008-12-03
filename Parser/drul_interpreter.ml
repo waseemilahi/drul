@@ -298,7 +298,7 @@ and function_call fname fargs env = match (fname, fargs) with
 					print_string "\n";
 					Void
 				| Beat(_,_) -> let state = state_of_beat v in print_endline(
-						match state with None->"NULL" | Some(b) -> if b then "YES" else "NO"
+						match state with None->"NULL" | Some(b) -> if b then "NOTE" else "REST"
 					); Void
 				| _ -> print_endline("Dunno how to print this yet."); Void
 			)
