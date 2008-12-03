@@ -49,7 +49,7 @@ rule token = parse
    |    "return"                        { debug "RETURN"; RETURN }
    |    "clip"                          { debug "CLIP"; CLIP }
    |    "<-"                            { debug "LARROW"; LARROW }
-   |    '$'(digit as numbers)           { debug("index variable " ^ numbers); ID(numbers)   }
+   |    '$' digit as numbers           { debug("index variable " ^ numbers); ID(numbers)   }
    |    identifier      as ide          {
 											if ((String.length ide) <= 64) 
 											then (debug("identifier " ^ ide); ID(ide))

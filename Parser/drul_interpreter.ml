@@ -124,11 +124,22 @@ let add_key_to_env env key value =
 		let new_st = NameMap.add key value old_st
 		in {symbols = new_st; parent = whatever}
 		
+(* retrieve the value for a given key from the environment
+	or its parent.
+   If the value is a PatternAlias, then use some magic to transform 
+   it into a Beat
+*)
 let rec get_key_from_env env key =
 	if NameMap.mem key env.symbols then NameMap.find key env.symbols
 	else match env.parent with 
 			Some(parent_env) -> get_key_from_env parent_env key
 		|	None -> raise (Undefined_identifier key)
+and  beat_of_alias env alias =
+	let currentVar = get_key_from_env env "$current"
+	in match currentVar with 
+			Int(currentVal) -> Beat(alias,currentVal)
+		|	_	-> raise (Failure "Can't have a non-integer in $current--you really can't!!")
+
 
 (* inside a map, do one step!
    return is saved as "return" in the env
@@ -174,7 +185,11 @@ and evaluate e env = match e with
 	|	CStr (x) -> Str (x)
 	|   CBool(x) -> Bool(x)
 	|	CInt (x) -> Int (x)
-	|	Var(name) -> get_key_from_env env name
+	|	Var(name) -> let fetched = get_key_from_env env name in
+			(match fetched with
+					PatternAlias(alias) -> beat_of_alias env alias
+				|	other -> other
+			)
 	|	UnaryMinus(xE) -> let xV = evaluate xE env in
 		(
 			match xV with
