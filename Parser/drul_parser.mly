@@ -11,7 +11,7 @@ let debug str =  if (true) then ignore(print_endline str) else ignore()
 %token <string> ID
 %token <string> STRCONST
 
-%left MCALL
+
 %left LIST /* is this correct? I mean, it *works*, but... */
 %nonassoc NOELSE /* which we define somehow, somewhere */
 %nonassoc ELSE
@@ -23,6 +23,7 @@ let debug str =  if (true) then ignore(print_endline str) else ignore()
 %left PLUS MINUS
 %left TIMES DIVIDE MOD
 %nonassoc UMINUS NOT
+%left MCALL
 
 %start program
 %type<Drul_ast.program> program
