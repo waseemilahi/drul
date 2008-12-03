@@ -142,9 +142,10 @@ and  beat_of_alias env alias =
 
 
 let state_of_beat beat =
-	match beat with (pattern_data,idx) ->
-	let pattern_length = Array.length pattern_data in
-	if (idx < 0 or idx >= pattern_length) then None else Some(pattern_data.(idx))
+	match beat with Beat(pattern_data,idx) ->
+		let pattern_length = Array.length pattern_data in
+		if (idx < 0 or idx >= pattern_length) then None else Some(pattern_data.(idx))
+	| _ -> raise (Failure "How did you even get here?")
 
 (* inside a map, do one step!
    return is saved as "return" in the env
@@ -296,7 +297,7 @@ and function_call fname fargs env = match (fname, fargs) with
 					List.iter (fun x -> print_string (if x then "1" else "0")) p;
 					print_string "\n";
 					Void
-				| Beat(a,i) -> let state = state_of_beat (a,i) in print_endline(
+				| Beat(_,_) -> let state = state_of_beat v in print_endline(
 						match state with None->"NULL" | Some(b) -> if b then "YES" else "NO"
 					); Void
 				| _ -> print_endline("Dunno how to print this yet."); Void
@@ -353,6 +354,20 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 				| (_, _) -> raise (Invalid_argument "slice must be given integers values for the start position and length")
 			)
 	| (Pattern(x), "tbm", margs) -> print_endline "Thierry rulzzzzzzzzzz!!!!" ;Void;
+	| (Beat(a,i), "note", []) -> let beatval = state_of_beat objectVal in
+		( match beatval with Some(yesno) -> Bool(yesno) | None -> Bool(false) )
+	| (Beat(a,i), "rest", []) -> let beatval = state_of_beat objectVal in
+		( match beatval with Some(yesno) -> Bool(not yesno) | None -> Bool(false) )
+	| (Beat(a,i), "prev", [offsetExpr]) -> let offsetVal = evaluate offsetExpr env in
+		(match offsetVal with 
+			Int(offsetInt) -> let newidx = i - offsetInt in Beat(a,newidx)
+			| _ -> raise (Invalid_function "Beat method 'prev' requires an integer argument")
+		)
+	| (Beat(a,i), "next", [offsetExpr]) -> let offsetVal = evaluate offsetExpr env in
+		(match offsetVal with 
+			Int(offsetInt) -> let newidx = i + offsetInt in Beat(a,newidx)
+			| _ -> raise (Invalid_function "Beat method 'next' requires an integer argument")
+		)
 	| _ -> raise (Invalid_function "Undefined member function")
 
 and execute s env = match s with
