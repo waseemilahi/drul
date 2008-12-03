@@ -3,6 +3,6 @@ p1 = pattern("101");
 p2 = map (p1)
 {
 	if ($1.note()) { return pattern("11"); }
-        else           { return pattern("0"); }
+	else           { return pattern("0"); }
 };
-print(p1);
+print(p2);
