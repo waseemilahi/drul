@@ -48,10 +48,10 @@ type drul_t = Void
 
 
 (*      symbol table for DruL
-        the current environment is 'symbols': a map from string to drul_t,
-        the parent is another drul_env
-*)   
-type drul_env = 
+		the current environment is 'symbols': a map from string to drul_t,
+		the parent is another drul_env
+*)
+type drul_env =
 	{
 		symbols: drul_t NameMap.t;
 		parent:  drul_env option
@@ -91,7 +91,7 @@ let add_pattern_alias  symbol_table pair =
 	let p_array = Array.of_list p_list in
 	let beat_holder = PatternAlias(p_array)
 	in NameMap.add alias beat_holder symbol_table
- 
+
 (*
 	use the above functions to add the correct entries to a new symbol table
 	before entering a "map" block
@@ -102,41 +102,41 @@ let init_mapper_st p_list a_list =
 
 (* create a new symbol table with the appropriate aliases, and link it to the parent *)
 let get_map_env parent_env p_list a_list =
-	let new_symbol_table = init_mapper_st p_list a_list 
+	let new_symbol_table = init_mapper_st p_list a_list
 	in {symbols = new_symbol_table; parent = Some(parent_env)}
 
 (* is called by find_longest_list *)
 let maxlen_helper currmax newlist =
-	match newlist with 
+	match newlist with
 	Pattern(patlist) -> (
 		let currlen = List.length patlist in
-		if (currlen > currmax) then currlen else currmax 
+		if (currlen > currmax) then currlen else currmax
 	)
 	| _ -> raise (Failure "asshole")
 
 (* find the length of the longest list *)
 let find_longest_list patternlist =
 	List.fold_left maxlen_helper 0 patternlist
-	
+
 (* add a given key & value to env in (env,parentenv) *)
-let add_key_to_env env key value = 
-	match env with {symbols=old_st;parent=whatever} -> 
+let add_key_to_env env key value =
+	match env with {symbols=old_st;parent=whatever} ->
 		let new_st = NameMap.add key value old_st
 		in {symbols = new_st; parent = whatever}
-		
+
 (* retrieve the value for a given key from the environment
 	or its parent.
-   If the value is a PatternAlias, then use some magic to transform 
+   If the value is a PatternAlias, then use some magic to transform
    it into a Beat
 *)
 let rec get_key_from_env env key =
 	if NameMap.mem key env.symbols then NameMap.find key env.symbols
-	else match env.parent with 
+	else match env.parent with
 			Some(parent_env) -> get_key_from_env parent_env key
 		|	None -> raise (Undefined_identifier key)
 and  beat_of_alias env alias =
 	let currentVar = get_key_from_env env "$current"
-	in match currentVar with 
+	in match currentVar with
 			Int(currentVal) -> Beat(alias,currentVal)
 		|	_	-> raise (Failure "Can't have a non-integer in $current--you really can't!!")
 
@@ -154,14 +154,14 @@ let state_of_beat beat =
 let rec one_mapper_step maxiters current st_list env current_pattern =
 	if (maxiters == current) then Pattern(current_pattern)
 	else
-		let retval = Pattern([]) in 
-		let env = add_key_to_env env "return" retval 	in 
-		let env = add_key_to_env env "$current" (Int(current)) in 
+		let retval = Pattern([]) in
+		let env = add_key_to_env env "return" retval 	in
+		let env = add_key_to_env env "$current" (Int(current)) in
 		let newenv = execlist_returning st_list env in
 		let new_st = newenv.symbols in
 		let return = NameMap.find "return" new_st in
-		let current_pattern = (match return with 
-			Pattern(bools) -> current_pattern @ bools 
+		let current_pattern = (match return with
+			Pattern(bools) -> current_pattern @ bools
 			| _ -> (raise (Failure "Jerks")) )
 		in
 		let current = current + 1 in
@@ -184,8 +184,8 @@ and run_named_mapper mapname argList env =
    evaluate the arg_list, which should be a list of patterns
    launches the iteration (one_mapper_step)
 *)
-and run_mapper statement_list arg_list env = 
-    let arg_list_evaled = eval_arg_list arg_list env in
+and run_mapper statement_list arg_list env =
+	let arg_list_evaled = eval_arg_list arg_list env in
 	let map_env = get_map_env env arg_list_evaled [] in (* FIXME: alias list from mapdef *)
 	let max_iters = find_longest_list arg_list_evaled in
 	one_mapper_step max_iters 0 statement_list map_env []
@@ -255,12 +255,12 @@ and evaluate e env = match e with
 			|	(Int(a), NotEqual, Int(b)) -> Bool(a != b)
 			| _ -> raise (Type_error "cannot do that comparison operation")
 		)
-	| MapCall(someMapper,argList) -> (match someMapper with 
+	| MapCall(someMapper,argList) -> (match someMapper with
 			AnonyMap(stList) -> run_mapper stList argList env
 		|	NamedMap(mapname) -> run_named_mapper mapname argList env
 		)
 	| _ -> Void
-		
+
 
 and function_call fname fargs env = match (fname, fargs) with
 		("pattern", []) -> Pattern([])
@@ -308,8 +308,18 @@ and function_call fname fargs env = match (fname, fargs) with
 		(
 			match (headVal, tailVal) with
 				(Pattern(headP), Pattern(tailP)) -> Pattern(headP @ tailP)
-			|	(_, _)                           -> raise (Invalid_argument "concat can inly be used on patterns")
+			|	(_, _)                           -> raise (Invalid_argument "concat can only be used on patterns")
 		)
+	|	("rand", []) -> Int(Random.int 2)
+	|	("rand", [argExpr]) -> let argVal = evaluate argExpr env in
+			(
+				match argVal with
+				Int(bound) -> if bound > 0 then Int(Random.int bound)
+							  else raise (Invalid_argument "the rand function expects a positive integer argument")
+				| _ -> raise (Invalid_argument "the rand function expects an integer argument")
+			)
+	|	("rand", _) -> raise (Invalid_argument "the rand function expects a single, optional, positive, integer argument")
+
 	|	(other, _)	-> (* TODO: currently also catches invalid argument-counts,
 							which should probably be intercepted further up the line *)
 			let msg =  "Function name '" ^ other ^ "' is not a valid function." in
@@ -343,7 +353,7 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 			(
 				match (startVal, lenVal) with
 				(Int(s), Int(l)) ->    if s < 1 || (s > List.length x && List.length x > 0) then raise (Invalid_argument "the start position is out of bounds")
-									else if l < 0  then raise (Invalid_argument "the length must be non-negative") 
+									else if l < 0  then raise (Invalid_argument "the length must be non-negative")
 									else  let rec subList inList i minPos maxPos = match inList with
 										  []         -> []
 										| head::tail -> if      i < minPos then subList tail (i+1) minPos maxPos
@@ -383,13 +393,13 @@ and execute s env = match s with
 		)
 	| Assign(varName,valExpr) ->
 		let valVal = evaluate valExpr env in
-		(match valVal with 
-		    Bool(x) -> raise(Illegal_assignment "do you try to assign a boolean? 20$ and I don't tell")
+		(match valVal with
+			Bool(x) -> raise(Illegal_assignment "do you try to assign a boolean? 20$ and I don't tell")
 		  | Str(x) -> raise(Illegal_assignment "do you try to assign a string? pfffff....")
-                  | Beat(x,y) -> raise(Illegal_assignment "do you try to assign a beat? you s*ck!")
-                  | PatternAlias(x) -> raise(Illegal_assignment "do you try to assign a patternalias? alright, I don't even know what it is")
+				  | Beat(x,y) -> raise(Illegal_assignment "do you try to assign a beat? you s*ck!")
+				  | PatternAlias(x) -> raise(Illegal_assignment "do you try to assign a patternalias? alright, I don't even know what it is")
 		  | _ ->
-		      let symbolTable = env.symbols in
+			  let symbolTable = env.symbols in
 			(* XXX mask variables in outer scope?  Or error? *)
 			{symbols = NameMap.add varName valVal symbolTable; parent=env.parent}
 		)
@@ -399,13 +409,13 @@ and execute s env = match s with
 			let newMapper = Mapper(mapname,formal_params,contents) in
 			let newST = NameMap.add mapname newMapper env.symbols  in
 			{symbols = newST;parent=env.parent}
-	| Return(retExpr) -> 
-		(match env.parent with 
+	| Return(retExpr) ->
+		(match env.parent with
 				None -> raise(Failure "no you don't")
 			| 	_ -> if (not (NameMap.mem "return" env.symbols)) then
 					raise (Failure "still don't")
 				else
-				let retVal = evaluate retExpr env in 
+				let retVal = evaluate retExpr env in
 				let newenv = add_key_to_env env "return" retVal in
 				raise (Return_value newenv)
 		)
@@ -415,7 +425,7 @@ and execlist slist env =
 	List.fold_left (fun env s -> execute s env) env slist
 and execlist_returning slist env =
 	try List.fold_left (fun env s -> execute s env) env slist
-	with 
+	with
 			Return_value(newenv) -> newenv
 		| 	other -> raise other
 
@@ -426,5 +436,5 @@ let _ =
 let unscoped_env = {symbols = NameMap.empty; parent= None} in
 let lexbuf = Lexing.from_channel stdin in
 let programAst = Drul_parser.program Drul_scanner.token lexbuf in
-ignore (run programAst unscoped_env);;
+Random.self_init (); ignore (run programAst unscoped_env);;
 
