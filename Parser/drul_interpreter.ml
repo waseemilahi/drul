@@ -166,6 +166,19 @@ let rec one_mapper_step maxiters current st_list env current_pattern =
 		let current = current + 1 in
 		one_mapper_step maxiters current st_list newenv current_pattern
 
+(* run a named mapper, find the mapper in the env, and cast it to a
+ anonymous mapper
+*)
+and run_named_mapper mapname argList env = 
+  let savedmapper = get_key_from_env env mapname in
+    match savedmapper with 
+	Mapper(mapname2,strlist,stat_list) -> 
+	  (* check if we receive the good number of patterns *)
+	  if List.length strlist != List.length argList  then raise (Invalid_argument "wrong number of inputs for named mapper")
+	  else run_mapper stat_list argList env
+      (* if given name is not bound to a mapper, Type_error *)
+      | _ -> raise (Type_error "we were expecting a mapper, name associated with something else")
+
 (* main function of a map, takes a list of statement (body of the mapper)
    evaluate the arg_list, which should be a list of patterns
    launches the iteration (one_mapper_step)
@@ -243,7 +256,7 @@ and evaluate e env = match e with
 		)
 	| MapCall(someMapper,argList) -> (match someMapper with 
 			AnonyMap(stList) -> run_mapper stList argList env
-		|	NamedMap(mapname) -> (raise (Failure "Not yet implemented."))
+		|	NamedMap(mapname) -> run_named_mapper mapname argList env
 		)
 	| _ -> Void
 		
