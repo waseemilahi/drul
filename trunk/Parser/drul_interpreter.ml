@@ -11,7 +11,6 @@
 *
 *       INTERPRETER
 *
-<<<<<<< .mine
 * This file contains the interpreter for DruL. It receives an AST
 * and interprets the code.
 * This code is written in OCaml.
