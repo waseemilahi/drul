@@ -176,6 +176,7 @@ and run_named_mapper mapname argList env =
 	Mapper(mapname2,a_list,stat_list) -> 
 	  (* check if we receive the good number of patterns *)
 	  if List.length a_list != List.length argList  then raise (Invalid_argument "wrong number of inputs for named mapper")
+	  else if String.compare mapname mapname2 != 0 then raise (Failure "intern mapper name problem")
 	  else run_mapper stat_list argList env a_list
       (* if given name is not bound to a mapper, Type_error *)
       | _ -> raise (Type_error "we were expecting a mapper, name associated with something else")
