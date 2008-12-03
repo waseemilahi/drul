@@ -141,6 +141,11 @@ and  beat_of_alias env alias =
 		|	_	-> raise (Failure "Can't have a non-integer in $current--you really can't!!")
 
 
+let state_of_beat beat =
+	match beat with (pattern_data,idx) ->
+	let pattern_length = Array.length pattern_data in
+	if (idx < 0 or idx >= pattern_length) then None else Some(pattern_data.(idx))
+
 (* inside a map, do one step!
    return is saved as "return" in the env
    current index is saved as "$current" in the env
@@ -278,6 +283,9 @@ and function_call fname fargs env = match (fname, fargs) with
 					List.iter (fun x -> print_string (if x then "1" else "0")) p;
 					print_string "\n";
 					Void
+				| Beat(a,i) -> let state = state_of_beat (a,i) in print_endline(
+						match state with None->"NULL" | Some(b) -> if b then "YES" else "NO"
+					); Void
 				| _ -> print_endline("Dunno how to print this yet."); Void
 			)
 	|	("concat", []) -> Pattern([])

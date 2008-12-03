@@ -1,0 +1,2 @@
+a = pattern("101");
+map (a) {print($1);};
