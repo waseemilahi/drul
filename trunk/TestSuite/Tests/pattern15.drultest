@@ -1,7 +1,7 @@
 
 p0 = map(pattern("001") , pattern("111") )
 {
- if ($1.note() || $2.note()) { return pattern("1"); }
+ if ($1.note() && $2.note()) { return pattern("1"); }
  else { return pattern("0"); }
 };
 
