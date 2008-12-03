@@ -1,0 +1,2 @@
+p3 = pattern("0011100");
+print(p3.slice(3, 3));
