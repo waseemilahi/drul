@@ -1,0 +1,5 @@
+a = pattern("1010");
+map(a){
+	print($1.prev(1));
+	print($1.next(1));
+};

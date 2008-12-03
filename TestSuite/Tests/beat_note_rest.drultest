@@ -1,0 +1,12 @@
+foo = pattern("1");
+bar = pattern("10");
+map (foo,bar) {
+	if($1.note()) {print("$1 note");}
+	else {print("$1 not note");}
+	if($1.rest()) {print("$1 rest");}
+	else {print("$1 not rest");}
+	if($2.note()) {print("$2 note");}
+	else {print("$2 not note");}
+	if($2.rest()) {print("$2 rest");}
+	else {print("$2 not rest");}
+};
