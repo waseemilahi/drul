@@ -3,7 +3,7 @@
 // takes every even index, starting at 0
 
 
-pat = pattern("0010111010001"); // even indexes: 0111101
+pat = pattern("00101110100010"); // even indexes: 0111101
 
 helper = pattern("10").repeat( pat.length() / 2 );
 
