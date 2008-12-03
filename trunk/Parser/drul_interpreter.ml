@@ -173,10 +173,10 @@ let rec one_mapper_step maxiters current st_list env current_pattern =
 and run_named_mapper mapname argList env = 
   let savedmapper = get_key_from_env env mapname in
     match savedmapper with 
-	Mapper(mapname2,strlist,stat_list) -> 
+	Mapper(mapname2,a_list,stat_list) -> 
 	  (* check if we receive the good number of patterns *)
-	  if List.length strlist != List.length argList  then raise (Invalid_argument "wrong number of inputs for named mapper")
-	  else run_mapper stat_list argList env
+	  if List.length a_list != List.length argList  then raise (Invalid_argument "wrong number of inputs for named mapper")
+	  else run_mapper stat_list argList env a_list
       (* if given name is not bound to a mapper, Type_error *)
       | _ -> raise (Type_error "we were expecting a mapper, name associated with something else")
 
@@ -184,9 +184,9 @@ and run_named_mapper mapname argList env =
    evaluate the arg_list, which should be a list of patterns
    launches the iteration (one_mapper_step)
 *)
-and run_mapper statement_list arg_list env =
-	let arg_list_evaled = eval_arg_list arg_list env in
-	let map_env = get_map_env env arg_list_evaled [] in (* FIXME: alias list from mapdef *)
+and run_mapper statement_list arg_list env a_list = 
+        let arg_list_evaled = eval_arg_list arg_list env in
+	let map_env = get_map_env env arg_list_evaled a_list in (* FIXME: alias list from mapdef *)
 	let max_iters = find_longest_list arg_list_evaled in
 	one_mapper_step max_iters 0 statement_list map_env []
 
@@ -256,7 +256,7 @@ and evaluate e env = match e with
 			| _ -> raise (Type_error "cannot do that comparison operation")
 		)
 	| MapCall(someMapper,argList) -> (match someMapper with
-			AnonyMap(stList) -> run_mapper stList argList env
+			AnonyMap(stList) -> run_mapper stList argList env []
 		|	NamedMap(mapname) -> run_named_mapper mapname argList env
 		)
 	| _ -> Void
