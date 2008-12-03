@@ -1,0 +1,5 @@
+r = rand(4);
+
+if (0 <= r && r <= 3) { print("It works!"); }
+else                  { print("What the hell?"); }
+
