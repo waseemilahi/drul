@@ -187,7 +187,7 @@ and run_named_mapper mapname argList env =
 *)
 and run_mapper statement_list arg_list env a_list = 
         let arg_list_evaled = eval_arg_list arg_list env in
-	let map_env = get_map_env env arg_list_evaled a_list in (* FIXME: alias list from mapdef *)
+	let map_env = get_map_env env arg_list_evaled a_list in
 	let max_iters = find_longest_list arg_list_evaled in
 	one_mapper_step max_iters 0 statement_list map_env []
 
