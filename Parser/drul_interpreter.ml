@@ -335,6 +335,8 @@ and execute s env = match s with
 		(match valVal with 
 		    Bool(x) -> raise(Illegal_assignment "do you try to assign a boolean? 20$ and I don't tell")
 		  | Str(x) -> raise(Illegal_assignment "do you try to assign a string? pfffff....")
+                  | Beat(x,y) -> raise(Illegal_assignment "do you try to assign a beat? you s*ck!")
+                  | PatternAlias(x) -> raise(Illegal_assignment "do you try to assign a patternalias? alright, I don't even know what it is")
 		  | _ ->
 		      let symbolTable = env.symbols in
 			(* XXX mask variables in outer scope?  Or error? *)
