@@ -15,7 +15,11 @@ let identifier    =  ['a'-'z' 'A'-'Z' '_']['a'-'z' 'A'-'Z' '_' '0'-'9']*
 
 
 rule token = parse
-		[' ' '\t' '\r' '\n']            { debug( "whitespace");token lexbuf                }
+        ' '                             { debug( "whitespace 'b '"); token lexbuf }  
+   |    '\t'                            { debug( "whitespace 't'"); token lexbuf }  
+   |    '\r'                            { debug( "whitespace 'r'"); token lexbuf }  
+   |    '\n'                            { debug( "whitespace 'n'"); token lexbuf }  
+   |	[' ' '\t' '\r' '\n']            { debug( "whitespace");token lexbuf                }
    |    '('                             { debug "LPAREN"; LPAREN                         }
    |    ')'                             { debug "RPAREN"; RPAREN                         }
    |    '{'                             { debug "LBRACE"; LBRACE                         }
