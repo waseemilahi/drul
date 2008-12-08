@@ -30,38 +30,37 @@ exception PatternParse_error of string
 exception Invalid_argument   of string
 exception Undefined_identifier of string
 exception Illegal_assignment of string
+exception Instruments_redefined of string
 
 type pattern = bool list
 type pattern_alias = bool array
 
-(*      type of every object in DruL
-*)
-type drul_t = Void
-	   | Int     of int
-	   | Str     of string
-	   | Bool    of bool
-	   | Pattern of pattern
-	   | Clip    of pattern array
-	   | Mapper  of (string * string list * statement list)
-	   | PatternAlias of pattern_alias
-	   | Beat of pattern_alias * int
-
+(* type of every object in DruL *)
+type drul_t =
+		Void
+	|	Int     of int
+	|	Str     of string
+	|	Bool    of bool
+	|	Pattern of pattern
+	|	Clip    of pattern array
+	|	Mapper  of (string * string list * statement list)
+	|	PatternAlias of pattern_alias
+	|	Beat of pattern_alias * int
+	|	Instruments of string list
+	|	InstrumentAssignment of string * pattern
 
 (*      symbol table for DruL
 		the current environment is 'symbols': a map from string to drul_t,
 		the parent is another drul_env
 *)
 type drul_env =
-	{
-		symbols: drul_t NameMap.t;
-		parent:  drul_env option
-	}
+{
+	symbols: drul_t NameMap.t;
+	parent:  drul_env option
+}
 
-(* exception used to handle return statement, similar to MicroC from Edwards
-*)
+(* exception used to handle return statement, similar to MicroC from Edwards *)
 exception Return_value of drul_env
-
-
 
 (*
 	turn a pattern object (list of booleans) into an array, and return
@@ -118,9 +117,12 @@ let maxlen_helper currmax newlist =
 let find_longest_list patternlist =
 	List.fold_left maxlen_helper 0 patternlist
 
-(* add a given key & value to env in (env,parentenv) *)
+(*
+	Adds a given key & value to env in (env, parentEnv).
+	Returns the modified env.
+*)
 let add_key_to_env env key value =
-	match env with {symbols=old_st;parent=whatever} ->
+	match env with {symbols=old_st; parent=whatever} ->
 		let new_st = NameMap.add key value old_st
 		in {symbols = new_st; parent = whatever}
 
@@ -147,6 +149,24 @@ let state_of_beat beat =
 		if (idx < 0 or idx >= pattern_length) then None else Some(pattern_data.(idx))
 	| _ -> raise (Failure "How did you even get here?")
 
+(* find the position of an instrument in the instruments in the env, returns -1 if doesn't find it *)
+(*
+let get_instrument_pos env instrName =
+	try
+		let instrList = get_key_from_env env "instrument" in
+		let rec find_pos strList counter =
+		(
+			match strList with
+				[]           -> -1
+			|	[head::tail] -> if head == instrName
+							 then counter
+							 else find_pos tail (counter + 1)
+		)
+		in find_pos instrList 0
+	with Undefined_identifier -> raise (Failure "instrument not saved in env yet")
+	| _ -> raise (Failure "wrong exception in get_instrument_pos")
+*)
+
 (* inside a map, do one step!
    return is saved as "return" in the env
    current index is saved as "$current" in the env
@@ -170,23 +190,23 @@ let rec one_mapper_step maxiters current st_list env current_pattern =
 (* run a named mapper, find the mapper in the env, and cast it to a
  anonymous mapper
 *)
-and run_named_mapper mapname argList env = 
+and run_named_mapper mapname argList env =
   let savedmapper = get_key_from_env env mapname in
-    match savedmapper with 
-	Mapper(mapname2,a_list,stat_list) -> 
+	match savedmapper with
+	Mapper(mapname2,a_list,stat_list) ->
 	  (* check if we receive the good number of patterns *)
 	  if List.length a_list != List.length argList  then raise (Invalid_argument "wrong number of inputs for named mapper")
 	  else if String.compare mapname mapname2 != 0 then raise (Failure "intern mapper name problem")
 	  else run_mapper stat_list argList env a_list
-      (* if given name is not bound to a mapper, Type_error *)
-      | _ -> raise (Type_error "we were expecting a mapper, name associated with something else")
+	  (* if given name is not bound to a mapper, Type_error *)
+	  | _ -> raise (Type_error "we were expecting a mapper, name associated with something else")
 
 (* main function of a map, takes a list of statement (body of the mapper)
    evaluate the arg_list, which should be a list of patterns
    launches the iteration (one_mapper_step)
 *)
-and run_mapper statement_list arg_list env a_list = 
-        let arg_list_evaled = eval_arg_list arg_list env in
+and run_mapper statement_list arg_list env a_list =
+		let arg_list_evaled = eval_arg_list arg_list env in
 	let map_env = get_map_env env arg_list_evaled a_list in
 	let max_iters = find_longest_list arg_list_evaled in
 	one_mapper_step max_iters 0 statement_list map_env []
@@ -260,6 +280,7 @@ and evaluate e env = match e with
 			AnonyMap(stList) -> run_mapper stList argList env []
 		|	NamedMap(mapname) -> run_named_mapper mapname argList env
 		)
+(*	| InstrAssign(instr, patExpr) -> match *)
 	| _ -> Void
 
 
@@ -320,6 +341,30 @@ and function_call fname fargs env = match (fname, fargs) with
 				| _ -> raise (Invalid_argument "the rand function expects an integer argument")
 			)
 	|	("rand", _) -> raise (Invalid_argument "the rand function expects a single, optional, positive, integer argument")
+	|	("instruments", argList) ->
+			(try
+
+				ignore(get_key_from_env env "instruments");
+				raise (Instruments_redefined "Don't do that")
+
+			with
+				Undefined_identifier e -> let strList = eval_arg_list argList env in
+					let str_to_string a =
+					(
+						match a with
+						Str(s) -> s
+						| _ -> raise (Invalid_argument "instruments takes a list of strings")
+					) in
+					let stringList = List.map str_to_string strList in
+						(
+							match stringList with
+							[] -> raise (Invalid_argument "you must define at least 1 instrument")
+							| _ -> let instVal = Instruments(stringList) in
+								ignore(add_key_to_env env "instruments" instVal); Void
+						)
+				| _ -> raise (Failure "Unexpected exception during instrument definition")
+			)
+(*	|	("clip", argList) -> let argValList = eval_arg_list argList env in *)
 
 	|	(other, _)	-> (* TODO: currently also catches invalid argument-counts,
 							which should probably be intercepted further up the line *)
@@ -370,12 +415,12 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 	| (Beat(a,i), "rest", []) -> let beatval = state_of_beat objectVal in
 		( match beatval with Some(yesno) -> Bool(not yesno) | None -> Bool(false) )
 	| (Beat(a,i), "prev", [offsetExpr]) -> let offsetVal = evaluate offsetExpr env in
-		(match offsetVal with 
+		(match offsetVal with
 			Int(offsetInt) -> let newidx = i - offsetInt in Beat(a,newidx)
 			| _ -> raise (Invalid_function "Beat method 'prev' requires an integer argument")
 		)
 	| (Beat(a,i), "next", [offsetExpr]) -> let offsetVal = evaluate offsetExpr env in
-		(match offsetVal with 
+		(match offsetVal with
 			Int(offsetInt) -> let newidx = i + offsetInt in Beat(a,newidx)
 			| _ -> raise (Invalid_function "Beat method 'next' requires an integer argument")
 		)
@@ -400,9 +445,8 @@ and execute s env = match s with
 				  | Beat(x,y) -> raise(Illegal_assignment "do you try to assign a beat? you s*ck!")
 				  | PatternAlias(x) -> raise(Illegal_assignment "do you try to assign a patternalias? alright, I don't even know what it is")
 		  | _ ->
-			  let symbolTable = env.symbols in
-			(* XXX mask variables in outer scope?  Or error? *)
-			{symbols = NameMap.add varName valVal symbolTable; parent=env.parent}
+			(* Does in fact mask variables in outer scope! Not an error! *)
+			add_key_to_env env varName valVal
 		)
 	| MapDef(mapname, formal_params, contents) ->
 		if (NameMap.mem mapname env.symbols) then raise (Failure"don't do that")
