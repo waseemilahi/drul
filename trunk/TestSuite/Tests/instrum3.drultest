@@ -1,0 +1,8 @@
+
+instruments("thierry","rocks");
+
+a = 3 * 2;
+
+instruments("always!");
+
+print("should fail!!!!");
