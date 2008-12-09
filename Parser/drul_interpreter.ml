@@ -150,22 +150,24 @@ let state_of_beat beat =
 	| _ -> raise (Failure "How did you even get here?")
 
 (* find the position of an instrument in the instruments in the env, returns -1 if doesn't find it *)
-(*
 let get_instrument_pos env instrName =
 	try
-		let instrList = get_key_from_env env "instrument" in
-		let rec find_pos strList counter =
-		(
-			match strList with
-				[]           -> -1
-			|	[head::tail] -> if head == instrName
-							 then counter
-							 else find_pos tail (counter + 1)
-		)
-		in find_pos instrList 0
-	with Undefined_identifier -> raise (Failure "instrument not saved in env yet")
+		let instrListDrul = get_key_from_env env "instrument" in
+		match instrListDrul with 
+		    Instruments(instrList) ->
+		      let rec find_pos strList counter  =
+			(
+			  match strList with
+			      []           -> -1
+			    |	head::tail -> if (String.compare head instrName) == 0
+				              then counter
+				              else find_pos tail (counter + 1)
+			)
+		      in find_pos instrList 0
+		  | _ -> raise (Failure "weird stuff in env for instruments...")
+	with Undefined_identifier(e) -> raise (Failure "instrument not saved in env yet")
 	| _ -> raise (Failure "wrong exception in get_instrument_pos")
-*)
+
 
 (* inside a map, do one step!
    return is saved as "return" in the env
