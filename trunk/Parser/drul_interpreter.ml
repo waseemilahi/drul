@@ -166,7 +166,8 @@ let get_instrument_pos env instrName =
 		      in find_pos instrList 0
 		  | _ -> raise (Failure "weird stuff in env for instruments...")
 	with Undefined_identifier(e) -> raise (Failure "instrument not saved in env yet")
-	| _ -> raise (Failure "wrong exception in get_instrument_pos")
+	  | Failure(e) -> raise (Failure e)
+	  | _ -> raise (Failure "wrong exception in get_instrument_pos")
 
 
 (* inside a map, do one step!
