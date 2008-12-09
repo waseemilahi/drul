@@ -1,0 +1,3 @@
+
+instruments("allo","everyone");
+print("done"); // should return done
