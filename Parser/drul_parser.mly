@@ -7,6 +7,7 @@ let debug str = if (true) then ignore(print_endline str) else ignore()
 %token MAP MAPDEF LARROW CLIP
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA PLUS MINUS TIMES DIVIDE
 %token ASSIGN EQ NEQ LT LEQ GT GEQ EOF MCALL AND OR NOT MOD
+%token INSTRUMENTS
 %token <int>    INTLITERAL
 %token <string> STRLITERAL
 %token <string> ID
@@ -15,6 +16,7 @@ let debug str = if (true) then ignore(print_endline str) else ignore()
 %nonassoc NOELSE /* which we define somehow, somewhere */
 %nonassoc ELSE
 %left ASSIGN /* needs no associativity, may need no precedence? */
+%left INSTRUMENTS /* same comment, may not need to be here */
 %left OR
 %left AND
 %left NEQ EQ
@@ -67,6 +69,8 @@ statement:
 	|   IF LPAREN expr RPAREN block iftail { IfBlock($3, $5, $6) }
 	/* TODO : ELSEIF */
 	/* May require AST change */
+	|   INSTRUMENTS LPAREN expr_list RPAREN SEMI { InstrAssign($3) }
+	|   INSTRUMENTS LPAREN RPAREN SEMI           { InstrAssign([]) }
 	| 	SEMI { EmptyStat }
 
 block:

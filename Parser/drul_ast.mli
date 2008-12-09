@@ -23,7 +23,6 @@ and expr =
 	|   Comparison of expr * compOp * expr
 	|   FunCall of string * expr list
 	|   MapCall of mapper * expr list
-	|   InstrAssign of string * expr
 
 and statement =
 	Expr of expr
@@ -31,6 +30,7 @@ and statement =
 	| Assign of string * expr
 	| MapDef of string * string list * statement list
 	| IfBlock of expr * statement list * statement list option
+	|   InstrAssign of expr list
 	| EmptyStat
 
 type program =

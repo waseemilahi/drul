@@ -281,7 +281,7 @@ and evaluate e env = match e with
 		|	NamedMap(mapname) -> run_named_mapper mapname argList env
 		)
 (*	| InstrAssign(instr, patExpr) -> match *)
-	| _ -> Void
+(*	| _ -> Void *)
 
 
 and function_call fname fargs env = match (fname, fargs) with
@@ -341,29 +341,6 @@ and function_call fname fargs env = match (fname, fargs) with
 				| _ -> raise (Invalid_argument "the rand function expects an integer argument")
 			)
 	|	("rand", _) -> raise (Invalid_argument "the rand function expects a single, optional, positive, integer argument")
-	|	("instruments", argList) ->
-			(try
-
-				ignore(get_key_from_env env "instruments");
-				raise (Instruments_redefined "Don't do that")
-
-			with
-				Undefined_identifier e -> let strList = eval_arg_list argList env in
-					let str_to_string a =
-					(
-						match a with
-						Str(s) -> s
-						| _ -> raise (Invalid_argument "instruments takes a list of strings")
-					) in
-					let stringList = List.map str_to_string strList in
-						(
-							match stringList with
-							[] -> raise (Invalid_argument "you must define at least 1 instrument")
-							| _ -> let instVal = Instruments(stringList) in
-								ignore(add_key_to_env env "instruments" instVal); Void
-						)
-				| _ -> raise (Failure "Unexpected exception during instrument definition")
-			)
 (*	|	("clip", argList) -> let argValList = eval_arg_list argList env in *)
 
 	|	(other, _)	-> (* TODO: currently also catches invalid argument-counts,
@@ -463,6 +440,29 @@ and execute s env = match s with
 				let retVal = evaluate retExpr env in
 				let newenv = add_key_to_env env "return" retVal in
 				raise (Return_value newenv)
+		)
+	| InstrAssign(argList) -> 
+	        (try
+
+		   ignore(get_key_from_env env "instruments");
+		   raise (Instruments_redefined "don't do that")
+		 with
+		     Undefined_identifier e -> let strList = eval_arg_list argList env in
+		     let str_to_string a =
+			(
+			  match a with
+			      Str(s) -> s
+			    | _ -> raise (Invalid_argument "instruments takes a list of strings")
+			) in
+		     let stringList = List.map str_to_string strList in
+			(
+			  match stringList with
+			      [] -> raise (Invalid_argument "you must define at least 1 instrument")
+			    | _ -> let instVal = Instruments(stringList) in
+				add_key_to_env env "instruments" instVal
+			)
+		   | Instruments_redefined(e) -> raise (Instruments_redefined e)
+		   | _ -> raise (Failure "Unexpected exception during instrument definition")
 		)
 	| EmptyStat -> env
 

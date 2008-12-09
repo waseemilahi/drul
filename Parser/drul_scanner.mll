@@ -51,6 +51,7 @@ rule token = parse
    |    "mapper"                        { debug "MAPDEF"; MAPDEF }
    |    "map"                           { debug "MAP";    MAP    }
    |    "return"                        { debug "RETURN"; RETURN }
+   |    "instruments"                   { debug "INSTRUMENTS"; INSTRUMENTS }
    |    "clip"                          { debug "CLIP";   CLIP   }
    |    "<-"                            { debug "LARROW"; LARROW }
    |    '$' digit as numbers            { debug("index variable " ^ numbers); ID(numbers)   }
