@@ -222,6 +222,7 @@ and eval_arg_list arg_list env = match arg_list with
 			in headVal :: (eval_arg_list tail env)
 		)
 
+(* evaluate expressions, no modifications to the environment! *)
 and evaluate e env = match e with
 		FunCall(fname, fargs) -> function_call fname fargs env
 	|	MemberCall(objectExpr, mname, margs) -> member_call objectExpr mname margs env
@@ -283,10 +284,9 @@ and evaluate e env = match e with
 			AnonyMap(stList) -> run_mapper stList argList env []
 		|	NamedMap(mapname) -> run_named_mapper mapname argList env
 		)
-(*	| InstrAssign(instr, patExpr) -> match *)
-(*	| _ -> Void *)
 
 
+(* handle the general case of a.b() *)
 and function_call fname fargs env = match (fname, fargs) with
 		("pattern", []) -> Pattern([])
 	|	("pattern", [arg]) -> let v = evaluate arg env in
@@ -406,6 +406,8 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 		)
 	| _ -> raise (Invalid_function "Undefined member function")
 
+
+(* similar to evaluate, but handles cases like assignment, where the environment is modified *)
 and execute s env = match s with
 		Expr(e) -> ignore(evaluate e env); env
 	| IfBlock(tExpr,iftrue,iffalse) -> let tVal = evaluate tExpr env
