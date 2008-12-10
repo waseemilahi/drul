@@ -21,6 +21,11 @@
 
 open Drul_ast
 
+
+(* default instruments *)
+let def_instr = ["hihat";"snare";"kick"];
+
+
 module NameMap = Map.Make(String)
 
 (* most of the exceptions *)
@@ -462,7 +467,8 @@ and execute s env = match s with
 			 let stringList = List.map str_to_string strList in
 			(
 			  match stringList with
-				  [] -> raise (Invalid_argument "you must define at least 1 instrument")
+				  [] -> (* default *)
+				    add_key_to_env env "instruments" (Instruments(def_instr))
 				| _ -> let instVal = Instruments(stringList) in
 				add_key_to_env env "instruments" instVal
 			)
