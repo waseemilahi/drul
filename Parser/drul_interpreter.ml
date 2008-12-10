@@ -285,11 +285,18 @@ and evaluate e env = match e with
 			|	(Int(a), NotEqual, Int(b)) -> Bool(a != b)
 			| _ -> raise (Type_error "cannot do that comparison operation")
 		)
-	| MapCall(someMapper,argList) -> (match someMapper with
-			AnonyMap(stList) -> run_mapper stList argList env []
-		|	NamedMap(mapname) -> run_named_mapper mapname argList env
+	|	MapCall(someMapper,argList) ->
+		(
+			match someMapper with
+				AnonyMap(stList) -> run_mapper stList argList env []
+			|	NamedMap(mapname) -> run_named_mapper mapname argList env
 		)
-
+	|	InstrAssign(instName, patExpr) -> let patVal = evaluate patExpr env in
+		(
+			match patVal with
+				Pattern(p) -> InstrumentAssignment(instName, p)
+			|	_ -> raise (Invalid_argument "Only patterns can be assigned to instruments")
+		)
 
 (* handle the general case of a.b() *)
 and function_call fname fargs env = match (fname, fargs) with
@@ -468,7 +475,7 @@ and execute s env = match s with
 			(
 			  match stringList with
 				  [] -> (* default *)
-				    add_key_to_env env "instruments" (Instruments(default_instr))
+					add_key_to_env env "instruments" (Instruments(default_instr))
 				| _ -> let instVal = Instruments(stringList) in
 				add_key_to_env env "instruments" instVal
 			)
