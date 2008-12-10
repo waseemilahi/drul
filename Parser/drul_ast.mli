@@ -24,6 +24,7 @@ and expr =
 	|   FunCall of string * expr list
 	|   MapCall of mapper * expr list
 	|	InstrAssign of string * expr
+	|	Output of string * expr list
 
 and statement =
 	Expr of expr

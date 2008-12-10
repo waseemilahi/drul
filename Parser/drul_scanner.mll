@@ -52,6 +52,7 @@ rule token = parse
    |    "map"                           { debug "MAP";    MAP    }
    |    "return"                        { debug "RETURN"; RETURN }
    |    "instruments"                   { debug "INSTRUMENTS"; INSTRUMENTS }
+   |	"output"						{ debug "OUTPUT"; OUTPUT  }
    |    "<-"                            { debug "LARROW"; LARROW }
    |    '$' digit as numbers            { debug("index variable " ^ numbers); ID(numbers)   }
    |    identifier as ide               {

@@ -8,6 +8,7 @@ let debug str = if (true) then ignore(print_endline str) else ignore()
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA PLUS MINUS TIMES DIVIDE
 %token ASSIGN EQ NEQ LT LEQ GT GEQ EOF MCALL AND OR NOT MOD
 %token INSTRUMENTS
+%token OUTPUT
 %token <int>    INTLITERAL
 %token <string> STRLITERAL
 %token <string> ID
@@ -38,6 +39,7 @@ expr:
 	|   ID       { Var($1) }
 	|   expr MCALL ID LPAREN RPAREN { MemberCall($1, $3, []) }
 	|   expr MCALL ID LPAREN expr_list RPAREN  { MemberCall($1, $3, $5) }
+	|	OUTPUT MCALL ID LPAREN expr_list RPAREN  { Output($3, $5) }
 	|   expr PLUS   expr { ArithBinop($1, Add,  $3) }
 	|   expr MINUS  expr { ArithBinop($1, Sub,  $3) }
 	|   expr TIMES  expr { ArithBinop($1, Mult, $3) }
