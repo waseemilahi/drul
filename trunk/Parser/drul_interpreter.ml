@@ -174,6 +174,11 @@ let get_instrument_pos env instrName =
 	  | Failure(e) -> raise (Failure e)
 	  | _ -> raise (Failure "wrong exception in get_instrument_pos")
 
+let rec concat_pattern_list plist =
+	match plist with 
+		[]	-> []
+	|	Pattern(x)::tail -> x @ (concat_pattern_list tail)
+	| 	_ -> raise (Invalid_argument "concat only concatenates patterns")
 
 (* inside a map, do one step!
    return is saved as "return" in the env
@@ -299,11 +304,11 @@ and evaluate e env = match e with
 		)
 
 (* handle the general case of a.b() *)
-and function_call fname fargs env = match (fname, fargs) with
+and function_call fname fargs env = 
+	let fargvals = eval_arg_list fargs env in
+	match (fname, fargvals) with
 		("pattern", []) -> Pattern([])
-	|	("pattern", [arg]) -> let v = evaluate arg env in
-			(
-				match v with
+	|	("pattern", [v]) -> (match v with
 				Str(x) ->
 				(
 					let charlist = Str.split (Str.regexp "") x
@@ -324,8 +329,7 @@ and function_call fname fargs env = match (fname, fargs) with
 				| _ -> raise (Type_error "Pattern definitions take a string argument")
 			)
 	|	("print", []) -> print_endline ""; Void
-	|	("print", [arg]) -> let v = evaluate arg env in
-			(
+	|	("print", [v]) -> (
 				match v with
 				  Str(x)  -> print_endline x; Void
 				| Int(y)  -> print_endline(string_of_int y); Void
@@ -339,17 +343,9 @@ and function_call fname fargs env = match (fname, fargs) with
 					); Void
 				| _ -> print_endline("Dunno how to print this yet."); Void
 			)
-	|	("concat", []) -> Pattern([])
-	|	("concat", head::tail) -> let headVal = evaluate head env in
-			let tailVal = function_call "concat" tail env in
-		(
-			match (headVal, tailVal) with
-				(Pattern(headP), Pattern(tailP)) -> Pattern(headP @ tailP)
-			|	(_, _)                           -> raise (Invalid_argument "concat can only be used on patterns")
-		)
+	|	("concat", concat_args) -> let catenated = concat_pattern_list concat_args in Pattern(catenated)
 	|	("rand", []) -> Int(Random.int 2)
-	|	("rand", [argExpr]) -> let argVal = evaluate argExpr env in
-			(
+	|	("rand", [argVal]) -> (
 				match argVal with
 				Int(bound) -> if bound > 0 then Int(Random.int bound)
 							  else raise (Invalid_argument "the rand function expects a positive integer argument")
