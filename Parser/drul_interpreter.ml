@@ -351,17 +351,20 @@ and evaluate e env = match e with
 		)
 	| Output(firstExpr, argList) -> output_call firstExpr argList env
 	
- and output_call outname outargs env = match (outname , outargs) with
+and output_call outname outargs env = match (outname , outargs) with
  
 		("txtfile",[firstArg;secondArg]) ->	
+		    (
 								let firstExpr = evaluate firstArg env in
 								let secondExpr = evaluate secondArg env in
-			(
+			
 				match (firstExpr, secondExpr) with
-					(Str(x),Str(y)) -> ignore(open_out x);Void
+					(Str(x),Str(y)) -> 	if(".txt" = String.sub x ((String.length x) - 4) 4)then( ignore(open_out x);Void)
+										else raise (Invalid_argument "output.txtfile only accepts .txt extersions for files.")
 					| 	( _ , _ ) 	-> raise (Invalid_argument "output.txt takes a file name and a string input") 
 			)
-	| 	( _ , _ ) 	-> raise (Invalid_function "Not Done Yet.............")
+	| 	( _ , _ ) 	-> raise (Invalid_function "usage: output.txtfile(filename,string);")
+
 
 (* handle the general case of a.b() *)
 and function_call fname fargs env = 
