@@ -30,7 +30,7 @@ and statement =
 	| Assign of string * expr
 	| MapDef of string * string list * statement list
 	| IfBlock of expr * statement list * statement list option
-	|   InstrAssign of expr list
+	| InstrDef of expr list
 	| EmptyStat
 
 type program =
