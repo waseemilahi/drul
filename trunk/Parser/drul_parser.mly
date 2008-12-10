@@ -69,8 +69,8 @@ statement:
 	|   IF LPAREN expr RPAREN block iftail { IfBlock($3, $5, $6) }
 	/* TODO : ELSEIF */
 	/* May require AST change */
-	|   INSTRUMENTS LPAREN expr_list RPAREN SEMI { InstrAssign($3) }
-	|   INSTRUMENTS LPAREN RPAREN SEMI           { InstrAssign([]) }
+	|   INSTRUMENTS LPAREN expr_list RPAREN SEMI { InstrDef($3) }
+	|   INSTRUMENTS LPAREN RPAREN SEMI           { InstrDef([]) }
 	| 	SEMI { EmptyStat }
 
 block:

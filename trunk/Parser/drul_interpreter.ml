@@ -153,17 +153,17 @@ let state_of_beat beat =
 let get_instrument_pos env instrName =
 	try
 		let instrListDrul = get_key_from_env env "instrument" in
-		match instrListDrul with 
-		    Instruments(instrList) ->
-		      let rec find_pos strList counter  =
+		match instrListDrul with
+			Instruments(instrList) ->
+			  let rec find_pos strList counter  =
 			(
 			  match strList with
-			      []           -> -1
-			    |	head::tail -> if (String.compare head instrName) == 0
-				              then counter
-				              else find_pos tail (counter + 1)
+				  []           -> -1
+				|	head::tail -> if (String.compare head instrName) == 0
+							  then counter
+							  else find_pos tail (counter + 1)
 			)
-		      in find_pos instrList 0
+			  in find_pos instrList 0
 		  | _ -> raise (Failure "weird stuff in env for instruments...")
 	with Undefined_identifier(e) -> raise (Failure "instrument not saved in env yet")
 	  | Failure(e) -> raise (Failure e)
@@ -446,24 +446,24 @@ and execute s env = match s with
 				let newenv = add_key_to_env env "return" retVal in
 				raise (Return_value newenv)
 		)
-	| InstrAssign(argList) -> 
-	        (try
+	| InstrDef(argList) ->
+			(try
 
 		   ignore(get_key_from_env env "instruments");
 		   raise (Instruments_redefined "don't do that")
 		 with
-		     Undefined_identifier e -> let strList = eval_arg_list argList env in
-		     let str_to_string a =
+			 Undefined_identifier e -> let strList = eval_arg_list argList env in
+			 let str_to_string a =
 			(
 			  match a with
-			      Str(s) -> s
-			    | _ -> raise (Invalid_argument "instruments takes a list of strings")
+				  Str(s) -> s
+				| _ -> raise (Invalid_argument "instruments takes a list of strings")
 			) in
-		     let stringList = List.map str_to_string strList in
+			 let stringList = List.map str_to_string strList in
 			(
 			  match stringList with
-			      [] -> raise (Invalid_argument "you must define at least 1 instrument")
-			    | _ -> let instVal = Instruments(stringList) in
+				  [] -> raise (Invalid_argument "you must define at least 1 instrument")
+				| _ -> let instVal = Instruments(stringList) in
 				add_key_to_env env "instruments" instVal
 			)
 		   | Instruments_redefined(e) -> raise (Instruments_redefined e)
