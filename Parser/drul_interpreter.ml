@@ -359,9 +359,10 @@ and output_call outname outargs env = match (outname , outargs) with
 								let secondExpr = evaluate secondArg env in
 			
 				match (firstExpr, secondExpr) with
-					(Str(x),Str(y)) -> 	if(".txt" = String.sub x ((String.length x) - 4) 4)then( ignore(open_out x);Void)
+					(Str(x),Str(y)) -> 	if(".txt" = String.sub x ((String.length x) - 4) 4)
+											then( output_string (open_out x) y;flush_all (); Void)
 										else raise (Invalid_argument "output.txtfile only accepts .txt extersions for files.")
-					| 	( _ , _ ) 	-> raise (Invalid_argument "output.txt takes a file name and a string input") 
+					| 	( _ , _ ) 	-> raise (Invalid_argument "output.txtfile takes a file name and a string input") 
 			)
 	| 	( _ , _ ) 	-> raise (Invalid_function "usage: output.txtfile(filename,string);")
 
