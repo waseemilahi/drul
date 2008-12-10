@@ -2,6 +2,7 @@ CHANGES:
 	changed argument list to comma separated from space-separated
 	scoping - dynamic
 	string values for variables?
+	use strings (not IDs) for instruments
 
 ERRATA:
 	"return" statement
