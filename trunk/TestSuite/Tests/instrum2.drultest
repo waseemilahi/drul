@@ -1,2 +1,4 @@
 
 instruments(); // should print error
+
+print("done");
