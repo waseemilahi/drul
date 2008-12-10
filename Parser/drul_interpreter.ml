@@ -23,7 +23,7 @@ open Drul_ast
 
 
 (* default instruments *)
-let def_instr = ["hihat";"snare";"kick"];
+let default_instr = ["hihat";"snare";"kick"];
 
 
 module NameMap = Map.Make(String)
@@ -468,7 +468,7 @@ and execute s env = match s with
 			(
 			  match stringList with
 				  [] -> (* default *)
-				    add_key_to_env env "instruments" (Instruments(def_instr))
+				    add_key_to_env env "instruments" (Instruments(default_instr))
 				| _ -> let instVal = Instruments(stringList) in
 				add_key_to_env env "instruments" instVal
 			)
