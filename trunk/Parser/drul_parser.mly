@@ -59,7 +59,7 @@ expr:
 	/* this has a shift-reduce conflict with function calls */
 	|   MAP LPAREN expr_list RPAREN block { MapCall(AnonyMap($5), $3) }
 	|   MAP LPAREN expr_list RPAREN ID    { MapCall(NamedMap($5), $3) }
-/*  |   ID LARROW expr { InstrAssign($1, $3) } */
+	|   STRLITERAL LARROW expr { InstrAssign($1, $3) }
 
 statement:
 		expr SEMI { Expr($1) }

@@ -23,6 +23,7 @@ and expr =
 	|   Comparison of expr * compOp * expr
 	|   FunCall of string * expr list
 	|   MapCall of mapper * expr list
+	|	InstrAssign of string * expr
 
 and statement =
 	Expr of expr
