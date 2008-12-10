@@ -27,14 +27,13 @@ mapper gcd(a, b) {
 		tmp = map (p1,p2) subtract;
 		print(tmp.length());
 		if ( tmp.length() == 0 ) {
-			//print("length is 0!");
-			 print("in return spot");
+	//		 print("in return spot");
 			 return p1;
 		} elseif ( ( map(tmp) squishrests).length() > 0) {
-			print("a gt b");
+	//		print("a gt b");
 			p1 = tmp;
 		} else {
-			print("b gt a");
+	//		print("b gt a");
 			p2 = tmp;
 		}
 		return map(p1,p2) gcd;
