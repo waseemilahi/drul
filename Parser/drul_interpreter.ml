@@ -76,8 +76,7 @@ let emptyClip clipSize =
   let rec emptyPatternList len =
     if len == 1 then [[]]
     else (List.append [[]] (emptyPatternList (len - 1)))
-  in  let emptyPatternArray = Array.of_list (emptyPatternList clipSize)
-  in Clip(emptyPatternArray)
+  in  Array.of_list (emptyPatternList clipSize)
 
 
 (*
@@ -161,6 +160,9 @@ and  beat_of_alias env alias =
 		|	_	-> raise (Failure "Can't have a non-integer in $current--you really can't!!")
 
 
+let string_of_pattern p = 
+	List.fold_left (fun a x -> a ^ (if x then "1" else "0")) "" p
+
 let state_of_beat beat =
 	match beat with Beat(pattern_data,idx) ->
 		let pattern_length = Array.length pattern_data in
@@ -170,7 +172,7 @@ let state_of_beat beat =
 (* find the position of an instrument in the instruments in the env, returns -1 if doesn't find it *)
 let get_instrument_pos env instrName =
 	try
-		let instrListDrul = get_key_from_env env "instrument" in
+		let instrListDrul = get_key_from_env env "instruments" in
 		match instrListDrul with
 			Instruments(instrList) ->
 			  let rec find_pos strList counter  =
@@ -192,6 +194,38 @@ let rec concat_pattern_list plist =
 		[]	-> []
 	|	Pattern(x)::tail -> x @ (concat_pattern_list tail)
 	| 	_ -> raise (Invalid_argument "concat only concatenates patterns")
+
+let rec fill_in_clip_patterns empty_clip pattern_list idx = match pattern_list with 
+		[]	-> Clip(empty_clip) (* not technically empty any more *)
+			(* TODO: catch array out of bounds here *)
+	|	Pattern(p)::tail -> ignore(empty_clip.(idx) <- p); fill_in_clip_patterns empty_clip tail (idx + 1)
+	|	InstrumentAssignment(_,_)::tail -> raise (Invalid_argument "clip arguments may not mix styles")
+	| 	_	-> raise (Invalid_argument "clip arguments must all evaluate to patterns")
+
+let rec fill_in_clip_instr_assigns empty_clip assignment_list env = match assignment_list with 
+		[]	-> Clip(empty_clip) (* not technically empty any more *)
+	|	InstrumentAssignment(instrName,p)::tail ->
+			(* TODO catch possible exception from incorrect instrument name *)
+			let idx = get_instrument_pos env instrName  in
+			ignore(empty_clip.(idx) <- p); fill_in_clip_instr_assigns empty_clip tail env 
+	|	Pattern(_)::tail ->raise (Invalid_argument "clip arguments may not mix styles")
+	| 	_	-> raise (Invalid_argument "clip arguments must all evaluate to instrument assignments")
+
+
+let make_clip argVals env = 
+	let instrument_list = get_key_from_env env "instruments"  (* XXX probably worth trapping *) in
+	let num_instrs = (match instrument_list with Instruments(i) -> List.length i 
+										| _ ->raise (Failure "can't happen")) in
+	let new_clip = emptyClip num_instrs in
+	let first_arg = List.hd argVals in
+	match first_arg with 
+Pattern(_) -> fill_in_clip_patterns new_clip argVals 0
+		|	InstrumentAssignment(_,_) ->fill_in_clip_instr_assigns new_clip argVals env
+		|	_ -> raise (Invalid_argument "clip arguments must be patterns or instrument assignments")
+
+	
+	
+	
 
 (* inside a map, do one step!
    return is saved as "return" in the env
@@ -360,13 +394,20 @@ and function_call fname fargs env =
 				  Str(x)  -> print_endline x; Void
 				| Int(y)  -> print_endline(string_of_int y); Void
 				| Bool(z) -> print_endline(if z then "TRUE" else "FALSE"); Void
-				| Pattern(p) ->
-					List.iter (fun x -> print_string (if x then "1" else "0")) p;
-					print_string "\n";
-					Void
+				| Pattern(p) -> let pstr = string_of_pattern p in print_endline pstr;Void
 				| Beat(_,_) -> let state = state_of_beat v in print_endline(
 						match state with None->"NULL" | Some(b) -> if b then "NOTE" else "REST"
 					); Void
+				| Clip(ar) -> let instrVal = get_key_from_env env "instruments" in
+					let instr_names = (match instrVal with Instruments(l) -> l | _ ->raise (Failure "can't happen")) in
+					print_endline "[";
+					ignore(List.fold_left 
+						(fun i name -> print_endline ("\t" ^ name ^ ":\t" ^ (string_of_pattern ar.(i))); (i+1))
+						0
+						instr_names
+					);
+					print_endline "]";
+					Void						
 				| _ -> print_endline("Dunno how to print this yet."); Void
 			)
 	|	("concat", concat_args) -> let catenated = concat_pattern_list concat_args in Pattern(catenated)
@@ -378,8 +419,7 @@ and function_call fname fargs env =
 				| _ -> raise (Invalid_argument "the rand function expects an integer argument")
 			)
 	|	("rand", _) -> raise (Invalid_argument "the rand function expects a single, optional, positive, integer argument")
-(*	|	("clip", argList) -> let argValList = eval_arg_list argList env in *)
-
+	|	("clip", argList) -> make_clip argList env
 	|	(other, _)	-> (* TODO: currently also catches invalid argument-counts,
 							which should probably be intercepted further up the line *)
 			let msg =  "Function name '" ^ other ^ "' is not a valid function." in

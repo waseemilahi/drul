@@ -1,0 +1,6 @@
+instruments();
+print(
+	clip(
+		pattern("1010")
+	)
+);

@@ -1,0 +1,12 @@
+a = pattern("1111");
+b = pattern("1");
+
+instruments("fred","mabel");
+c = clip(a,b);
+print(c);
+
+d = clip(
+	"mabel" <- a,
+	"fred"  <- b
+);
+print(d);
