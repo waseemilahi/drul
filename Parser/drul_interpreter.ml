@@ -67,6 +67,19 @@ type drul_env =
 (* exception used to handle return statement, similar to MicroC from Edwards *)
 exception Return_value of drul_env
 
+
+
+(* create an empty clip of given size (an array of empty patterns) 
+assumes non empty list (clipLen > 0)
+*)
+let emptyClip clipSize = 
+  let rec emptyPatternList len =
+    if len == 1 then [[]]
+    else (List.append [[]] (emptyPatternList (len - 1)))
+  in  let emptyPatternArray = Array.of_list (emptyPatternList clipSize)
+  in Clip(emptyPatternArray)
+
+
 (*
 	turn a pattern object (list of booleans) into an array, and return
 	pairs of (array, alias) to be added to the symbol table
