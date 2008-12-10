@@ -1,0 +1,46 @@
+
+p1 = pattern("1").repeat(352);
+p2 = pattern("1").repeat(40);
+
+mapper subtract(a, b) {
+	if( (a.note() || a.rest()) && (b.note() || b.rest() ) ) {
+		return pattern("");
+	} elseif (a.note() || a.rest() ) {
+		return pattern("1");
+	} else {
+		return pattern("0");
+	}
+}
+
+mapper squishrests(a) { 
+	if ( a.note() ) { 
+		return pattern("1"); 
+	} 
+	else {
+		return pattern("");
+	}
+}
+
+mapper gcd(a, b) {
+	if ( 	!a.prev(1).note() && !a.prev(1).rest()
+		 &&	!b.prev(1).note() && !b.prev(1).rest() ) {
+		tmp = map (p1,p2) subtract;
+		print(tmp.length());
+		if ( tmp.length() == 0 ) {
+			//print("length is 0!");
+			 print("in return spot");
+			 return p1;
+		} elseif ( ( map(tmp) squishrests).length() > 0) {
+			print("a gt b");
+			p1 = tmp;
+		} else {
+			print("b gt a");
+			p2 = tmp;
+		}
+		return map(p1,p2) gcd;
+	}
+	return pattern("");
+}
+p3 = map(p1,p2) gcd;
+
+print(p3.length());
