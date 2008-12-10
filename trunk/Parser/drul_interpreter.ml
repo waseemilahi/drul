@@ -360,7 +360,7 @@ and output_call outname outargs env = match (outname , outargs) with
 			
 				match (firstExpr, secondExpr) with
 					(Str(x),Str(y)) -> 	if(".txt" = String.sub x ((String.length x) - 4) 4)
-											then( output_string (open_out x) y;flush_all (); Void)
+											then( let fd = open_out x in output_string fd y;close_out fd; Void)
 										else raise (Invalid_argument "output.txtfile only accepts .txt extersions for files.")
 					| 	( _ , _ ) 	-> raise (Invalid_argument "output.txtfile takes a file name and a string input") 
 			)
