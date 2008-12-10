@@ -359,13 +359,14 @@ and function_call fname fargs env =
 			let msg =  "Function name '" ^ other ^ "' is not a valid function." in
 				raise (Invalid_function msg)
 
-and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr env in
-	match (objectVal, mname, margs) with
+and member_call objectExpr mname margs env = 
+	let objectVal = evaluate objectExpr env in
+	let argVals	  = eval_arg_list margs env in
+	match (objectVal, mname, argVals) with
 	(Pattern(x), "repeat", margs) ->
 	(
 		match margs with
-			[argExpr] -> let argVal = evaluate argExpr env in
-			(
+			[argVal] -> (
 				match argVal with
 				  Int(y) -> if (y < 0) then raise (Invalid_argument "Repeat can only accept non-negative integers")
 							else if (y == 0) then Pattern([])
@@ -373,7 +374,7 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 								in Pattern(repeatPattern x y)
 				| _ -> raise (Invalid_function "Member function repeat expects an integer argument")
 			)
-			| _ -> raise (Invalid_function "Member function repeat expects a single arguments")
+			| _ -> raise (Invalid_function "Member function repeat expects a single argument")
 	)
 
 	|	(Pattern(x), "length", margs) ->
@@ -382,9 +383,7 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 					[]  ->  Int(List.length x)
 				|	_   -> raise (Invalid_function "Member function length expects no arguments")
 		)
-	|	(Pattern(x), "slice", [startExpr; lenExpr]) -> let startVal = evaluate startExpr env in
-													   let lenVal   = evaluate lenExpr   env in
-			(
+	|	(Pattern(x), "slice", [startVal; lenVal]) -> (
 				match (startVal, lenVal) with
 				(Int(s), Int(l)) ->    if s < 1 || (s > List.length x && List.length x > 0) then raise (Invalid_argument "the start position is out of bounds")
 									else if l < 0  then raise (Invalid_argument "the length must be non-negative")
@@ -402,13 +401,11 @@ and member_call objectExpr mname margs env = let objectVal = evaluate objectExpr
 		( match beatval with Some(yesno) -> Bool(yesno) | None -> Bool(false) )
 	| (Beat(a,i), "rest", []) -> let beatval = state_of_beat objectVal in
 		( match beatval with Some(yesno) -> Bool(not yesno) | None -> Bool(false) )
-	| (Beat(a,i), "prev", [offsetExpr]) -> let offsetVal = evaluate offsetExpr env in
-		(match offsetVal with
+	| (Beat(a,i), "prev", [offsetVal]) -> (match offsetVal with
 			Int(offsetInt) -> let newidx = i - offsetInt in Beat(a,newidx)
 			| _ -> raise (Invalid_function "Beat method 'prev' requires an integer argument")
 		)
-	| (Beat(a,i), "next", [offsetExpr]) -> let offsetVal = evaluate offsetExpr env in
-		(match offsetVal with
+	| (Beat(a,i), "next", [offsetVal]) -> (match offsetVal with
 			Int(offsetInt) -> let newidx = i + offsetInt in Beat(a,newidx)
 			| _ -> raise (Invalid_function "Beat method 'next' requires an integer argument")
 		)
