@@ -15,7 +15,7 @@ let debug str = if (true) then ignore(print_endline str) else ignore()
 %left LIST /* is this correct? I mean, it *works*, but... */
 %nonassoc NOELSE /* which we define somehow, somewhere */
 %nonassoc ELSE
-%left ASSIGN /* needs no associativity, may need no precedence? */
+%left ASSIGN LARROW /* needs no associativity, may need no precedence? */
 %left INSTRUMENTS /* same comment, may not need to be here */
 %left OR
 %left AND
