@@ -387,7 +387,18 @@ and output_func firstArg secondArg flag env =
 										let pstr = 	string_of_pattern p in 
 													output_string fd pstr ; flush fd ; output_string fd "\n";	close_out_noerr fd; Void
 									)
-							|	_			->	raise (Invalid_argument "Haven't implemented clips and the rest yet")
+							| 	Clip(ar) -> let instrVal = get_key_from_env env "instruments" in
+											let instr_names = (match instrVal with Instruments(l) -> l | _ ->raise (Failure "can't happen")) in
+											output_string fd "[";output_string fd "\n";
+											ignore(List.fold_left 
+												(fun i name -> 
+													output_string fd ("\t" ^ name ^ ":\t" ^ (string_of_pattern ar.(i))); output_string fd "\n";(i+1))
+												0
+												instr_names
+												);
+											output_string fd "]";output_string fd "\n";Void		
+
+							|	_			->	raise (Invalid_argument "You can't output this to a file.")
 							)
 						
 					else raise (Invalid_argument "output.txtfile_option only accepts .txt extensions for files.")			
