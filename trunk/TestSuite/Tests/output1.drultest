@@ -1,3 +1,4 @@
 
-output.txtfile("file.txt","allo");
+output.txtfile_truncate("file.txt","allo");
+output.txtfile_append("file.txt","friends");
 print("done");
