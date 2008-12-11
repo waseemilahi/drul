@@ -351,33 +351,49 @@ and evaluate e env = match e with
 		)
 	| Output(firstExpr, argList) -> output_call firstExpr argList env
 	
-and output_call outname outargs env = match (outname , outargs) with 
-		("txtfile_truncate",[firstArg;secondArg]) ->	
-		    (
-								let firstExpr = evaluate firstArg env in
-								let secondExpr = evaluate secondArg env in
+and output_call outname outargs env = 
+		match (outname , outargs) with 
+			  ("txtfile_truncate",[firstArg;secondArg]) -> output_func firstArg secondArg 0 env 
+		|	  ("txtfile_append",[firstArg;secondArg])   -> output_func firstArg secondArg 1 env 
+		| 	  ( _ , _ )	->	raise (Invalid_function "Usage: output.txtfile_option(filename,stuff to write to the file)")
+				   
+and output_func firstArg secondArg flag env = 
+		let firstExpr = evaluate firstArg env in
+		let secondExpr = evaluate secondArg env in				
+			match firstExpr with 
+				Str(x) ->											
+					if(".txt" = String.sub x ((String.length x) - 4) 4)
+						then(
+							let fd =	if(flag == 0)then (open_out_gen [Open_creat ; Open_trunc ; Open_wronly] 666 x)
+									 	else (open_out_gen [Open_creat ; Open_append] 666 x)
+							in												
+							match secondExpr with
+								Str(y) ->	output_string fd y ; flush fd ; output_string fd "\n"; close_out_noerr fd; Void									
+							|	Int(y)  -> 	output_string fd (string_of_int y) ; flush fd ; output_string fd "\n";close_out_noerr fd; Void 
+							| 	Bool(z) -> 
+									(
+											 if z then output_string fd "TRUE"
+											else output_string fd "FALSE" ; 
+											flush fd ; output_string fd "\n";	close_out_noerr fd; Void
+									)
+							| 	Beat(_,_) ->
+									(
+											let state = state_of_beat secondExpr in
+											output_string fd (match state with None->"NULL" | Some(b) -> if b then "NOTE" else "REST");
+											flush fd ; output_string fd "\n";	close_out_noerr fd; Void
+									)
+							|	Pattern(p) ->
+									(
+										let pstr = 	string_of_pattern p in 
+													output_string fd pstr ; flush fd ; output_string fd "\n";	close_out_noerr fd; Void
+									)
+							|	_			->	raise (Invalid_argument "Haven't implemented clips and the rest yet")
+							)
+						
+					else raise (Invalid_argument "output.txtfile_option only accepts .txt extensions for files.")			
+	
+				| 	_ 	-> raise (Invalid_argument "output.txtfile_option accepts a string stating the file name") 
 			
-				match (firstExpr, secondExpr) with
-					(Str(x),Str(y)) -> 
-						if(".txt" = String.sub x ((String.length x) - 4) 4)
-							then( let fd = open_out_gen [Open_creat ; Open_trunc ; 	Open_wronly] 666 x in output_string fd y;close_out_noerr fd; Void)
-						else raise (Invalid_argument "output.txtfile_truncate only accepts .txt extensions for files.")
-				| 	( _ , _ ) 	-> raise (Invalid_argument "output.txtfile_truncate takes a file name and a string input") 
-			)
-	|	("txtfile_append",[firstArg;secondArg]) ->	
-		    (
-								let firstExpr = evaluate firstArg env in
-								let secondExpr = evaluate secondArg env in
-			
-				match (firstExpr, secondExpr) with
-					(Str(x),Str(y)) -> 	
-						if(".txt" = String.sub x ((String.length x) - 4) 4)
-							then( let fa = open_out_gen [Open_creat ; Open_append] 666 x in output_string fa y;close_out_noerr fa; Void)
-						else raise (Invalid_argument "output.txtfile_append only accepts .txt extensions for files.")
-				| 	( _ , _ ) 	-> raise (Invalid_argument "output.txtfile_append takes a file name and a string input") 
-			)	
-	| 	( _ , _ ) 	-> raise (Invalid_function "usage: output.txtfile_option(filename,string);")
-
 
 (* handle the general case of a.b() *)
 and function_call fname fargs env = 
