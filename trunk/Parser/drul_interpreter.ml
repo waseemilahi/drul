@@ -351,20 +351,32 @@ and evaluate e env = match e with
 		)
 	| Output(firstExpr, argList) -> output_call firstExpr argList env
 	
-and output_call outname outargs env = match (outname , outargs) with
- 
-		("txtfile",[firstArg;secondArg]) ->	
+and output_call outname outargs env = match (outname , outargs) with 
+		("txtfile_truncate",[firstArg;secondArg]) ->	
 		    (
 								let firstExpr = evaluate firstArg env in
 								let secondExpr = evaluate secondArg env in
 			
 				match (firstExpr, secondExpr) with
-					(Str(x),Str(y)) -> 	if(".txt" = String.sub x ((String.length x) - 4) 4)
-											then( let fd = open_out x in output_string fd y;close_out fd; Void)
-										else raise (Invalid_argument "output.txtfile only accepts .txt extersions for files.")
-					| 	( _ , _ ) 	-> raise (Invalid_argument "output.txtfile takes a file name and a string input") 
+					(Str(x),Str(y)) -> 
+						if(".txt" = String.sub x ((String.length x) - 4) 4)
+							then( let fd = open_out_gen [Open_creat ; Open_trunc ; 	Open_wronly] 666 x in output_string fd y;close_out_noerr fd; Void)
+						else raise (Invalid_argument "output.txtfile_truncate only accepts .txt extensions for files.")
+				| 	( _ , _ ) 	-> raise (Invalid_argument "output.txtfile_truncate takes a file name and a string input") 
 			)
-	| 	( _ , _ ) 	-> raise (Invalid_function "usage: output.txtfile(filename,string);")
+	|	("txtfile_append",[firstArg;secondArg]) ->	
+		    (
+								let firstExpr = evaluate firstArg env in
+								let secondExpr = evaluate secondArg env in
+			
+				match (firstExpr, secondExpr) with
+					(Str(x),Str(y)) -> 	
+						if(".txt" = String.sub x ((String.length x) - 4) 4)
+							then( let fa = open_out_gen [Open_creat ; Open_append] 666 x in output_string fa y;close_out_noerr fa; Void)
+						else raise (Invalid_argument "output.txtfile_append only accepts .txt extensions for files.")
+				| 	( _ , _ ) 	-> raise (Invalid_argument "output.txtfile_append takes a file name and a string input") 
+			)	
+	| 	( _ , _ ) 	-> raise (Invalid_function "usage: output.txtfile_option(filename,string);")
 
 
 (* handle the general case of a.b() *)
