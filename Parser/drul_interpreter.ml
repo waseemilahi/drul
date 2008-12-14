@@ -362,9 +362,8 @@ and output_func firstArg secondArg flag env =
 		let secondExpr = evaluate secondArg env in				
 			match firstExpr with 
 				Str(x) -> 
-					if(String.length x < 5)then raise (Invalid_argument "File name cannot be this short.")											
-					else if(".txt" = String.sub x ((String.length x) - 4) 4)
-						then(
+						if(String.length x < 1)then raise (Invalid_argument "File Name needs to be atleast of length 1.")											
+						else(
 							let fd =	if(flag == 0)then (open_out_gen [Open_creat ; Open_trunc ; Open_wronly] 666 x)
 									 	else (open_out_gen [Open_creat ; Open_append] 666 x)
 							in												
@@ -401,9 +400,7 @@ and output_func firstArg secondArg flag env =
 
 							|	_			->	raise (Invalid_argument "You can't output this to a file.")
 							)
-						
-					else raise (Invalid_argument "output.txtfile_option only accepts .txt extensions for files.")			
-	
+					
 				| 	_ 	-> raise (Invalid_argument "output.txtfile_option accepts a string stating the file name") 
 			
 
