@@ -361,8 +361,9 @@ and output_func firstArg secondArg flag env =
 		let firstExpr = evaluate firstArg env in
 		let secondExpr = evaluate secondArg env in				
 			match firstExpr with 
-				Str(x) ->											
-					if(".txt" = String.sub x ((String.length x) - 4) 4)
+				Str(x) -> 
+					if(String.length x < 5)then raise (Invalid_argument "File name cannot be this short.")											
+					else if(".txt" = String.sub x ((String.length x) - 4) 4)
 						then(
 							let fd =	if(flag == 0)then (open_out_gen [Open_creat ; Open_trunc ; Open_wronly] 666 x)
 									 	else (open_out_gen [Open_creat ; Open_append] 666 x)
