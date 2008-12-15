@@ -1,0 +1,3 @@
+
+instruments = 4;
+print("shouldn't be able to assign something to 'instruments'");
