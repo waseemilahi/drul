@@ -213,16 +213,18 @@ let rec fill_in_clip_instr_assigns empty_clip assignment_list env = match assign
 
 
 let make_clip argVals env = 
-	let instrument_list = get_key_from_env env "instruments"  (* XXX probably worth trapping *) in
-	let num_instrs = (match instrument_list with Instruments(i) -> List.length i 
-										| _ ->raise (Failure "can't happen")) in
-	let new_clip = emptyClip num_instrs in
-	let first_arg = List.hd argVals in
-	match first_arg with 
-Pattern(_) -> fill_in_clip_patterns new_clip argVals 0
-		|	InstrumentAssignment(_,_) ->fill_in_clip_instr_assigns new_clip argVals env
-		|	_ -> raise (Invalid_argument "clip arguments must be patterns or instrument assignments")
-
+        try (
+	  let instrument_list = get_key_from_env env "instruments" in
+	  let num_instrs = (match instrument_list with Instruments(i) -> List.length i 
+			      | _ ->raise (Failure "can't happen")) in
+	  let new_clip = emptyClip num_instrs in
+	  let first_arg = List.hd argVals in
+	    match first_arg with 
+		Pattern(_) -> fill_in_clip_patterns new_clip argVals 0
+	      |	InstrumentAssignment(_,_) ->fill_in_clip_instr_assigns new_clip argVals env
+	      |	_ -> raise (Invalid_argument "clip arguments must be patterns or instrument assignments")
+	)
+	with Undefined_identifier("instruments") -> raise (Illegal_assignment "try to create a clip before defining instruments")
 	
 	
 	
