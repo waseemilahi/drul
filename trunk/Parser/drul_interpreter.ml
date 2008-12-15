@@ -532,7 +532,11 @@ and execute s env = match s with
 			|	_	-> raise ( Type_error "test of if block must be a boolean")
 		)
 	| Assign(varName,valExpr) ->
-		let valVal = evaluate valExpr env in
+	    (match varName with
+		"pattern" -> raise(Illegal_assignment "can't assign to 'pattern'")
+	      | "rand" -> raise(Illegal_assignment "can't assign to 'rand'")
+	      | "clip" -> raise(Illegal_assignment "can't assign to 'clip'")
+	      | _ -> let valVal = evaluate valExpr env in
 		(match valVal with
 			Bool(x) -> raise(Illegal_assignment "do you try to assign a boolean? 20$ and I don't tell")
 		  | Str(x) -> raise(Illegal_assignment "do you try to assign a string? pfffff....")
@@ -542,6 +546,7 @@ and execute s env = match s with
 			(* Does in fact mask variables in outer scope! Not an error! *)
 			add_key_to_env env varName valVal
 		)
+	    )
 	| MapDef(mapname, formal_params, contents) ->
 		if (NameMap.mem mapname env.symbols) then raise (Failure"don't do that")
 		else
