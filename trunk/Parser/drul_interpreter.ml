@@ -9,22 +9,19 @@
 *
 * file: drul_interpreter.ml
 *
-*       INTERPRETER
+*       				INTERPRETER
 *
 * This file contains the interpreter for DruL. It receives an AST
 * and interprets the code.
 * This code is written in OCaml.
 *
-*************************************************************************
+************************************************************************
 *)
-
 
 open Drul_ast
 
-
 (* default instruments *)
 let default_instr = ["hihat";"snare";"kick"];
-
 
 module NameMap = Map.Make(String)
 
@@ -66,7 +63,6 @@ type drul_env =
 
 (* exception used to handle return statement, similar to MicroC from Edwards *)
 exception Return_value of drul_env
-
 
 
 (* create an empty clip of given size (an array of empty patterns) 
@@ -158,7 +154,7 @@ and  beat_of_alias env alias =
 	in match currentVar with
 			Int(currentVal) -> Beat(alias,currentVal)
 		|	_	-> raise (Failure "Can't have a non-integer in $current--you really can't!!")
-
+		
 
 let string_of_pattern p = 
 	List.fold_left (fun a x -> a ^ (if x then "1" else "0")) "" p
@@ -224,11 +220,9 @@ let make_clip argVals env =
 	      |	InstrumentAssignment(_,_) ->fill_in_clip_instr_assigns new_clip argVals env
 	      |	_ -> raise (Invalid_argument "clip arguments must be patterns or instrument assignments")
 	)
-	with Undefined_identifier("instruments") -> raise (Illegal_assignment "try to create a clip before defining instruments")
+	with Undefined_identifier("instruments") -> raise (Illegal_assignment "trying to create a clip before defining instruments")
 	
 	
-	
-
 (* inside a map, do one step!
    return is saved as "return" in the env
    current index is saved as "$current" in the env
@@ -352,13 +346,17 @@ and evaluate e env = match e with
 			|	_ -> raise (Invalid_argument "Only patterns can be assigned to instruments")
 		)
 	| Output(firstExpr, argList) -> output_call firstExpr argList env
+
 	
+(* Used when there is an output.txtfile_option call. *)	
 and output_call outname outargs env = 
 		match (outname , outargs) with 
 			  ("txtfile_truncate",[firstArg;secondArg]) -> output_func firstArg secondArg 0 env 
 		|	  ("txtfile_append",[firstArg;secondArg])   -> output_func firstArg secondArg 1 env 
 		| 	  ( _ , _ )	->	raise (Invalid_function "Usage: output.txtfile_option(filename,stuff to write to the file)")
-				   
+	
+(* Takes the two arguments of output.txtfile call and puts the second
+   argument in the file with the same name as the first argument of output.txtfile****)	
 and output_func firstArg secondArg flag env = 
 		let firstExpr = evaluate firstArg env in
 		let secondExpr = evaluate secondArg env in				
@@ -468,6 +466,8 @@ and function_call fname fargs env =
 			let msg =  "Function name '" ^ other ^ "' is not a valid function." in
 				raise (Invalid_function msg)
 
+				
+(* Method Calls *)
 and member_call objectExpr mname margs env = 
 	let objectVal = evaluate objectExpr env in
 	let argVals	  = eval_arg_list margs env in
@@ -539,15 +539,15 @@ and execute s env = match s with
 	      | "rand" -> raise(Illegal_assignment "can't assign to 'rand'")
 	      | "clip" -> raise(Illegal_assignment "can't assign to 'clip'")
 	      | _ -> let valVal = evaluate valExpr env in
-		(match valVal with
-			Bool(x) -> raise(Illegal_assignment "do you try to assign a boolean? 20$ and I don't tell")
-		  | Str(x) -> raise(Illegal_assignment "do you try to assign a string? pfffff....")
-				  | Beat(x,y) -> raise(Illegal_assignment "do you try to assign a beat? you s*ck!")
-				  | PatternAlias(x) -> raise(Illegal_assignment "do you try to assign a patternalias? alright, I don't even know what it is")
-		  | _ ->
-			(* Does in fact mask variables in outer scope! Not an error! *)
-			add_key_to_env env varName valVal
-		)
+			(match valVal with
+				Bool(x) -> raise(Illegal_assignment "do you try to assign a boolean? 20$ and I don't tell")
+			| Str(x) -> raise(Illegal_assignment "do you try to assign a string? pfffff....")
+			| Beat(x,y) -> raise(Illegal_assignment "do you try to assign a beat? you s*ck!")
+			| PatternAlias(x) -> raise(Illegal_assignment "do you try to assign a patternalias? alright, I don't even know what it is")
+			| _ ->
+				(* Does in fact mask variables in outer scope! Not an error! *)
+				add_key_to_env env varName valVal
+			)
 	    )
 	| MapDef(mapname, formal_params, contents) ->
 		if (NameMap.mem mapname env.symbols) then raise (Failure"don't do that")
@@ -566,7 +566,7 @@ and execute s env = match s with
 				raise (Return_value newenv)
 		)
 	| InstrDef(argList) ->
-			(try
+		(try
 
 		   ignore(get_key_from_env env "instruments");
 		   raise (Instruments_redefined "don't do that")
@@ -593,6 +593,7 @@ and execute s env = match s with
 
 and execlist slist env =
 	List.fold_left (fun env s -> execute s env) env slist
+	
 and execlist_returning slist env =
 	try List.fold_left (fun env s -> execute s env) env slist
 	with
@@ -607,4 +608,3 @@ let unscoped_env = {symbols = NameMap.empty; parent= None} in
 let lexbuf = Lexing.from_channel stdin in
 let programAst = Drul_parser.program Drul_scanner.token lexbuf in
 Random.self_init (); ignore (run programAst unscoped_env);;
-
