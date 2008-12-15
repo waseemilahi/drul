@@ -1,1 +1,1 @@
-shouldn't be able to assign something to clip
+Fatal error: exception Drul_interpreter.Illegal_assignment("can't assign to 'clip'")
