@@ -41,7 +41,7 @@ let rec get_alias_list p_list a_list counter =
 	let newcounter = counter + 1 in
 		match (p_list,a_list) with
 		([],[]) -> []
-	|	([],oops) -> raise (Failure "not enough patterns provided to mapper")
+	|	([],oops) -> raise (Failure "not enough patterns provided to mapper", (fst p_list).lineno)
 	|	(thispat::rest,[]) ->
 (thispat, "$" ^ string_of_int counter) :: get_alias_list rest [] newcounter
 	|	(thispat::rest,thisalias::other_aliases) ->
@@ -82,7 +82,7 @@ let maxlen_helper currmax newlist =
 		let currlen = List.length patlist in
 		if (currlen > currmax) then currlen else currmax
 	)
-	| _ -> raise (Failure "asshole")
+	| _ -> raise (Failure "asshole", -1)
 
 (* find the length of the longest list *)
 let find_longest_list patternlist =
@@ -111,7 +111,7 @@ and  beat_of_alias env alias =
 	let currentVar = get_key_from_env env "$current"
 	in match currentVar with
 			Int(currentVal) -> Beat(alias,currentVal)
-		|	_	-> raise (Failure "Can't have a non-integer in $current--you really can't!!")
+		|	_	-> raise (Failure "Can't have a non-integer in $current--you really can't!!", -1)
 		
 
 let string_of_pattern p = 
@@ -121,7 +121,7 @@ let state_of_beat beat =
 	match beat with Beat(pattern_data,idx) ->
 		let pattern_length = Array.length pattern_data in
 		if (idx < 0 or idx >= pattern_length) then None else Some(pattern_data.(idx))
-	| _ -> raise (Failure "How did you even get here?")
+	| _ -> raise (Failure "How did you even get here?", -1)
 
 (* find the position of an instrument in the instruments in the env, returns -1 if doesn't find it *)
 let get_instrument_pos env instrName =
@@ -138,10 +138,10 @@ let get_instrument_pos env instrName =
 							  else find_pos tail (counter + 1)
 			)
 			  in find_pos instrList 0
-		  | _ -> raise (Failure "weird stuff in env for instruments...")
-	with Undefined_identifier(e) -> raise (Failure "instrument not saved in env yet")
+		  | _ -> raise (Failure "weird stuff in env for instruments...", -1)
+	with Undefined_identifier(e) -> raise (Failure "instrument not saved in env yet", -1)
 	  | Failure(e) -> raise (Failure e)
-	  | _ -> raise (Failure "wrong exception in get_instrument_pos")
+	  | _ -> raise (Failure "wrong exception in get_instrument_pos", -1)
 
 let rec concat_pattern_list plist =
 	match plist with 
@@ -153,8 +153,8 @@ let rec fill_in_clip_patterns empty_clip pattern_list idx = match pattern_list w
 		[]	-> Clip(empty_clip) (* not technically empty any more *)
 			(* TODO: catch array out of bounds here *)
 	|	Pattern(p)::tail -> ignore(empty_clip.(idx) <- p); fill_in_clip_patterns empty_clip tail (idx + 1)
-	|	InstrumentAssignment(_,_)::tail -> raise (Invalid_argument "clip arguments may not mix styles")
-	| 	_	-> raise (Invalid_argument "clip arguments must all evaluate to patterns")
+	|	InstrumentAssignment(_,_)::tail -> raise (Invalid_argument "clip arguments may not mix styles", (fst pattern_list).lineno)
+	| 	_	-> raise (Invalid_argument "clip arguments must all evaluate to patterns", (fst pattern_list).lineno)
 
 let rec fill_in_clip_instr_assigns empty_clip assignment_list env = match assignment_list with 
 		[]	-> Clip(empty_clip) (* not technically empty any more *)
@@ -162,8 +162,8 @@ let rec fill_in_clip_instr_assigns empty_clip assignment_list env = match assign
 			(* TODO catch possible exception from incorrect instrument name *)
 			let idx = get_instrument_pos env instrName  in
 			ignore(empty_clip.(idx) <- p); fill_in_clip_instr_assigns empty_clip tail env 
-	|	Pattern(_)::tail ->raise (Invalid_argument "clip arguments may not mix styles")
-	| 	_	-> raise (Invalid_argument "clip arguments must all evaluate to instrument assignments")
+	|	Pattern(_)::tail ->raise (Invalid_argument "clip arguments may not mix styles",(fst pattern_list).lineno)
+	| 	_	-> raise (Invalid_argument "clip arguments must all evaluate to instrument assignments", (fst pattern_list).lineno)
 
 
 let make_clip argVals env = 
@@ -176,6 +176,6 @@ let make_clip argVals env =
 	    match first_arg with 
 		Pattern(_) -> fill_in_clip_patterns new_clip argVals 0
 	      |	InstrumentAssignment(_,_) ->fill_in_clip_instr_assigns new_clip argVals env
-	      |	_ -> raise (Invalid_argument "clip arguments must be patterns or instrument assignments")
+	      |	_ -> raise (Invalid_argument "clip arguments must be patterns or instrument assignments", (fst argVals).lineno)
 	)
-	with Undefined_identifier("instruments") -> raise (Illegal_assignment "trying to create a clip before defining instruments")
+	with Undefined_identifier("instruments") -> raise (Illegal_assignment "trying to create a clip before defining instruments", (fst argVals).lineno)
