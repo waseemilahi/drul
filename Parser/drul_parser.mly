@@ -2,16 +2,15 @@
 let debug str = if (true) then ignore(print_endline str) else ignore()
 %}
 
-%token IF ELSE ELSEIF RETURN
-%token TRUE FALSE
-%token MAP MAPDEF LARROW CLIP
-%token SEMI LPAREN RPAREN LBRACE RBRACE COMMA PLUS MINUS TIMES DIVIDE
-%token ASSIGN EQ NEQ LT LEQ GT GEQ EOF MCALL AND OR NOT MOD
-%token INSTRUMENTS
-%token OUTPUT
+%token <int> IF ELSE ELSEIF RETURN
+%token <int> TRUE FALSE
+%token <int> MAP MAPDEF LARROW CLIP
+%token <int> SEMI LPAREN RPAREN LBRACE RBRACE COMMA PLUS MINUS TIMES DIVIDE
+%token <int> ASSIGN EQ NEQ LT LEQ GT GEQ EOF MCALL AND OR NOT MOD
+%token <int> INSTRUMENTS
+%token <int> OUTPUT
 %token <int>    INTLITERAL
-%token <string> STRLITERAL
-%token <string> ID
+%token <string * int> STRLITERAL ID
 
 %left LIST /* is this correct? I mean, it *works*, but... */
 %nonassoc NOELSE /* which we define somehow, somewhere */
