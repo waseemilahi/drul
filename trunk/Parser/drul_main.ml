@@ -80,7 +80,7 @@ and eval_arg_list arg_list env = match arg_list with
 		)
 
 (* evaluate expressions, no modifications to the environment! *)
-and evaluate e env = match e with
+and evaluate e env = match e.real_expr with
 		FunCall(fname, fargs) -> function_call fname fargs env
 	|	MemberCall(objectExpr, mname, margs) -> member_call objectExpr mname margs env
 	|	CStr (x) -> Str (x)
@@ -337,7 +337,7 @@ and execute s env = match s with
 				)
 			|	_	-> raise ( Type_error "test of if block must be a boolean")
 		)
-	| Assign(varName,valExpr) ->
+	| Assign(varName,valExpr, lineno) ->
 	    (match varName with
 		"pattern" -> raise(Illegal_assignment "can't assign to 'pattern'")
 	      | "rand" -> raise(Illegal_assignment "can't assign to 'rand'")
@@ -353,7 +353,7 @@ and execute s env = match s with
 				add_key_to_env env varName valVal
 			)
 	    )
-	| MapDef(mapname, formal_params, contents) ->
+	| MapDef(mapname, formal_params, contents, lineno) ->
 		if (NameMap.mem mapname env.symbols) then raise (Failure"don't do that")
 		else
 			let newMapper = Mapper(mapname,formal_params,contents) in
@@ -369,7 +369,7 @@ and execute s env = match s with
 				let newenv = add_key_to_env env "return" retVal in
 				raise (Return_value newenv)
 		)
-	| InstrDef(argList) ->
+	| InstrDef(argList, lineno) ->
 		(try
 
 		   ignore(get_key_from_env env "instruments");
