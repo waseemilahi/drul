@@ -23,10 +23,10 @@ open Drul_main
 open Drul_types
 
 let run p env = match p with
-	Content(statements) -> ignore(execlist statements env)
+	Content(statements) -> Random.self_init(); ignore(execlist statements env)
 
 let _ =
 let unscoped_env = {symbols = NameMap.empty; parent= None} in
 let lexbuf = Lexing.from_channel stdin in
 let programAst = Drul_parser.program Drul_scanner.token lexbuf in
-Random.self_init (); ignore (run programAst unscoped_env);;
+run programAst unscoped_env;;
