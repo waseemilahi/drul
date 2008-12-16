@@ -168,8 +168,8 @@ and output_func firstArg secondArg flag env =
 				Str(x) -> 
 						if(String.length x < 1)then raise (Invalid_argument "File Name needs to be atleast of length 1.")											
 						else(
-							let fd =	if(flag == 0)then (open_out_gen [Open_creat ; Open_trunc ; Open_wronly] 666 x)
-									 	else (open_out_gen [Open_creat ; Open_append] 666 x)
+							let fd =	if(flag == 0)then (open_out_gen [Open_creat ; Open_trunc ; Open_wronly] 511 x)
+									 	else (open_out_gen [Open_creat ; Open_append] 511 x)
 							in												
 							match secondExpr with
 								Str(y) ->	output_string fd y ; flush fd ; output_string fd "\n"; close_out_noerr fd; Void									
