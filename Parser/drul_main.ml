@@ -149,24 +149,24 @@ and evaluate e env = match e.real_expr with
 				Pattern(p) -> InstrumentAssignment(instName, p)
 			|	_ -> raise (Invalid_argument ("Only patterns can be assigned to instruments", e.lineno))
 		)
-	| Output(firstExpr, argList) -> output_call firstExpr argList env
+	| Output(firstExpr, argList) -> output_call firstExpr argList env e.lineno
 
 	
 (* Used when there is an output.txtfile_option call. *)	
-and output_call outname outargs env = 
+and output_call outname outargs env lineno = 
 		match (outname , outargs) with 
-			  ("txtfile_truncate",[firstArg;secondArg]) -> output_func firstArg secondArg 0 env 
-		|	  ("txtfile_append",[firstArg;secondArg])   -> output_func firstArg secondArg 1 env 
-		| 	  ( _ , _ )	->	raise (Invalid_function ("Usage: output.txtfile_option(filename,stuff to write to the file)", -1))
+			  ("txtfile_truncate",[firstArg;secondArg]) -> output_func firstArg secondArg 0 env lineno
+		|	  ("txtfile_append",[firstArg;secondArg])   -> output_func firstArg secondArg 1 env lineno
+		| 	  ( _ , _ )	->	raise (Invalid_function ("Usage: output.txtfile_option(filename,stuff to write to the file)", lineno))
 	
 (* Takes the two arguments of output.txtfile call and puts the second
    argument in the file with the same name as the first argument of output.txtfile****)	
-and output_func firstArg secondArg flag env = 
+and output_func firstArg secondArg flag env lineno = 
 	let firstExpr = evaluate firstArg env in
 	let secondExpr = evaluate secondArg env in				
 		match firstExpr with 
 			Str(x) -> 
-				if(String.length x < 1)then raise (Invalid_argument ("File Name needs to be atleast of length 1.", -1))
+				if(String.length x < 1)then raise (Invalid_argument ("File Name needs to be atleast of length 1.", lineno))
 				else(
 					let fd =	if(flag == 0)then (open_out_gen [Open_creat ; Open_trunc ; Open_wronly] 511 x)
 								else (open_out_gen [Open_creat ; Open_append] 511 x)
@@ -202,10 +202,10 @@ and output_func firstArg secondArg flag env =
 										);
 									output_string fd "]";output_string fd "\n";Void		
 
-					|	_			->	raise (Invalid_argument ("You can't output this to a file.", -1))
+					|	_			->	raise (Invalid_argument ("You can't output this to a file.", lineno))
 					)
 				
-			| 	_ 	-> raise (Invalid_argument ("output.txtfile_option accepts a string stating the file name", -1)) 
+			| 	_ 	-> raise (Invalid_argument ("output.txtfile_option accepts a string stating the file name", lineno)) 
 		
 
 (* handle the general case of a.b() *)
