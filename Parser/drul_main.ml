@@ -55,11 +55,11 @@ and run_named_mapper mapname argList env =
 	match savedmapper with
 	Mapper(mapname2,a_list,stat_list) ->
 	  (* check if we receive the good number of patterns *)
-	  if List.length a_list != List.length argList  then raise (Invalid_argument "wrong number of inputs for named mapper", (fst argList).lineno)
+	  if List.length a_list != List.length argList  then raise (Invalid_argument ("wrong number of inputs for named mapper", -1))
 	  else if String.compare mapname mapname2 != 0 then raise (Failure "intern mapper name problem")
 	  else run_mapper stat_list argList env a_list
 	  (* if given name is not bound to a mapper, Type_error *)
-	  | _ -> raise (Type_error "we were expecting a mapper, name associated with something else", (fst argList).lineno)
+	  | _ -> raise (Type_error ("we were expecting a mapper, name associated with something else", -1))
 
 (* main function of a map, takes a list of statement (body of the mapper)
    evaluate the arg_list, which should be a list of patterns
@@ -95,13 +95,13 @@ and evaluate e env = match e.real_expr with
 		(
 			match xV with
 				Int(x) -> Int(-x)
-			| _ -> raise (Type_error "you can't negate that, dorkface", e.lineno)
+			| _ -> raise (Type_error ("you can't negate that, dorkface", e.lineno))
 		)
 	|	UnaryNot(xE) ->  let xV = evaluate xE env in
 		(
 			match xV with
 				Bool(x) -> Bool(not x)
-			| _ -> raise (Type_error "you can't contradict that, dorkface", e.lineno)
+			| _ -> raise (Type_error ( "you can't contradict that, dorkface", e.lineno))
 		)
 	|	ArithBinop(aExp, operator, bExp) ->
 		let aVal = evaluate aExp env in
@@ -113,7 +113,7 @@ and evaluate e env = match e.real_expr with
 			|	(Int(a), Mult, Int(b)) -> Int(a * b)
 			|	(Int(a), Div,  Int(b)) -> Int(a / b)
 			|	(Int(a), Mod,  Int(b)) -> Int(a mod b)
-			| _ -> raise (Type_error "cannot do arithmetic on non-integers", e.lineno)
+			| _ -> raise (Type_error ("cannot do arithmetic on non-integers", e.lineno))
 		)
 	|	LogicBinop(aExp, operator, bExp) ->
 		let aVal = evaluate aExp env in
@@ -122,7 +122,7 @@ and evaluate e env = match e.real_expr with
 			match (aVal, operator, bVal) with
 				(Bool(x), And, Bool(y)) -> Bool(x && y)
 			|	(Bool(x), Or,  Bool(y)) -> Bool(x || y)
-			| _ -> raise (Type_error "cannot do logical operations except on booleans", e.lineno)
+			| _ -> raise (Type_error ("cannot do logical operations except on booleans", e.lineno))
 		)
 	|	Comparison(aExp, operator, bExp) ->
 		let aVal = evaluate aExp env in
@@ -135,7 +135,7 @@ and evaluate e env = match e.real_expr with
 			|	(Int(a), GreaterEq, Int(b)) -> Bool(a >= b)
 			|	(Int(a), EqualTo, Int(b)) -> Bool(a == b)
 			|	(Int(a), NotEqual, Int(b)) -> Bool(a != b)
-			| _ -> raise (Type_error "cannot do that comparison operation", e.lineno)
+			| _ -> raise (Type_error ("cannot do that comparison operation", e.lineno))
 		)
 	|	MapCall(someMapper,argList) ->
 		(
@@ -147,7 +147,7 @@ and evaluate e env = match e.real_expr with
 		(
 			match patVal with
 				Pattern(p) -> InstrumentAssignment(instName, p)
-			|	_ -> raise (Invalid_argument "Only patterns can be assigned to instruments", e.lineno)
+			|	_ -> raise (Invalid_argument ("Only patterns can be assigned to instruments", e.lineno))
 		)
 	| Output(firstExpr, argList) -> output_call firstExpr argList env
 
@@ -157,7 +157,7 @@ and output_call outname outargs env =
 		match (outname , outargs) with 
 			  ("txtfile_truncate",[firstArg;secondArg]) -> output_func firstArg secondArg 0 env 
 		|	  ("txtfile_append",[firstArg;secondArg])   -> output_func firstArg secondArg 1 env 
-		| 	  ( _ , _ )	->	raise (Invalid_function "Usage: output.txtfile_option(filename,stuff to write to the file)", outargs.lineno)
+		| 	  ( _ , _ )	->	raise (Invalid_function ("Usage: output.txtfile_option(filename,stuff to write to the file)", -1))
 	
 (* Takes the two arguments of output.txtfile call and puts the second
    argument in the file with the same name as the first argument of output.txtfile****)	
@@ -166,7 +166,7 @@ and output_func firstArg secondArg flag env =
 	let secondExpr = evaluate secondArg env in				
 		match firstExpr with 
 			Str(x) -> 
-				if(String.length x < 1)then raise (Invalid_argument "File Name needs to be atleast of length 1.")											
+				if(String.length x < 1)then raise (Invalid_argument ("File Name needs to be atleast of length 1.", -1))
 				else(
 					let fd =	if(flag == 0)then (open_out_gen [Open_creat ; Open_trunc ; Open_wronly] 511 x)
 								else (open_out_gen [Open_creat ; Open_append] 511 x)
@@ -202,10 +202,10 @@ and output_func firstArg secondArg flag env =
 										);
 									output_string fd "]";output_string fd "\n";Void		
 
-					|	_			->	raise (Invalid_argument "You can't output this to a file.")
+					|	_			->	raise (Invalid_argument ("You can't output this to a file.", -1))
 					)
 				
-			| 	_ 	-> raise (Invalid_argument "output.txtfile_option accepts a string stating the file name") 
+			| 	_ 	-> raise (Invalid_argument ("output.txtfile_option accepts a string stating the file name", -1)) 
 		
 
 (* handle the general case of a.b() *)
@@ -225,13 +225,13 @@ and function_call fname fargs env lineno =
 									match str with
 									  "0" -> false
 									| "1" -> true
-									| _   -> raise (PatternParse_error "Patterns definitions must be a string of 0's and 1's",lineno)
+									| _   -> raise (PatternParse_error ("Patterns definitions must be a string of 0's and 1's",lineno))
 								) :: bl
 							)
 							[] charlist
 						in Pattern(List.rev revlist)
 				)
-				| _ -> raise (Type_error "Pattern definitions take a string argument",lineno)
+				| _ -> raise (Type_error ("Pattern definitions take a string argument",lineno))
 			)
 	|	("print", []) -> print_endline ""; Void
 	|	("print", [v]) -> (
@@ -260,15 +260,15 @@ and function_call fname fargs env lineno =
 	|	("rand", [argVal]) -> (
 				match argVal with
 				Int(bound) -> if bound > 0 then Int(Random.int bound)
-							  else raise (Invalid_argument "the rand function expects a positive integer argument",lineno)
-				| _ -> raise (Invalid_argument "the rand function expects an integer argument",lineno)
+							  else raise (Invalid_argument ("the rand function expects a positive integer argument",lineno))
+				| _ -> raise (Invalid_argument ("the rand function expects an integer argument",lineno))
 			)
-	|	("rand", _) -> raise (Invalid_argument "the rand function expects a single, optional, positive, integer argument",lineno)
+	|	("rand", _) -> raise (Invalid_argument ("the rand function expects a single, optional, positive, integer argument",lineno))
 	|	("clip", argList) -> make_clip argList env
 	|	(other, _)	-> (* TODO: currently also catches invalid argument-counts,
 							which should probably be intercepted further up the line *)
 			let msg =  "Function name '" ^ other ^ "' is not a valid function." in
-				raise (Invalid_function msg, lineno)
+				raise (Invalid_function (msg, lineno))
 
 				
 (* Method Calls *)
@@ -281,25 +281,25 @@ and member_call objectExpr mname margs env =
 		match margs with
 			[argVal] -> (
 				match argVal with
-				  Int(y) -> if (y < 0) then raise (Invalid_argument "Repeat can only accept non-negative integers",objectExpr.lineno)
+				  Int(y) -> if (y < 0) then raise (Invalid_argument ("Repeat can only accept non-negative integers",objectExpr.lineno))
 							else if (y == 0) then Pattern([])
 							else let rec repeatPattern p n = if n == 1 then p else p @ repeatPattern p (n-1)
 								in Pattern(repeatPattern x y)
-				| _ -> raise (Invalid_function "Member function repeat expects an integer argument",objectExpr.lineno)
+				| _ -> raise (Invalid_function ("Member function repeat expects an integer argument",objectExpr.lineno))
 			)
-			| _ -> raise (Invalid_function "Member function repeat expects a single argument",objectExpr.lineno)
+			| _ -> raise (Invalid_function ("Member function repeat expects a single argument",objectExpr.lineno))
 	)
 
 	|	(Pattern(x), "length", margs) ->
 		(
 			 match margs with
 					[]  ->  Int(List.length x)
-				|	_   -> raise (Invalid_function "Member function length expects no arguments",objectExpr.lineno)
+				|	_   -> raise (Invalid_function ("Member function length expects no arguments",objectExpr.lineno))
 		)
 	|	(Pattern(x), "slice", [startVal; lenVal]) -> (
 				match (startVal, lenVal) with
-				(Int(s), Int(l)) ->    if s < 1 || (s > List.length x && List.length x > 0) then raise (Invalid_argument "the start position is out of bounds",objectExpr.lineno)
-									else if l < 0  then raise (Invalid_argument "the length must be non-negative",objectExpr.lineno)
+				(Int(s), Int(l)) ->    if s < 1 || (s > List.length x && List.length x > 0) then raise (Invalid_argument( "the start position is out of bounds",objectExpr.lineno))
+									else if l < 0  then raise (Invalid_argument ("the length must be non-negative",objectExpr.lineno))
 									else  let rec subList inList i minPos maxPos = match inList with
 										  []         -> []
 										| head::tail -> if      i < minPos then subList tail (i+1) minPos maxPos
@@ -307,7 +307,7 @@ and member_call objectExpr mname margs env =
 														else if i > maxPos then []
 														else                    head :: (subList tail (i+1) minPos maxPos)
 									in Pattern(subList x 1 s (s+l-1))
-				| (_, _) -> raise (Invalid_argument "slice must be given integers values for the start position and length",objectExpr.lineno)
+				| (_, _) -> raise (Invalid_argument ("slice must be given integers values for the start position and length",objectExpr.lineno))
 			)
 	| (Pattern(x), "tbm", margs) -> print_endline "Thierry rulzzzzzzzzzz!!!!" ;Void;
 	| (Beat(a,i), "note", []) -> let beatval = state_of_beat objectVal in
@@ -316,13 +316,13 @@ and member_call objectExpr mname margs env =
 		( match beatval with Some(yesno) -> Bool(not yesno) | None -> Bool(false) )
 	| (Beat(a,i), "prev", [offsetVal]) -> (match offsetVal with
 			Int(offsetInt) -> let newidx = i - offsetInt in Beat(a,newidx)
-			| _ -> raise (Invalid_function "Beat method 'prev' requires an integer argument")
+			| _ -> raise (Invalid_function ("Beat method 'prev' requires an integer argument",objectExpr.lineno))
 		)
 	| (Beat(a,i), "next", [offsetVal]) -> (match offsetVal with
 			Int(offsetInt) -> let newidx = i + offsetInt in Beat(a,newidx)
-			| _ -> raise (Invalid_function "Beat method 'next' requires an integer argument")
+			| _ -> raise (Invalid_function ("Beat method 'next' requires an integer argument",objectExpr.lineno))
 		)
-	| _ -> raise (Invalid_function "Undefined member function")
+	| _ -> raise (Invalid_function ("Undefined member function",objectExpr.lineno))
 
 
 (* similar to evaluate, but handles cases like assignment, where the environment is modified *)
@@ -335,19 +335,19 @@ and execute s env = match s with
 					Some(stlist) -> execlist stlist env
 				|	None -> env
 				)
-			|	_	-> raise ( Type_error "test of if block must be a boolean", tExpr.lineno)
+			|	_	-> raise ( Type_error ("test of if block must be a boolean", tExpr.lineno))
 		)
 	| Assign(varName,valExpr, lineno) ->
 	    (match varName with
-		"pattern" -> raise(Illegal_assignment "can't assign to 'pattern'", lineno)
-	      | "rand" -> raise(Illegal_assignment "can't assign to 'rand'", lineno)
-	      | "clip" -> raise(Illegal_assignment "can't assign to 'clip'", lineno)
+		"pattern" -> raise(Illegal_assignment ("can't assign to 'pattern'", lineno))
+	      | "rand" -> raise(Illegal_assignment ("can't assign to 'rand'", lineno))
+	      | "clip" -> raise(Illegal_assignment ("can't assign to 'clip'", lineno))
 	      | _ -> let valVal = evaluate valExpr env in
 			(match valVal with
-				Bool(x) -> raise(Illegal_assignment "do you try to assign a boolean? 20$ and I don't tell", lineno)
-			| Str(x) -> raise(Illegal_assignment "do you try to assign a string? pfffff....",lineno)
-			| Beat(x,y) -> raise(Illegal_assignment "do you try to assign a beat? you s*ck!", lineno)
-			| PatternAlias(x) -> raise(Illegal_assignment "do you try to assign a patternalias? alright, I don't even know what it is",lineno)
+				Bool(x) -> raise(Illegal_assignment ("do you try to assign a boolean? 20$ and I don't tell", lineno))
+			| Str(x) -> raise(Illegal_assignment ( "do you try to assign a string? pfffff....",lineno))
+			| Beat(x,y) -> raise(Illegal_assignment ("do you try to assign a beat? you s*ck!", lineno))
+			| PatternAlias(x) -> raise(Illegal_assignment ("do you try to assign a patternalias? alright, I don't even know what it is",lineno))
 			| _ ->
 				(* Does in fact mask variables in outer scope! Not an error! *)
 				add_key_to_env env varName valVal
@@ -373,14 +373,14 @@ and execute s env = match s with
 		(try
 
 		   ignore(get_key_from_env env "instruments");
-		   raise (Instruments_redefined "don't do that", lineno) (*XXX could be improved...*)
+		   raise (Instruments_redefined ("don't do that", lineno)) (*XXX could be improved...*)
 		 with
-			 Undefined_identifier e -> let strList = eval_arg_list argList env in
+			 Undefined_identifier (_,_) -> let strList = eval_arg_list argList env in
 			 let str_to_string a =
 			(
 			  match a with
 				  Str(s) -> s
-				| _ -> raise (Invalid_argument "instruments takes a list of strings", lineno)
+				| _ -> raise (Invalid_argument ("instruments takes a list of strings", lineno))
 			) in
 			 let stringList = List.map str_to_string strList in
 			(
@@ -390,7 +390,7 @@ and execute s env = match s with
 				| _ -> let instVal = Instruments(stringList) in
 				add_key_to_env env "instruments" instVal
 			)
-		   | Instruments_redefined(e) -> raise (Instruments_redefined e)
+		   | Instruments_redefined(e,i) -> raise (Instruments_redefined (e,i))
 		   | _ -> raise (Failure "Unexpected exception during instrument definition")
 		)
 	| EmptyStat -> env
