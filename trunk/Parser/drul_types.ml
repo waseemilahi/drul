@@ -24,13 +24,13 @@ open Drul_ast
 module NameMap = Map.Make(String)
 
 (* most of the exceptions *)
-exception Type_error         of string
-exception Invalid_function   of string
-exception PatternParse_error of string
-exception Invalid_argument   of string
-exception Undefined_identifier of string
-exception Illegal_assignment of string
-exception Instruments_redefined of string
+exception Type_error         of string * int
+exception Invalid_function   of string * int
+exception PatternParse_error of string * int
+exception Invalid_argument   of string * int
+exception Undefined_identifier of string * int
+exception Illegal_assignment of string * int
+exception Instruments_redefined of string * int
 
 type pattern = bool list
 type pattern_alias = bool array
