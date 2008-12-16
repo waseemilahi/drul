@@ -55,11 +55,11 @@ and run_named_mapper mapname argList env =
 	match savedmapper with
 	Mapper(mapname2,a_list,stat_list) ->
 	  (* check if we receive the good number of patterns *)
-	  if List.length a_list != List.length argList  then raise (Invalid_argument "wrong number of inputs for named mapper")
+	  if List.length a_list != List.length argList  then raise (Invalid_argument "wrong number of inputs for named mapper" (fst argList).lineno)
 	  else if String.compare mapname mapname2 != 0 then raise (Failure "intern mapper name problem")
 	  else run_mapper stat_list argList env a_list
 	  (* if given name is not bound to a mapper, Type_error *)
-	  | _ -> raise (Type_error "we were expecting a mapper, name associated with something else")
+	  | _ -> raise (Type_error "we were expecting a mapper, name associated with something else" (fst argList).lineno)
 
 (* main function of a map, takes a list of statement (body of the mapper)
    evaluate the arg_list, which should be a list of patterns
@@ -95,13 +95,13 @@ and evaluate e env = match e.real_expr with
 		(
 			match xV with
 				Int(x) -> Int(-x)
-			| _ -> raise (Type_error "you can't negate that, dorkface")
+			| _ -> raise (Type_error "you can't negate that, dorkface" e.lineno)
 		)
 	|	UnaryNot(xE) ->  let xV = evaluate xE env in
 		(
 			match xV with
 				Bool(x) -> Bool(not x)
-			| _ -> raise (Type_error "you can't contradict that, dorkface")
+			| _ -> raise (Type_error "you can't contradict that, dorkface" e.lineno)
 		)
 	|	ArithBinop(aExp, operator, bExp) ->
 		let aVal = evaluate aExp env in
@@ -113,7 +113,7 @@ and evaluate e env = match e.real_expr with
 			|	(Int(a), Mult, Int(b)) -> Int(a * b)
 			|	(Int(a), Div,  Int(b)) -> Int(a / b)
 			|	(Int(a), Mod,  Int(b)) -> Int(a mod b)
-			| _ -> raise (Type_error("cannot do arithmetic on non-integers"))
+			| _ -> raise (Type_error "cannot do arithmetic on non-integers" e.lineno)
 		)
 	|	LogicBinop(aExp, operator, bExp) ->
 		let aVal = evaluate aExp env in
@@ -135,7 +135,7 @@ and evaluate e env = match e.real_expr with
 			|	(Int(a), GreaterEq, Int(b)) -> Bool(a >= b)
 			|	(Int(a), EqualTo, Int(b)) -> Bool(a == b)
 			|	(Int(a), NotEqual, Int(b)) -> Bool(a != b)
-			| _ -> raise (Type_error "cannot do that comparison operation")
+			| _ -> raise (Type_error "cannot do that comparison operation" e.lineno)
 		)
 	|	MapCall(someMapper,argList) ->
 		(
@@ -147,7 +147,7 @@ and evaluate e env = match e.real_expr with
 		(
 			match patVal with
 				Pattern(p) -> InstrumentAssignment(instName, p)
-			|	_ -> raise (Invalid_argument "Only patterns can be assigned to instruments")
+			|	_ -> raise (Invalid_argument "Only patterns can be assigned to instruments" e.lineno)
 		)
 	| Output(firstExpr, argList) -> output_call firstExpr argList env
 
