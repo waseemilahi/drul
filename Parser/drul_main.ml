@@ -157,7 +157,7 @@ and output_call outname outargs env =
 		match (outname , outargs) with 
 			  ("txtfile_truncate",[firstArg;secondArg]) -> output_func firstArg secondArg 0 env 
 		|	  ("txtfile_append",[firstArg;secondArg])   -> output_func firstArg secondArg 1 env 
-		| 	  ( _ , _ )	->	raise (Invalid_function "Usage: output.txtfile_option(filename,stuff to write to the file)")
+		| 	  ( _ , _ )	->	raise (Invalid_function "Usage: output.txtfile_option(filename,stuff to write to the file)" outargs.lineno)
 	
 (* Takes the two arguments of output.txtfile call and puts the second
    argument in the file with the same name as the first argument of output.txtfile****)	
