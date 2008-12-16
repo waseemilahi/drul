@@ -9,7 +9,7 @@ let debug str = if (true) then ignore(print_endline str) else ignore()
 %token <int> ASSIGN EQ NEQ LT LEQ GT GEQ EOF MCALL AND OR NOT MOD
 %token <int> INSTRUMENTS
 %token <int> OUTPUT
-%token <int>    INTLITERAL
+%token <int * int>    INTLITERAL
 %token <string * int> STRLITERAL ID
 
 %left LIST /* is this correct? I mean, it *works*, but... */
@@ -31,59 +31,104 @@ let debug str = if (true) then ignore(print_endline str) else ignore()
 %%
 
 expr:
-		INTLITERAL { CInt($1)     }
-	|   STRLITERAL { CStr($1)     }
-	|   TRUE       { CBool(true)  }
-	|   FALSE      { CBool(false) }
-	|   ID       { Var($1) }
-	|   expr MCALL ID LPAREN RPAREN { MemberCall($1, $3, []) }
-	|   expr MCALL ID LPAREN expr_list RPAREN  { MemberCall($1, $3, $5) }
-	|	OUTPUT MCALL ID LPAREN expr_list RPAREN  { Output($3, $5) }
-	|   expr PLUS   expr { ArithBinop($1, Add,  $3) }
-	|   expr MINUS  expr { ArithBinop($1, Sub,  $3) }
-	|   expr TIMES  expr { ArithBinop($1, Mult, $3) }
-	|   expr DIVIDE expr { ArithBinop($1, Div,  $3) }
-	|   expr MOD    expr { ArithBinop($1, Mod,  $3) }
-	|   expr EQ  expr { Comparison($1, EqualTo,     $3) }
-	|   expr NEQ expr { Comparison($1, NotEqual,    $3) }
-	|   expr LT  expr { Comparison($1, LessThan,    $3) }
-	|   expr GT  expr { Comparison($1, GreaterThan, $3) }
-	|   expr LEQ expr { Comparison($1, LessEq,      $3) }
-	|   expr GEQ expr { Comparison($1, GreaterEq,   $3) }
-	|   expr AND expr { LogicBinop($1, And,         $3) }
-	|   expr OR  expr { LogicBinop($1, Or,          $3) }
-	|   MINUS expr %prec UMINUS { UnaryMinus($2) }
-	|   NOT expr { UnaryNot($2) }
-	|   ID LPAREN expr_list RPAREN { FunCall($1, $3) }
-	|   ID LPAREN RPAREN { FunCall($1, []) }
-	|   LPAREN expr RPAREN { $2 }
-	/* this has a shift-reduce conflict with function calls */
-	|   MAP LPAREN expr_list RPAREN block { MapCall(AnonyMap($5), $3) }
-	|   MAP LPAREN expr_list RPAREN ID    { MapCall(NamedMap($5), $3) }
-	|   STRLITERAL LARROW expr { InstrAssign($1, $3) }
+		INTLITERAL { {real_expr = CInt(fst($1)); lineno = snd($1) } }
+	|   STRLITERAL { {real_expr = CStr(fst $1); lineno = snd($1)  } }
+	|   TRUE       { {real_expr = CBool(true); lineno = $1  }       }
+	|   FALSE      { {real_expr = CBool(false); lineno = $1  }      }
+	|   ID         { {real_expr = Var(fst $1); lineno = snd($1)  }  }
+	|   expr MCALL ID LPAREN RPAREN { 
+	        {real_expr = MemberCall($1.real_expr, fst($3), []) ; lineno = $2 }
+	    }
+	|   expr MCALL ID LPAREN expr_list RPAREN  { 
+	        {real_expr = MemberCall($1.real_expr, fst($3), $5) ; lineno = $2 }
+	    }
+	|	OUTPUT MCALL ID LPAREN expr_list RPAREN  { 
+	       {real_expr = Output(fst($3), $5); lineno = $1} 
+	    }
+	|   expr PLUS   expr { 
+	        {real_expr = ArithBinop($1.real_expr, Add,  $3.real_expr) ; lineno = $2 }
+	    }
+	|   expr MINUS  expr { 
+	        {real_expr = ArithBinop($1.real_expr, Sub,  $3.real_expr) ; lineno = $2 }
+	    }
+	|   expr TIMES  expr { 
+	        {real_expr = ArithBinop($1.real_expr, Mult,  $3.real_expr) ; lineno = $2 }
+	    }
+	|   expr DIVIDE expr { 
+	        {real_expr = ArithBinop($1.real_expr, Div,  $3.real_expr) ; lineno = $2 }
+	    }
+	|   expr MOD    expr { 
+	        {real_expr = ArithBinop($1.real_expr, Mod,  $3.real_expr) ; lineno = $2 }
+	    }
+	|   expr EQ  expr { 
+	        { real_expr = Comparison($1.real_expr, EqualTo, $3.real_expr); lineno = $2 }
+	    }
+	|   expr NEQ expr { 
+	        { real_expr = Comparison($1.real_expr, NotEqual, $3.real_expr); lineno = $2 }
+	    }
+	|   expr LT  expr { 
+	        { real_expr = Comparison($1.real_expr, LessThan, $3.real_expr); lineno = $2 }
+	    }
+	|   expr GT  expr { 
+	        { real_expr = Comparison($1.real_expr, GreaterThan, $3.real_expr); lineno = $2 }
+	    }
+	|   expr LEQ expr { 
+	        { real_expr = Comparison($1.real_expr, LessEq, $3.real_expr); lineno = $2 }
+	    }
+	|   expr GEQ expr { 
+	        { real_expr = Comparison($1.real_expr, GreaterEq, $3.real_expr); lineno = $2 }
+	    }
+	|   expr AND expr { 
+	        { real_expr = LogicBinop($1.real_expr, And, $3.real_expr); lineno = $2 }
+	    }
+	|   expr OR  expr { 
+	        { real_expr = LogicBinop($1.real_expr, Or, $3.real_expr); lineno = $2 }
+	    }
+	|   MINUS expr %prec UMINUS { 
+	        { real_expr = UnaryMinus($2.real_expr); lineno = $1 }
+	    }
+	|   NOT expr {
+	        { real_expr = UnaryNot($2.real_expr); lineno = $1 }
+	    }
+	|   ID LPAREN expr_list RPAREN { 
+	        { real_expr = FunCall(fst($1), $3); lineno = snd($1) }
+	    }
+	|   ID LPAREN RPAREN { 
+            { real_expr = FunCall(fst($1), []); lineno = snd($1) }
+        }
+	|   LPAREN expr RPAREN { {real_expr = $2.real_expr; lineno = $1} }
+	|   MAP LPAREN expr_list RPAREN block { 
+	        {real_expr = MapCall(AnonyMap($5), $3); lineno = $1 }
+	    }
+	|   MAP LPAREN expr_list RPAREN ID    { 
+	        {real_expr = MapCall(NamedMap(fst($5)), $3); lineno = $1 }
+	    }
+	|   STRLITERAL LARROW expr {
+	        {real_expr = InstrAssign(fst($1), $3.real_expr); lineno = $2 }
+	    }
 
 statement:
 		expr SEMI { Expr($1) }
 	|   RETURN expr SEMI { Return($2) }
-	|   MAPDEF ID LPAREN id_list RPAREN block { MapDef($2, List.rev $4, $6) }
-	|   ID ASSIGN expr SEMI { Assign($1, $3) }
+	|   MAPDEF ID LPAREN id_list RPAREN block { MapDef((fst $2), List.rev $4, $6, snd($2)) }
+	|   ID ASSIGN expr SEMI { Assign(fst($1), $3, snd($1)) }
 	|   IF LPAREN expr RPAREN block iftail { IfBlock($3, $5, $6) }
 	/* TODO : ELSEIF */
 	/* May require AST change */
-	|   INSTRUMENTS LPAREN expr_list RPAREN SEMI { InstrDef($3) }
-	|   INSTRUMENTS LPAREN RPAREN SEMI           { InstrDef([]) }
+	|   INSTRUMENTS LPAREN expr_list RPAREN SEMI { InstrDef($3, $1) }
+	|   INSTRUMENTS LPAREN RPAREN SEMI           { InstrDef([], $1) }
 	| 	SEMI { EmptyStat }
 
 block:
 	LBRACE st_list RBRACE { List.rev $2 }
 
 id_list:
-		ID { [$1] }
-	|	id_list COMMA ID { $3::$1 }
+		ID { [fst($1)] }
+	|	id_list COMMA ID { fst($3)::$1 }
 
 expr_list:
-		expr { [$1] }
-	|	expr COMMA expr_list { $1::$3 }
+		expr { [$1.real_expr] }
+	|	expr COMMA expr_list { $1.real_expr::$3 }
 
 st_list:
 	/* staring into the abyss */ { [] }
