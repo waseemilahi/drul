@@ -106,7 +106,7 @@ let rec get_key_from_env env key =
 	if NameMap.mem key env.symbols then NameMap.find key env.symbols
 	else match env.parent with
 			Some(parent_env) -> get_key_from_env parent_env key
-		|	None -> raise (Undefined_identifier key)
+		|	None -> raise (Undefined_identifier (key, -1))
 and  beat_of_alias env alias =
 	let currentVar = get_key_from_env env "$current"
 	in match currentVar with
@@ -139,7 +139,7 @@ let get_instrument_pos env instrName =
 			)
 			  in find_pos instrList 0
 		  | _ -> raise (Failure "weird stuff in env for instruments...")
-	with Undefined_identifier(e) -> raise (Failure "instrument not saved in env yet")
+	with Undefined_identifier(e,i) -> raise (Failure "instrument not saved in env yet")
 	  | Failure(e) -> raise (Failure e)
 	  | _ -> raise (Failure "wrong exception in get_instrument_pos")
 
@@ -147,14 +147,14 @@ let rec concat_pattern_list plist =
 	match plist with 
 		[]	-> []
 	|	Pattern(x)::tail -> x @ (concat_pattern_list tail)
-	| 	_ -> raise (Invalid_argument "concat only concatenates patterns")
+	| 	_ -> raise (Invalid_argument ("concat only concatenates patterns", -1))
 
 let rec fill_in_clip_patterns empty_clip pattern_list idx = match pattern_list with 
 		[]	-> Clip(empty_clip) (* not technically empty any more *)
 			(* TODO: catch array out of bounds here *)
 	|	Pattern(p)::tail -> ignore(empty_clip.(idx) <- p); fill_in_clip_patterns empty_clip tail (idx + 1)
-	|	InstrumentAssignment(_,_)::tail -> raise (Invalid_argument "clip arguments may not mix styles", (fst pattern_list).lineno)
-	| 	_	-> raise (Invalid_argument "clip arguments must all evaluate to patterns", (fst pattern_list).lineno)
+	|	InstrumentAssignment(_,_)::tail -> raise (Invalid_argument ("clip arguments may not mix styles", -1))
+	| 	_	-> raise (Invalid_argument ("clip arguments must all evaluate to patterns", -1))
 
 let rec fill_in_clip_instr_assigns empty_clip assignment_list env = match assignment_list with 
 		[]	-> Clip(empty_clip) (* not technically empty any more *)
@@ -162,8 +162,8 @@ let rec fill_in_clip_instr_assigns empty_clip assignment_list env = match assign
 			(* TODO catch possible exception from incorrect instrument name *)
 			let idx = get_instrument_pos env instrName  in
 			ignore(empty_clip.(idx) <- p); fill_in_clip_instr_assigns empty_clip tail env 
-	|	Pattern(_)::tail ->raise (Invalid_argument "clip arguments may not mix styles",(fst pattern_list).lineno)
-	| 	_	-> raise (Invalid_argument "clip arguments must all evaluate to instrument assignments", (fst pattern_list).lineno)
+	|	Pattern(_)::tail ->raise (Invalid_argument ("clip arguments may not mix styles",-1))
+	| 	_	-> raise (Invalid_argument ("clip arguments must all evaluate to instrument assignments",-1))
 
 
 let make_clip argVals env = 
@@ -176,6 +176,6 @@ let make_clip argVals env =
 	    match first_arg with 
 		Pattern(_) -> fill_in_clip_patterns new_clip argVals 0
 	      |	InstrumentAssignment(_,_) ->fill_in_clip_instr_assigns new_clip argVals env
-	      |	_ -> raise (Invalid_argument "clip arguments must be patterns or instrument assignments", (fst argVals).lineno)
+	      |	_ -> raise (Invalid_argument ("clip arguments must be patterns or instrument assignments", -1))
 	)
-	with Undefined_identifier("instruments") -> raise (Illegal_assignment "trying to create a clip before defining instruments", (fst argVals).lineno)
+	with Undefined_identifier("instruments",i) -> raise (Illegal_assignment ("trying to create a clip before defining instruments", i))
