@@ -113,8 +113,6 @@ statement:
 	|   MAPDEF ID LPAREN id_list RPAREN block { MapDef((fst $2), List.rev $4, $6, snd($2)) }
 	|   ID ASSIGN expr SEMI { Assign(fst($1), $3, snd($1)) }
 	|   IF LPAREN expr RPAREN block iftail { IfBlock($3, $5, $6) }
-	/* TODO : ELSEIF */
-	/* May require AST change */
 	|   INSTRUMENTS LPAREN expr_list RPAREN SEMI { InstrDef($3, $1) }
 	|   INSTRUMENTS LPAREN RPAREN SEMI           { InstrDef([], $1) }
 	| 	SEMI { EmptyStat }
