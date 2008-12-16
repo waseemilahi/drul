@@ -152,16 +152,16 @@ let rec concat_pattern_list plist =
 let rec fill_in_clip_patterns empty_clip pattern_list idx lineno = match pattern_list with 
 		[]	-> Clip(empty_clip) (* not technically empty any more *)
 			(* TODO: catch array out of bounds here *)
-	|	Pattern(p)::tail -> ignore(empty_clip.(idx) <- p); fill_in_clip_patterns empty_clip tail (idx + 1)
+	|	Pattern(p)::tail -> ignore(empty_clip.(idx) <- p); fill_in_clip_patterns empty_clip tail (idx + 1) lineno
 	|	InstrumentAssignment(_,_)::tail -> raise (Invalid_argument ("clip arguments may not mix styles", lineno))
 	| 	_	-> raise (Invalid_argument ("clip arguments must all evaluate to patterns", lineno))
 
-let rec fill_in_clip_instr_assigns empty_clip assignment_list env = match assignment_list with 
+let rec fill_in_clip_instr_assigns empty_clip assignment_list env lineno = match assignment_list with 
 		[]	-> Clip(empty_clip) (* not technically empty any more *)
 	|	InstrumentAssignment(instrName,p)::tail ->
 			(* TODO catch possible exception from incorrect instrument name *)
 			let idx = get_instrument_pos env instrName  in
-			ignore(empty_clip.(idx) <- p); fill_in_clip_instr_assigns empty_clip tail env 
+			ignore(empty_clip.(idx) <- p); fill_in_clip_instr_assigns empty_clip tail env lineno
 	|	Pattern(_)::tail ->raise (Invalid_argument ("clip arguments may not mix styles",lineno))
 	| 	_	-> raise (Invalid_argument ("clip arguments must all evaluate to instrument assignments",lineno))
 
@@ -174,7 +174,7 @@ let make_clip argVals env lineno =
 	  let new_clip = emptyClip num_instrs in
 	  let first_arg = List.hd argVals in
 	    match first_arg with 
-		Pattern(_) -> fill_in_clip_patterns new_clip argVals 0
+		Pattern(_) -> fill_in_clip_patterns new_clip argVals 0 lineno
 	      |	InstrumentAssignment(_,_) ->fill_in_clip_instr_assigns new_clip argVals env lineno
 	      |	_ -> raise (Invalid_argument ("clip arguments must be patterns or instrument assignments", -1))
 	)

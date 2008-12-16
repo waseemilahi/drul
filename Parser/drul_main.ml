@@ -264,7 +264,7 @@ and function_call fname fargs env lineno =
 				| _ -> raise (Invalid_argument ("the rand function expects an integer argument",lineno))
 			)
 	|	("rand", _) -> raise (Invalid_argument ("the rand function expects a single, optional, positive, integer argument",lineno))
-	|	("clip", argList) -> make_clip argList env
+	|	("clip", argList) -> make_clip argList env lineno
 	|	(other, _)	-> (* TODO: currently also catches invalid argument-counts,
 							which should probably be intercepted further up the line *)
 			let msg =  "Function name '" ^ other ^ "' is not a valid function." in
