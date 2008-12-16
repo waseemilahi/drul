@@ -162,51 +162,51 @@ and output_call outname outargs env =
 (* Takes the two arguments of output.txtfile call and puts the second
    argument in the file with the same name as the first argument of output.txtfile****)	
 and output_func firstArg secondArg flag env = 
-		let firstExpr = evaluate firstArg env in
-		let secondExpr = evaluate secondArg env in				
-			match firstExpr with 
-				Str(x) -> 
-						if(String.length x < 1)then raise (Invalid_argument "File Name needs to be atleast of length 1.")											
-						else(
-							let fd =	if(flag == 0)then (open_out_gen [Open_creat ; Open_trunc ; Open_wronly] 511 x)
-									 	else (open_out_gen [Open_creat ; Open_append] 511 x)
-							in												
-							match secondExpr with
-								Str(y) ->	output_string fd y ; flush fd ; output_string fd "\n"; close_out_noerr fd; Void									
-							|	Int(y)  -> 	output_string fd (string_of_int y) ; flush fd ; output_string fd "\n";close_out_noerr fd; Void 
-							| 	Bool(z) -> 
-									(
-											 if z then output_string fd "TRUE"
-											else output_string fd "FALSE" ; 
-											flush fd ; output_string fd "\n";	close_out_noerr fd; Void
-									)
-							| 	Beat(_,_) ->
-									(
-											let state = state_of_beat secondExpr in
-											output_string fd (match state with None->"NULL" | Some(b) -> if b then "NOTE" else "REST");
-											flush fd ; output_string fd "\n";	close_out_noerr fd; Void
-									)
-							|	Pattern(p) ->
-									(
-										let pstr = 	string_of_pattern p in 
-													output_string fd pstr ; flush fd ; output_string fd "\n";	close_out_noerr fd; Void
-									)
-							| 	Clip(ar) -> let instrVal = get_key_from_env env "instruments" in
-											let instr_names = (match instrVal with Instruments(l) -> l | _ ->raise (Failure "can't happen")) in
-											output_string fd "[";output_string fd "\n";
-											ignore(List.fold_left 
-												(fun i name -> 
-													output_string fd ("\t" ^ name ^ ":\t" ^ (string_of_pattern ar.(i))); output_string fd "\n";(i+1))
-												0
-												instr_names
-												);
-											output_string fd "]";output_string fd "\n";Void		
-
-							|	_			->	raise (Invalid_argument "You can't output this to a file.")
+	let firstExpr = evaluate firstArg env in
+	let secondExpr = evaluate secondArg env in				
+		match firstExpr with 
+			Str(x) -> 
+				if(String.length x < 1)then raise (Invalid_argument "File Name needs to be atleast of length 1.")											
+				else(
+					let fd =	if(flag == 0)then (open_out_gen [Open_creat ; Open_trunc ; Open_wronly] 511 x)
+								else (open_out_gen [Open_creat ; Open_append] 511 x)
+					in
+					match secondExpr with
+						Str(y) ->	output_string fd y ; flush fd ; output_string fd "\n"; close_out_noerr fd; Void
+					|	Int(y)  -> 	output_string fd (string_of_int y) ; flush fd ; output_string fd "\n";close_out_noerr fd; Void 
+					| 	Bool(z) -> 
+							(
+									 if z then output_string fd "TRUE"
+									else output_string fd "FALSE" ; 
+									flush fd ; output_string fd "\n";	close_out_noerr fd; Void
 							)
-					
-				| 	_ 	-> raise (Invalid_argument "output.txtfile_option accepts a string stating the file name") 
-			
+					| 	Beat(_,_) ->
+							(
+									let state = state_of_beat secondExpr in
+									output_string fd (match state with None->"NULL" | Some(b) -> if b then "NOTE" else "REST");
+									flush fd ; output_string fd "\n";	close_out_noerr fd; Void
+							)
+					|	Pattern(p) ->
+							(
+								let pstr = 	string_of_pattern p in 
+											output_string fd pstr ; flush fd ; output_string fd "\n";	close_out_noerr fd; Void
+							)
+					| 	Clip(ar) -> let instrVal = get_key_from_env env "instruments" in
+									let instr_names = (match instrVal with Instruments(l) -> l | _ ->raise (Failure "can't happen")) in
+									output_string fd "[";output_string fd "\n";
+									ignore(List.fold_left 
+										(fun i name -> 
+											output_string fd ("\t" ^ name ^ ":\t" ^ (string_of_pattern ar.(i))); output_string fd "\n";(i+1))
+										0
+										instr_names
+										);
+									output_string fd "]";output_string fd "\n";Void		
+
+					|	_			->	raise (Invalid_argument "You can't output this to a file.")
+					)
+				
+			| 	_ 	-> raise (Invalid_argument "output.txtfile_option accepts a string stating the file name") 
+		
 
 (* handle the general case of a.b() *)
 and function_call fname fargs env = 
