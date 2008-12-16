@@ -41,7 +41,7 @@ let rec get_alias_list p_list a_list counter =
 	let newcounter = counter + 1 in
 		match (p_list,a_list) with
 		([],[]) -> []
-	|	([],oops) -> raise (Failure "not enough patterns provided to mapper", (fst p_list).lineno)
+	|	([],oops) -> raise (Failure "not enough patterns provided to mapper")
 	|	(thispat::rest,[]) ->
 (thispat, "$" ^ string_of_int counter) :: get_alias_list rest [] newcounter
 	|	(thispat::rest,thisalias::other_aliases) ->
@@ -82,7 +82,7 @@ let maxlen_helper currmax newlist =
 		let currlen = List.length patlist in
 		if (currlen > currmax) then currlen else currmax
 	)
-	| _ -> raise (Failure "asshole", -1)
+	| _ -> raise (Failure "asshole")
 
 (* find the length of the longest list *)
 let find_longest_list patternlist =
@@ -111,7 +111,7 @@ and  beat_of_alias env alias =
 	let currentVar = get_key_from_env env "$current"
 	in match currentVar with
 			Int(currentVal) -> Beat(alias,currentVal)
-		|	_	-> raise (Failure "Can't have a non-integer in $current--you really can't!!", -1)
+		|	_	-> raise (Failure "Can't have a non-integer in $current--you really can't!!")
 		
 
 let string_of_pattern p = 
@@ -121,7 +121,7 @@ let state_of_beat beat =
 	match beat with Beat(pattern_data,idx) ->
 		let pattern_length = Array.length pattern_data in
 		if (idx < 0 or idx >= pattern_length) then None else Some(pattern_data.(idx))
-	| _ -> raise (Failure "How did you even get here?", -1)
+	| _ -> raise (Failure "How did you even get here?")
 
 (* find the position of an instrument in the instruments in the env, returns -1 if doesn't find it *)
 let get_instrument_pos env instrName =
@@ -138,10 +138,10 @@ let get_instrument_pos env instrName =
 							  else find_pos tail (counter + 1)
 			)
 			  in find_pos instrList 0
-		  | _ -> raise (Failure "weird stuff in env for instruments...", -1)
-	with Undefined_identifier(e) -> raise (Failure "instrument not saved in env yet", -1)
+		  | _ -> raise (Failure "weird stuff in env for instruments...")
+	with Undefined_identifier(e) -> raise (Failure "instrument not saved in env yet")
 	  | Failure(e) -> raise (Failure e)
-	  | _ -> raise (Failure "wrong exception in get_instrument_pos", -1)
+	  | _ -> raise (Failure "wrong exception in get_instrument_pos")
 
 let rec concat_pattern_list plist =
 	match plist with 
