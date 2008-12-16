@@ -7,7 +7,7 @@
 *
 * for the class COMS W4115: Programming Language and Translators
 *
-* file: drul_types.mli
+* file: drul_types.ml
 *
 *       TYPES
 *
