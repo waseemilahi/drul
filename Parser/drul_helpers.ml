@@ -149,12 +149,12 @@ let rec concat_pattern_list plist =
 	|	Pattern(x)::tail -> x @ (concat_pattern_list tail)
 	| 	_ -> raise (Invalid_argument ("concat only concatenates patterns", -1))
 
-let rec fill_in_clip_patterns empty_clip pattern_list idx = match pattern_list with 
+let rec fill_in_clip_patterns empty_clip pattern_list idx lineno = match pattern_list with 
 		[]	-> Clip(empty_clip) (* not technically empty any more *)
 			(* TODO: catch array out of bounds here *)
 	|	Pattern(p)::tail -> ignore(empty_clip.(idx) <- p); fill_in_clip_patterns empty_clip tail (idx + 1)
-	|	InstrumentAssignment(_,_)::tail -> raise (Invalid_argument ("clip arguments may not mix styles", -1))
-	| 	_	-> raise (Invalid_argument ("clip arguments must all evaluate to patterns", -1))
+	|	InstrumentAssignment(_,_)::tail -> raise (Invalid_argument ("clip arguments may not mix styles", lineno))
+	| 	_	-> raise (Invalid_argument ("clip arguments must all evaluate to patterns", lineno))
 
 let rec fill_in_clip_instr_assigns empty_clip assignment_list env = match assignment_list with 
 		[]	-> Clip(empty_clip) (* not technically empty any more *)
@@ -162,11 +162,11 @@ let rec fill_in_clip_instr_assigns empty_clip assignment_list env = match assign
 			(* TODO catch possible exception from incorrect instrument name *)
 			let idx = get_instrument_pos env instrName  in
 			ignore(empty_clip.(idx) <- p); fill_in_clip_instr_assigns empty_clip tail env 
-	|	Pattern(_)::tail ->raise (Invalid_argument ("clip arguments may not mix styles",-1))
-	| 	_	-> raise (Invalid_argument ("clip arguments must all evaluate to instrument assignments",-1))
+	|	Pattern(_)::tail ->raise (Invalid_argument ("clip arguments may not mix styles",lineno))
+	| 	_	-> raise (Invalid_argument ("clip arguments must all evaluate to instrument assignments",lineno))
 
 
-let make_clip argVals env = 
+let make_clip argVals env lineno = 
         try (
 	  let instrument_list = get_key_from_env env "instruments" in
 	  let num_instrs = (match instrument_list with Instruments(i) -> List.length i 
@@ -175,7 +175,7 @@ let make_clip argVals env =
 	  let first_arg = List.hd argVals in
 	    match first_arg with 
 		Pattern(_) -> fill_in_clip_patterns new_clip argVals 0
-	      |	InstrumentAssignment(_,_) ->fill_in_clip_instr_assigns new_clip argVals env
+	      |	InstrumentAssignment(_,_) ->fill_in_clip_instr_assigns new_clip argVals env lineno
 	      |	_ -> raise (Invalid_argument ("clip arguments must be patterns or instrument assignments", -1))
 	)
 	with Undefined_identifier("instruments",i) -> raise (Illegal_assignment ("trying to create a clip before defining instruments", i))
