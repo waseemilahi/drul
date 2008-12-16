@@ -13,11 +13,11 @@ type mapper =
 and expr =
 		CInt of int
 	|   CStr of string
-	|   CBool of bool
-	|   Var of string
+	|   CBool of bool 
+	|   Var of string 
 	|   MemberCall of expr * string * expr list
 	|   UnaryMinus of expr
-	|   UnaryNot  of expr
+	|   UnaryNot  of expr 
 	|   ArithBinop of expr * intOp * expr
 	|   LogicBinop of expr * boolOp * expr
 	|   Comparison of expr * compOp * expr
@@ -27,13 +27,14 @@ and expr =
 	|	Output of string * expr list
 
 and statement =
-	Expr of expr
-	| Return of expr
-	| Assign of string * expr
-	| MapDef of string * string list * statement list
-	| IfBlock of expr * statement list * statement list option
-	| InstrDef of expr list
+	Expr of tagged_expr
+	| Return of tagged_expr
+	| Assign of string * tagged_expr * int
+	| MapDef of string * string list * statement list * int
+	| IfBlock of tagged_expr * statement list * statement list option
+	| InstrDef of expr list * int
 	| EmptyStat
+and tagged_expr = { real_expr : expr ; lineno : int }
 
 type program =
 	Content of statement list
