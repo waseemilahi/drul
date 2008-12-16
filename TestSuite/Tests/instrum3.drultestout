@@ -1,1 +1,1 @@
-Fatal error: exception Drul_interpreter.Instruments_redefined("don't do that")
+Fatal error: exception Drul_types.Instruments_redefined("don't do that")
