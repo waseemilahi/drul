@@ -27,6 +27,8 @@ let run p env = match p with
 
 let _ =
 let unscoped_env = {symbols = NameMap.empty; parent= None} in
-let lexbuf = Lexing.from_channel stdin in
+let arglen = Array.length Sys.argv in
+let input_stream = if 1 < arglen then open_in Sys.argv.(1) else stdin in
+let lexbuf = Lexing.from_channel input_stream in
 let programAst = Drul_parser.program Drul_scanner.token lexbuf in
 run programAst unscoped_env;;
