@@ -64,7 +64,7 @@ let add_pattern_alias  symbol_table pair =
 	(
 		match p_obj with
 			Pattern(pat) -> pat
-		|	_            -> raise (Failure "erp")
+		|	_            -> raise (Failure "in add_pattern_alias, should not happen")
 	) in
 	let p_array = Array.of_list p_list in
 	let beat_holder = PatternAlias(p_array)
@@ -91,7 +91,7 @@ let maxlen_helper currmax newlist =
 		let currlen = List.length patlist in
 		if (currlen > currmax) then currlen else currmax
 	)
-	| _ -> raise (Failure "asshole")
+	| _ -> raise (Failure "in maxlen_helper, should not happen (not a pattern?)")
 
 (* find the length of the longest list *)
 let find_longest_list patternlist = List.fold_left maxlen_helper 0 patternlist
@@ -120,7 +120,7 @@ and  beat_of_alias env alias lineno =
 	let currentVar = get_key_from_env env "$current" lineno
 	in match currentVar with
 			Int(currentVal) -> Beat(alias,currentVal)
-		|	_  -> raise (Failure "Can't have a non-integer in $current--you really can't!!")
+		|	_  -> raise (Failure "in beat_of_alias, can't have a non-integer in $current")
 
 
 
@@ -131,7 +131,7 @@ let state_of_beat beat =
 		Beat(pattern_data,idx) ->
 			let pattern_length = Array.length pattern_data in
 			if (idx < 0 or idx >= pattern_length) then None else Some(pattern_data.(idx))
-	|	_ -> raise (Failure "How did you even get here?")
+	|	_ -> raise (Failure "in state_of_beat, should not happen (not a beat?)")
 
 (* find the position of an instrument in the instruments in the env, returns -1 if doesn't find it *)
 let get_instrument_pos env instrName lineno =
@@ -147,11 +147,11 @@ let get_instrument_pos env instrName lineno =
 									   else find_pos tail (counter + 1)
 				)
 				in find_pos instrList 0
-		|	_ -> raise (Failure "weird stuff in env for instruments...")
+		|	_ -> raise (Failure "in get_instrument_pos, weird stuff in env for instruments...")
 	with
-		Undefined_identifier(e,i) -> raise (Failure "instrument not saved in env yet")
+		Undefined_identifier(e,i) -> raise (Failure "in get_instument_pos, instrument not saved in env yet")
 	|	Failure(e)                -> raise (Failure e)
-	|	_                         -> raise (Failure "wrong exception in get_instrument_pos")
+	|	_                         -> raise (Failure "in get_instrument_pos, wrong or new exception")
 
 let rec concat_pattern_list plist lineno =
 	match plist with
@@ -186,7 +186,7 @@ let make_clip argVals env lineno =
 		(
 			match instrument_list with
 				Instruments(i) -> List.length i
-			|	_              -> raise (Failure "can't happen")
+			|	_              -> raise (Failure "in make_clip, should not happen")
 		) in
 		let new_clip = emptyClip num_instrs in
 		let first_arg = List.hd argVals in
