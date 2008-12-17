@@ -11,28 +11,26 @@
 *
 *       TYPES
 *
-* This file contains the internal type and exception declarations 
+* This file contains the internal type and exception declarations
 * required by the interpreter and printing/checking functions.
 *
 *************************************************************************
 *)
-
-
 
 open Drul_ast
 
 module NameMap = Map.Make(String)
 
 (* most of the exceptions *)
-exception Type_error         of string * int
-exception Invalid_function   of string * int
-exception PatternParse_error of string * int
-exception Invalid_argument   of string * int
-exception Undefined_identifier of string * int
-exception Illegal_assignment of string * int
+exception Type_error            of string * int
+exception Invalid_function      of string * int
+exception PatternParse_error    of string * int
+exception Invalid_argument      of string * int
+exception Undefined_identifier  of string * int
+exception Illegal_assignment    of string * int
 exception Instruments_redefined of string * int
 
-type pattern = bool list
+type pattern       = bool list
 type pattern_alias = bool array
 
 (* type of every object in DruL *)
@@ -49,12 +47,13 @@ type drul_t =
 	|	Instruments of string list
 	|	InstrumentAssignment of string * pattern
 
-(*      symbol table for DruL
-		the current environment is 'symbols': a map from string to drul_t,
-		the parent is another drul_env
+(*	symbol table for DruL:
+	the current environment is 'symbols': a map from string to drul_t,
+	the parent is another drul_env
 *)
 type drul_env =
 {
 	symbols: drul_t NameMap.t;
 	parent:  drul_env option
 }
+
