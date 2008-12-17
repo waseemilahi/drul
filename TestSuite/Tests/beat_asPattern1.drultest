@@ -1,0 +1,7 @@
+
+p1 = map (pattern("1111")) { return concat($1.asPattern(), pattern("0")); };
+print(p1);
+
+p2 = map (pattern("1010"), p1) { return $1.asPattern().repeat(3); };
+print(p2);
+
