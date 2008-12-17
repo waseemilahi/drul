@@ -110,13 +110,14 @@ let add_key_to_env env key value =
    If the value is a PatternAlias, then use some magic to transform
    it into a Beat
 *)
-let rec get_key_from_env env key =
+let rec get_key_from_env env key lineno =
 	if NameMap.mem key env.symbols then NameMap.find key env.symbols
 	else match env.parent with
-			Some(parent_env) -> get_key_from_env parent_env key
+			Some(parent_env) -> get_key_from_env parent_env key lineno
 		|	None -> raise (Undefined_identifier (key, -1))
-and  beat_of_alias env alias =
-	let currentVar = get_key_from_env env "$current"
+
+and  beat_of_alias env alias lineno =
+	let currentVar = get_key_from_env env "$current" lineno
 	in match currentVar with
 			Int(currentVal) -> Beat(alias,currentVal)
 		|	_  -> raise (Failure "Can't have a non-integer in $current--you really can't!!")
@@ -133,9 +134,9 @@ let state_of_beat beat =
 	|	_ -> raise (Failure "How did you even get here?")
 
 (* find the position of an instrument in the instruments in the env, returns -1 if doesn't find it *)
-let get_instrument_pos env instrName =
+let get_instrument_pos env instrName lineno =
 	try
-		let instrListDrul = get_key_from_env env "instruments" in
+		let instrListDrul = get_key_from_env env "instruments" lineno in
 		match instrListDrul with
 			Instruments(instrList) ->
 				let rec find_pos strList counter  =
@@ -171,17 +172,16 @@ let rec fill_in_clip_instr_assigns empty_clip assignment_list env lineno = match
 		[]	-> Clip(empty_clip) (* not technically empty any more *)
 	|	InstrumentAssignment(instrName,p)::tail ->
 			(* TODO catch possible exception from incorrect instrument name *)
-			let idx = get_instrument_pos env instrName  in
+			let idx = get_instrument_pos env instrName lineno in
 			ignore(empty_clip.(idx) <- p); fill_in_clip_instr_assigns empty_clip tail env lineno
 	|	Pattern(_)::tail ->raise (Invalid_argument ("clip arguments may not mix styles",lineno))
 	| 	_	-> raise (Invalid_argument ("clip arguments must all evaluate to instrument assignments",lineno))
 
 
-
 let make_clip argVals env lineno =
 	try
 	(
-		let instrument_list = get_key_from_env env "instruments" in
+		let instrument_list = get_key_from_env env "instruments" lineno in
 		let num_instrs =
 		(
 			match instrument_list with
