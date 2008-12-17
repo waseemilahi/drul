@@ -45,7 +45,7 @@ let rec one_mapper_step maxiters current st_list env current_pattern =
 			|	MapDef(_,_,_,lineno) -> lineno
 			|	IfBlock(e,_,_) 		-> e.lineno
 			|	InstrDef(_,lineno)	-> lineno
-			|	EmptyStat	-> -1
+			|	EmptyStat(lineno)	-> lineno
 		) in
 		let newenv = execlist_returning st_list env in
 		let new_st = newenv.symbols in
@@ -58,7 +58,9 @@ let rec one_mapper_step maxiters current st_list env current_pattern =
 					if ((idx >= 0) && (idx < (Array.length alias_bools) ))
 					then current_pattern @ [alias_bools.(idx)]
 					else current_pattern
-			|	_ -> (raise (Illegal_assignment ("attempt to return an illegal value",block_line)))
+			|	_ -> (raise (Illegal_assignment 
+				("attempt to return an illegal value from this mapper",block_line)
+				))
 		)
 		in
 		let current = current + 1 in
@@ -469,7 +471,7 @@ and execute s env = match s with
 			| Instruments_redefined(e,i) -> raise (Instruments_redefined (e,i))
 			| _ -> raise (Failure "in execute, case InstrDef, unexpected exception")
 	)
-|	EmptyStat -> env
+|	EmptyStat(_) -> env
 
 
 
