@@ -1,0 +1,6 @@
+
+instruments();
+
+clip("a" <- pattern("01010"));
+
+print("bad...");
