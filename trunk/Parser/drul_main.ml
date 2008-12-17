@@ -312,6 +312,12 @@ and method_call objectExpr mname margs env =
 				Int(offsetInt) -> let newidx = i + offsetInt in Beat(a,newidx)
 			|	_              -> raise (Invalid_function ("Beat method 'next' requires an integer argument", objectExpr.lineno))
 		)
+	|	(Beat(a,i), "asPattern", []) -> let beatval = state_of_beat objectVal in
+		(
+			match beatval with
+				Some(yesno) -> Pattern([yesno])
+			|	None        -> Pattern([])
+		)
 	|	(Clip(ar), "outputText", [fileVal]) ->
 		(
 			match fileVal with
