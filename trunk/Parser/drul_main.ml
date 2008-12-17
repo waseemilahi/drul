@@ -203,7 +203,10 @@ and output_func firstArg secondArg flag env lineno =
 *)
 
 
-(* function calls *)
+(* 
+function calls, anything looking like a() or a(something) 
+the major 'match' is done on a
+*)
 and function_call fname fargs env lineno =
 	let fargvals = eval_arg_list fargs env in
 	match (fname, fargvals) with
@@ -280,7 +283,10 @@ and function_call fname fargs env lineno =
 
 
 
-(* Method Calls *)
+(* 
+Method Calls, anything looking like a.b() or a.b(something) 
+the major 'match' is usually done on both a and b
+*)
 and method_call objectExpr mname margs env =
 	let objectVal = evaluate objectExpr env in
 	let argVals	  = eval_arg_list margs env in
@@ -451,6 +457,7 @@ and execute s env = match s with
 
 and execlist slist env = List.fold_left (fun env s -> execute s env) env slist
 
+(* special case used for mapper, when we expect a return value *)
 and execlist_returning slist env =
 	try List.fold_left (fun env s -> execute s env) env slist
 	with
