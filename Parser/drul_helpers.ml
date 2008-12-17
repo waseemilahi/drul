@@ -116,6 +116,7 @@ let rec get_key_from_env env key lineno =
 			Some(parent_env) -> get_key_from_env parent_env key lineno
 		|	None -> raise (Undefined_identifier (key, lineno))
 
+(* takes an alias, turns it into a beat object (used in mapper) *)
 and  beat_of_alias env alias lineno =
 	let currentVar = get_key_from_env env "$current" lineno
 	in match currentVar with
@@ -123,7 +124,7 @@ and  beat_of_alias env alias lineno =
 		|	_  -> raise (Failure "in beat_of_alias, can't have a non-integer in $current")
 
 
-
+(* get a string out of a pattern, pattern("0101") becomes "0101" *)
 let string_of_pattern p = List.fold_left (fun a x -> a ^ (if x then "1" else "0")) "" p
 
 let state_of_beat beat =
@@ -133,7 +134,9 @@ let state_of_beat beat =
 			if (idx < 0 or idx >= pattern_length) then None else Some(pattern_data.(idx))
 	|	_ -> raise (Failure "in state_of_beat, should not happen (not a beat?)")
 
-(* find the position of an instrument in the instruments in the env, returns -1 if doesn't find it *)
+(* 
+find the position of an instrument in the instruments in the env, returns -1 if doesn't find it 
+*)
 let get_instrument_pos env instrName lineno =
 	try
 		let instrListDrul = get_key_from_env env "instruments" lineno in
@@ -153,6 +156,7 @@ let get_instrument_pos env instrName lineno =
 	|	Failure(e)                -> raise (Failure e)
 	|	_                         -> raise (Failure "in get_instrument_pos, wrong or new exception")
 
+(* concat patterns into one *)
 let rec concat_pattern_list plist lineno =
 	match plist with
 		[]	-> []
@@ -160,7 +164,10 @@ let rec concat_pattern_list plist lineno =
 	| 	_ -> raise (Invalid_argument ("concat only concatenates patterns", lineno))
 
 
-
+(* 
+get an empty clip (clip with the right number of empty patterns)
+and fills it from a pattern list
+*)
 let rec fill_in_clip_patterns empty_clip pattern_list idx lineno = match pattern_list with
 		[] -> Clip(empty_clip) (* not technically empty any more *)
 			(* TODO: catch array out of bounds here *)
@@ -168,6 +175,9 @@ let rec fill_in_clip_patterns empty_clip pattern_list idx lineno = match pattern
 	|	InstrumentAssignment(_,_)::tail -> raise (Invalid_argument ("clip arguments may not mix styles", lineno))
 	| 	_ -> raise (Invalid_argument ("clip arguments must all evaluate to patterns", lineno))
 
+(*
+similar as fill_in_clip_patterns, but deals with the InstrumentAssignments 'hihat' <- pattern("1")
+*)
 let rec fill_in_clip_instr_assigns empty_clip assignment_list env lineno = match assignment_list with
 		[]	-> Clip(empty_clip) (* not technically empty any more *)
 	|	InstrumentAssignment(instrName,p)::tail ->
@@ -178,6 +188,7 @@ let rec fill_in_clip_instr_assigns empty_clip assignment_list env lineno = match
 	| 	_	-> raise (Invalid_argument ("clip arguments must all evaluate to instrument assignments",lineno))
 
 
+(* first function in order to make a clip *)
 let make_clip argVals env lineno =
 	try
 	(
