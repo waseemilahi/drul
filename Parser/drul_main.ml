@@ -56,8 +56,8 @@ let rec one_mapper_step maxiters current st_list env current_pattern =
 	find the mapper in the env,
 	and cast it to a anonymous mapper
 *)
-and run_named_mapper mapname argList env =
-  let savedmapper = get_key_from_env env mapname in
+and run_named_mapper mapname argList env lineno =
+  let savedmapper = get_key_from_env env mapname lineno in
 	match savedmapper with
 	Mapper(mapname2,a_list,stat_list) ->
 	  (* check if we receive the good number of patterns *)
@@ -96,10 +96,9 @@ and evaluate e env = match e.real_expr with
 	|	CStr (x) -> Str (x)
 	|   CBool(x) -> Bool(x)
 	|	CInt (x) -> Int (x)
-	|	Var(name) -> let fetched = get_key_from_env env name in
-		(
+	|	Var(name) -> let fetched = get_key_from_env env name e.lineno in		(
 			match fetched with
-				PatternAlias(alias) -> beat_of_alias env alias
+				PatternAlias(alias) -> beat_of_alias env alias e.lineno
 			|	other -> other
 		)
 	|	UnaryMinus(xE) -> let xV = evaluate xE env in
@@ -152,7 +151,7 @@ and evaluate e env = match e.real_expr with
 		(
 			match someMapper with
 				AnonyMap(stList)  -> run_mapper stList argList env []
-			|	NamedMap(mapname) -> run_named_mapper mapname argList env
+			|	NamedMap(mapname) -> run_named_mapper mapname argList env e.lineno
 		)
 	|	InstrAssign(instName, patExpr) -> let patVal = evaluate patExpr env in
 		(
@@ -187,7 +186,7 @@ and output_func firstArg secondArg flag env lineno =
 								else (open_out_gen [Open_creat ; Open_append] 511 x)
 					in
 
-					| 	Clip(ar) -> let instrVal = get_key_from_env env "instruments" in
+					| 	Clip(ar) -> let instrVal = (get_key_from_env env "instruments" (-1)) in
 									let instr_names = (match instrVal with Instruments(l) -> l | _ ->raise (Failure "can't happen")) in
 									output_string fd "[";output_string fd "\n";
 									ignore(List.fold_left
@@ -245,7 +244,7 @@ and function_call fname fargs env lineno =
 						None    -> "NULL"
 					|	Some(b) -> if b then "NOTE" else "REST"
 				); Void
-			|	Clip(ar) -> let instrVal = get_key_from_env env "instruments" in
+			|	Clip(ar) -> let instrVal = get_key_from_env env "instruments" lineno in
 					let instr_names =
 					(
 						match instrVal with
@@ -352,7 +351,7 @@ and method_call objectExpr mname margs env =
 			match fileVal with
 			Str(fileName) ->
 				if (String.length fileName) < 1 then raise (Invalid_argument ("Output filename must have 1 or more characters", objectExpr.lineno))
-				else let instrVal = get_key_from_env env "instruments" in
+				else let instrVal = get_key_from_env env "instruments" (-1) in
 					let instr_names =
 					(
 						match instrVal with
@@ -426,7 +425,7 @@ and execute s env = match s with
 |	InstrDef(argList, lineno) ->
 	(
 		try
-			ignore(get_key_from_env env "instruments");
+			ignore(get_key_from_env env "instruments" lineno);
 			raise (Instruments_redefined ("don't do that", lineno)) (*XXX could be improved...*)
 		with
 			Undefined_identifier (_,_) -> let strList = eval_arg_list argList env in
