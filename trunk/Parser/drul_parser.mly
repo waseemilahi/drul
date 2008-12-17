@@ -67,7 +67,7 @@ statement:
 	|   IF LPAREN expr RPAREN block iftail { IfBlock($3, $5, $6) }
 	|   INSTRUMENTS LPAREN expr_list RPAREN SEMI { InstrDef($3, $1) }
 	|   INSTRUMENTS LPAREN RPAREN SEMI           { InstrDef([], $1) }
-	| 	SEMI { EmptyStat }
+	| 	SEMI { EmptyStat($1) }
 
 block:
 	LBRACE st_list RBRACE { List.rev $2 }

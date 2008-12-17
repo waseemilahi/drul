@@ -32,7 +32,7 @@ and statement =
 	|	MapDef   of string * string list * statement list * int
 	|	IfBlock  of tagged_expr * statement list * statement list option
 	|	InstrDef of tagged_expr list * int
-	|	EmptyStat
+	|	EmptyStat of int
 
 and tagged_expr = { real_expr : expr ; lineno : int }
 
