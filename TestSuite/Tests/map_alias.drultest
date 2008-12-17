@@ -1,0 +1,5 @@
+mapper foo (a) { return pattern("0"); }
+bar = foo;
+baz = pattern("111");
+print(map (baz) foo);
+print(map (baz) bar);

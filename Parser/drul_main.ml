@@ -407,6 +407,7 @@ and execute s env = match s with
 				|	Str(x)          -> raise(Illegal_assignment ("can't assign a string", lineno))
 				|	Beat(x,y)       -> raise(Illegal_assignment ("can't assigna beat", lineno))
 				|	PatternAlias(x) -> raise(Illegal_assignment ("can't assign a PatternAlias, whatever it is", lineno))
+				|	Mapper(_,_,_)	-> raise(Illegal_assignment ("can't assign a mapper",lineno))
 				| _ -> add_key_to_env env varName valVal (* Does in fact mask variables in outer scope! Not an error! *)
 			)
 	)
