@@ -1,4 +1,9 @@
 
-output.txtfile_truncate("file.txt","allo");
-output.txtfile_append("file.txt","friends");
+instruments();
+
+c = clip( pattern("1010001") , pattern() , pattern("000") );
+
+
+c.outputText("file.txt");
+
 print("done");
