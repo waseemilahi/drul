@@ -1,1 +1,1 @@
-Fatal error: exception Drul_types.Illegal_assignment("can't assign to 'pattern'")
+Illegal assignment attempted on line 1: can't assign to 'pattern'
