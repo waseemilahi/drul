@@ -1,0 +1,9 @@
+
+p = pattern("111");
+
+p2 = map (p)
+{
+   return $1.next(1);
+};
+
+print(p2);
