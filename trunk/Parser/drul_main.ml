@@ -162,50 +162,9 @@ and evaluate e env = match e.real_expr with
 
 
 
-(* Used when there is an output.txtfile_option call. *)
 (*
-and output_call outname outargs env lineno =
-	match (outname , outargs) with
-		("txtfile_truncate", [firstArg; secondArg]) -> output_func firstArg secondArg 0 env lineno
-	|	("txtfile_append",   [firstArg; secondArg]) -> output_func firstArg secondArg 1 env lineno
-	|	(_ ,_)	->	raise (Invalid_function ("Usage: output.txtfile_option(filename,stuff to write to the file)", lineno))
-*)
-
-(* Takes the two arguments of output.txtfile call and puts the second
-   argument in the file with the same name as the first argument of output.txtfile
-*)
-(*
-and output_func firstArg secondArg flag env lineno =
-	let firstExpr  = evaluate firstArg  env in
-	let secondExpr = evaluate secondArg env in
-		match firstExpr with
-			Str(x) ->
-				if(String.length x < 1)then raise (Invalid_argument ("File Name needs to be atleast of length 1.", lineno))
-				else(
-					let fd =	if(flag == 0)then (open_out_gen [Open_creat ; Open_trunc ; Open_wronly] 511 x)
-								else (open_out_gen [Open_creat ; Open_append] 511 x)
-					in
-
-					| 	Clip(ar) -> let instrVal = (get_key_from_env env "instruments" (-1)) in
-									let instr_names = (match instrVal with Instruments(l) -> l | _ ->raise (Failure "can't happen")) in
-									output_string fd "[";output_string fd "\n";
-									ignore(List.fold_left
-										(fun i name ->
-											output_string fd ("\t" ^ name ^ ":\t" ^ (string_of_pattern ar.(i))); output_string fd "\n";(i+1))
-										0
-										instr_names
-										);
-									output_string fd "]";output_string fd "\n";Void
-
-					|	_			->	raise (Invalid_argument ("You can't output this to a file.", lineno))
-					)
-			| 	_ 	-> raise (Invalid_argument ("output.txtfile_option accepts a string stating the file name", lineno))
-*)
-
-
-(* 
-function calls, anything looking like a() or a(something) 
-the major 'match' is done on a
+	function calls, anything looking like a() or a(something)
+	the major 'match' is done on a
 *)
 and function_call fname fargs env lineno =
 	let fargvals = eval_arg_list fargs env in
@@ -283,8 +242,8 @@ and function_call fname fargs env lineno =
 
 
 
-(* 
-Method Calls, anything looking like a.b() or a.b(something) 
+(*
+Method Calls, anything looking like a.b() or a.b(something)
 the major 'match' is usually done on both a and b
 *)
 and method_call objectExpr mname margs env =
@@ -374,6 +333,45 @@ and method_call objectExpr mname margs env =
 						instr_names
 					);
 					output_string out "]\n";
+					Void
+					| _ -> raise (Invalid_function ("Clip method 'outputText' requires an string argument for the output file", objectExpr.lineno))
+		)
+	|	(Clip(ar), "outputMidi", [fileVal; tempoVal]) ->
+		(
+			match (fileVal, tempoVal) with
+			(Str(fileName), Int(tempo)) ->
+				if (String.length fileName) < 1 then raise (Invalid_argument ("Output filename must have 1 or more characters", objectExpr.lineno))
+				else if tempo < 1               then raise (Invalid_argument ("Tempo must be postive", objectExpr.lineno))
+				else let instrVal = get_key_from_env env "instruments" objectExpr.lineno in
+					let instr_names =
+					(
+						match instrVal with
+							Instruments(l) -> l
+						|	_ -> raise (Failure "can't happen")
+					) in
+					(* let out = open_out fileName in *)
+					let out = Unix.open_process_out ("midge -q -o " ^ fileName) in
+					output_string out ("@head {\n");
+					output_string out ("$tempo " ^ (string_of_int tempo) ^ "\n");
+					output_string out ("$time_sig 4/4" ^ "\n");
+					output_string out ("}\n");
+					output_string out "@body {\n";
+					ignore
+					(
+						List.fold_left
+						(
+							fun i name ->
+							(
+								if (List.length ar.(i)) > 0
+								then output_string out ("\t@channel 10 " ^ name ^ " { /L4/" ^ (string_of_instr_pattern ar.(i) name) ^ " }\n")
+								else ignore()
+							);
+							(i+1)
+						)
+						0
+						instr_names
+					);
+					output_string out "}\n";
 					Void
 					| _ -> raise (Invalid_function ("Clip method 'outputText' requires an string argument for the output file", objectExpr.lineno))
 		)
