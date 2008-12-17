@@ -125,7 +125,11 @@ and  beat_of_alias env alias lineno =
 
 
 (* get a string out of a pattern, pattern("0101") becomes "0101" *)
-let string_of_pattern p = List.fold_left (fun a x -> a ^ (if x then "1" else "0")) "" p
+let string_of_pattern       p   = List.fold_left (fun a x -> a ^ (if x then "1" else "0")      ) "" p
+
+let string_of_instr_pattern p i = List.fold_left (fun a x -> a ^ (if x then  i  else "r") ^ " ") "" p
+
+
 
 let state_of_beat beat =
 	match beat with

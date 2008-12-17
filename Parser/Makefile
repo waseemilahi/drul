@@ -3,7 +3,7 @@ CFLAGS = # none for now
 
 OBJS = drul_scanner.cmo drul_parser.cmo drul_types.cmo \
 	drul_helpers.cmo drul_main.cmo 
-LIBS = str.cma
+LIBS = str.cma unix.cma
 
 all : $(OBJS) interpret
 
