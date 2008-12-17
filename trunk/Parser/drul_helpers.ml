@@ -114,7 +114,7 @@ let rec get_key_from_env env key lineno =
 	if NameMap.mem key env.symbols then NameMap.find key env.symbols
 	else match env.parent with
 			Some(parent_env) -> get_key_from_env parent_env key lineno
-		|	None -> raise (Undefined_identifier (key, -1))
+		|	None -> raise (Undefined_identifier (key, lineno))
 
 and  beat_of_alias env alias lineno =
 	let currentVar = get_key_from_env env "$current" lineno
@@ -153,11 +153,11 @@ let get_instrument_pos env instrName lineno =
 	|	Failure(e)                -> raise (Failure e)
 	|	_                         -> raise (Failure "wrong exception in get_instrument_pos")
 
-let rec concat_pattern_list plist =
+let rec concat_pattern_list plist lineno =
 	match plist with
 		[]	-> []
-	|	Pattern(x)::tail -> x @ (concat_pattern_list tail)
-	| 	_ -> raise (Invalid_argument ("concat only concatenates patterns", -1))
+	|	Pattern(x)::tail -> x @ (concat_pattern_list tail) lineno
+	| 	_ -> raise (Invalid_argument ("concat only concatenates patterns", lineno))
 
 
 
@@ -194,7 +194,7 @@ let make_clip argVals env lineno =
 			match first_arg with
 				Pattern(_) -> fill_in_clip_patterns new_clip argVals 0 lineno
 			|	InstrumentAssignment(_,_) ->fill_in_clip_instr_assigns new_clip argVals env lineno
-			|	_ -> raise (Invalid_argument ("clip arguments must be patterns or instrument assignments", -1))
+			|	_ -> raise (Invalid_argument ("clip arguments must be patterns or instrument assignments", lineno))
 		)
 	)
 	with Undefined_identifier("instruments",i) -> raise (Illegal_assignment ("trying to create a clip before defining instruments", i))

@@ -61,11 +61,11 @@ and run_named_mapper mapname argList env lineno =
 	match savedmapper with
 	Mapper(mapname2,a_list,stat_list) ->
 	  (* check if we receive the good number of patterns *)
-	  if List.length a_list != List.length argList then raise (Invalid_argument ("wrong number of inputs for named mapper", -1))
+	  if List.length a_list != List.length argList then raise (Invalid_argument ("wrong number of inputs for named mapper", lineno))
 	  else if String.compare mapname mapname2 != 0 then raise (Failure "intern mapper name problem")
 	  else run_mapper stat_list argList env a_list
 	  (* if given name is not bound to a mapper, Type_error *)
-	  | _ -> raise (Type_error ("we were expecting a mapper, name associated with something else", -1))
+	  | _ -> raise (Type_error ("we were expecting a mapper, name associated with something else", lineno))
 
 (*
 	main function of a map, takes a list of statement (body of the mapper)
@@ -263,7 +263,7 @@ and function_call fname fargs env lineno =
 					Void
 				| _ -> print_endline("Dunno how to print this yet."); Void
 			)
-	|	("concat", concat_args) -> let catenated = concat_pattern_list concat_args in Pattern(catenated)
+	|	("concat", concat_args) -> let catenated = concat_pattern_list concat_args lineno in Pattern(catenated)
 	|	("rand", []) -> Int(Random.int 2)
 	|	("rand", [argVal]) ->
 		(
@@ -351,7 +351,7 @@ and method_call objectExpr mname margs env =
 			match fileVal with
 			Str(fileName) ->
 				if (String.length fileName) < 1 then raise (Invalid_argument ("Output filename must have 1 or more characters", objectExpr.lineno))
-				else let instrVal = get_key_from_env env "instruments" (-1) in
+				else let instrVal = get_key_from_env env "instruments" objectExpr.lineno in
 					let instr_names =
 					(
 						match instrVal with
