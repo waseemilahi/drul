@@ -38,6 +38,15 @@ let rec one_mapper_step maxiters current st_list env current_pattern =
 		let retval = Pattern([]) in
 		let env = add_key_to_env env "return" retval in
 		let env = add_key_to_env env "$current" (Int(current)) in
+		let block_line = (match (List.hd st_list) with 
+				Expr(e) 	-> e.lineno
+			|	Return(e)	-> e.lineno
+			|	Assign(_,_,lineno) -> lineno
+			|	MapDef(_,_,_,lineno) -> lineno
+			|	IfBlock(e,_,_) 		-> e.lineno
+			|	InstrDef(_,lineno)	-> lineno
+			|	EmptyStat	-> -1
+		) in
 		let newenv = execlist_returning st_list env in
 		let new_st = newenv.symbols in
 		let return = NameMap.find "return" new_st in
@@ -45,8 +54,11 @@ let rec one_mapper_step maxiters current st_list env current_pattern =
 		(
 			match return with
 				Pattern(bools) -> current_pattern @ bools
-			|	Beat(alias_bools,idx) -> current_pattern @ [alias_bools.(idx)]
-			|	_ -> (raise (Failure "in one_mapper_step, should not happen"))
+			|	Beat(alias_bools,idx) -> 
+					if ((idx >= 0) && (idx < (Array.length alias_bools) ))
+					then current_pattern @ [alias_bools.(idx)]
+					else current_pattern
+			|	_ -> (raise (Illegal_assignment ("attempt to return an illegal value",block_line)))
 		)
 		in
 		let current = current + 1 in

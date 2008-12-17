@@ -1,0 +1,10 @@
+mapper fred (a, b, c) {
+	; // pathology forever!
+	if (a.note() ) {
+		return true;
+	} else {
+		return b;
+	}
+}
+
+map (pattern("101"), pattern(""), pattern("10101") ) fred;
