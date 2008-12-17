@@ -22,7 +22,7 @@ open Drul_types
 open Drul_helpers
 
 (* default instruments *)
-let default_instr = ["hihat"; "snare"; "kick"];
+let default_instr = ["hh_c"; "sd_ac"; "bd"; "cowbell"];
 
 (* exception used to handle return statement, similar to MicroC from Edwards *)
 exception Return_value of drul_env
