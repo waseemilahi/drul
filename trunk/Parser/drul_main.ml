@@ -45,7 +45,7 @@ let rec one_mapper_step maxiters current st_list env current_pattern =
 		(
 			match return with
 				Pattern(bools) -> current_pattern @ bools
-			|	_ -> (raise (Failure "Jerks"))
+			|	_ -> (raise (Failure "in one_mapper_step, should not happen"))
 		)
 		in
 		let current = current + 1 in
@@ -62,7 +62,7 @@ and run_named_mapper mapname argList env lineno =
 	Mapper(mapname2,a_list,stat_list) ->
 	  (* check if we receive the good number of patterns *)
 	  if List.length a_list != List.length argList then raise (Invalid_argument ("wrong number of inputs for named mapper", lineno))
-	  else if String.compare mapname mapname2 != 0 then raise (Failure "intern mapper name problem")
+	  else if String.compare mapname mapname2 != 0 then raise (Failure "in run_named_mapper, should not happen (intern mapper name problem)")
 	  else run_mapper stat_list argList env a_list
 	  (* if given name is not bound to a mapper, Type_error *)
 	  | _ -> raise (Type_error ("we were expecting a mapper, name associated with something else", lineno))
@@ -111,7 +111,7 @@ and evaluate e env = match e.real_expr with
 		(
 			match xV with
 				Bool(x) -> Bool(not x)
-			|	_       -> raise (Type_error ("you can't contradict that, dorkface", e.lineno))
+			|	_       -> raise (Type_error ("you can't contradict that", e.lineno))
 		)
 	|	ArithBinop(aExp, operator, bExp) ->
 		let aVal = evaluate aExp env in
@@ -249,7 +249,7 @@ and function_call fname fargs env lineno =
 					(
 						match instrVal with
 							Instruments(l) -> l
-						|	_ -> raise (Failure "can't happen")
+						|	_ -> raise (Failure "in gunction_call, case (print,[v]), should not happen")
 					) in
 					print_endline "[";
 					ignore
@@ -399,10 +399,10 @@ and execute s env = match s with
 		|	_         -> let valVal = evaluate valExpr env in
 			(
 				match valVal with
-					Bool(x)         -> raise(Illegal_assignment ("do you try to assign a boolean? 20$ and I don't tell", lineno))
-				|	Str(x)          -> raise(Illegal_assignment ("do you try to assign a string? pfffff....", lineno))
-				|	Beat(x,y)       -> raise(Illegal_assignment ("do you try to assign a beat? you s*ck!", lineno))
-				|	PatternAlias(x) -> raise(Illegal_assignment ("do you try to assign a patternalias? alright, I don't even know what it is", lineno))
+					Bool(x)         -> raise(Illegal_assignment ("can't assign a boolean", lineno))
+				|	Str(x)          -> raise(Illegal_assignment ("can't assign a string", lineno))
+				|	Beat(x,y)       -> raise(Illegal_assignment ("can't assigna beat", lineno))
+				|	PatternAlias(x) -> raise(Illegal_assignment ("can't assign a PatternAlias, whatever it is", lineno))
 				| _ -> add_key_to_env env varName valVal (* Does in fact mask variables in outer scope! Not an error! *)
 			)
 	)
@@ -415,7 +415,7 @@ and execute s env = match s with
 |	Return(retExpr) ->
 	(
 		match env.parent with
-			None -> raise(Failure "no you don't")
+			None -> raise(Failure "in execute, case Return, should not happen (None parent?)")
 		| 	_    -> if (not (NameMap.mem "return" env.symbols)) then raise (Failure "still don't")
 					else
 					let retVal = evaluate retExpr env in
@@ -443,7 +443,7 @@ and execute s env = match s with
 								add_key_to_env env "instruments" instVal
 				)
 			| Instruments_redefined(e,i) -> raise (Instruments_redefined (e,i))
-			| _ -> raise (Failure "Unexpected exception during instrument definition")
+			| _ -> raise (Failure "in execute, case InstrDef, unexpected exception")
 	)
 |	EmptyStat -> env
 
