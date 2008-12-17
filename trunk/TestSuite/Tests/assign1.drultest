@@ -1,0 +1,5 @@
+
+a = 3;
+p = pattern("01");
+map (p) a;
+print("bad");

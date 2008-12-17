@@ -1,0 +1,4 @@
+
+
+a = pattern("31");
+print("bad");
