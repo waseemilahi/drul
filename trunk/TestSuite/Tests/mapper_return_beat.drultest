@@ -1,0 +1,3 @@
+print( map (pattern("1010"), pattern("1101")) {
+ if($1.note() ) { return $2; } 
+});

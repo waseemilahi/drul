@@ -45,6 +45,7 @@ let rec one_mapper_step maxiters current st_list env current_pattern =
 		(
 			match return with
 				Pattern(bools) -> current_pattern @ bools
+			|	Beat(alias_bools,idx) -> current_pattern @ [alias_bools.(idx)]
 			|	_ -> (raise (Failure "in one_mapper_step, should not happen"))
 		)
 		in
