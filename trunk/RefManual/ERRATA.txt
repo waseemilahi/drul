@@ -1,8 +1,11 @@
 CHANGES:
 	changed argument list to comma separated from space-separated
-	scoping - dynamic
+	scoping - dynamic (or is this just an erratum?)
 	string values for variables?
 	use strings (not IDs) for instruments
+	strings cannot contain newlines
+	output functions are substantially revised
+	clip creation syntax
 
 ERRATA:
 	"return" statement
