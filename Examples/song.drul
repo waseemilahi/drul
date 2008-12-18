@@ -1,0 +1,75 @@
+
+snare1 = pattern("0000100000001000");
+ kick1 = pattern("1101001101100000");
+
+mapper nor (p1, p2)
+{
+	if (p1.rest() && p2.rest()) { return pattern("1"); }
+	else                        { return pattern("0"); }
+}
+
+hat1 = map (snare1, kick1) nor;
+
+instruments();
+
+print();
+print("1st set of patterns:");
+print(clip(hat1, snare1, kick1));
+
+mapper halfTime (p)
+{
+	return concat(p.asPattern(), pattern("0"));
+}
+
+snare2 = map (snare1) halfTime;
+ kick2 = map ( kick1) halfTime;
+  hat2 = map (snare2, kick2) nor;
+
+print();
+print("2nd set of patterns (half as fast as 1st set):");
+print(clip(hat2, snare2, kick2));
+
+mapper cutNotes (p, cuts)
+{
+	if (cuts.note()) { return p; }
+}
+
+doubleTimeCuts = pattern("10").repeat(snare1.length() / 2);
+snare3 = map (snare1, doubleTimeCuts) cutNotes;
+ kick3 = map ( kick1, doubleTimeCuts) cutNotes;
+  hat3 = map (snare3, kick3) nor;
+
+print();
+print("3rd set of patterns (twice as fast as 1st set):");
+print(clip(hat3, snare3, kick3));
+
+r = pattern("0");
+
+snare1 = snare1.repeat(4);
+ kick1 =  kick1.repeat(4);
+  hat1 =   hat1.repeat(2);
+rests1 = r.repeat(snare1.length() - hat1.length());
+  hat1 = concat(rests1, hat1);
+
+snare2 = snare2.repeat(4);
+ kick2 =  kick2.repeat(4);
+  hat2 =   hat2.repeat(2);
+rests2 = r.repeat(snare2.length() - hat2.length());
+  hat2 = concat(rests2, hat2);
+
+snare3 = snare3.repeat(4);
+ kick3 =  kick3.repeat(4);
+  hat3 =   hat3.repeat(2);
+rests3 = r.repeat(snare3.length() - hat3.length());
+  hat3 = concat(rests3, hat3);
+
+cowbell = pattern("1000100010001000");
+rests   = r.repeat(cowbell.length());
+snare   = concat(rests, snare1, snare2, snare3);
+kick    = concat(rests,  kick1,  kick2,  kick3);
+hat     = concat(rests,   hat1,   hat2,   hat3);
+
+song = clip(hat, snare, kick, cowbell);
+print(song);
+song.outputMidi("song.mid", 500);
+
