@@ -242,7 +242,7 @@ let string_of_clip clip_contents env =
 
 
 let midge_of_clip clip_contents env tempo =
-	let inames = get_instr_name_array env in(* TODO: make line-number situation less stupid when dealing with instruments *)
+	let inames = get_instr_name_array env in
 	assert ((Array.length inames) >= (Array.length clip_contents));
 	let pattern_strings = Array.mapi
 		(fun idx p -> if (0 < List.length p) 
