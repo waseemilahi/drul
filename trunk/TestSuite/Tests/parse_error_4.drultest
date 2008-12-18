@@ -1,0 +1,7 @@
+// this is to show that we can have initial errors *after*
+// some comments
+foo();
+bar();
++
+= a
+;

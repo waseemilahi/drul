@@ -1,5 +1,30 @@
-%{ open Drul_ast
+%{ 
+open Drul_ast
+open Lexing
+    
 let debug str = if (true) then ignore(print_endline str) else ignore()
+
+let string_of_two_positions start_pos end_pos = 
+    let start_line = start_pos.pos_lnum in
+    let end_line = end_pos.pos_lnum in
+    let start_char = start_pos.pos_cnum - start_pos.pos_bol in
+    let end_char = end_pos.pos_cnum - end_pos.pos_bol in
+    if ( end_line = start_line ) then
+        if ( end_char == start_char )  
+            then Printf.sprintf "on line %d after character %d" 
+                start_line start_char
+            else Printf.sprintf "on line %d between characters %d and %d" 
+                start_line start_char end_char
+    else 
+        Printf.sprintf "between char %d of line %d and char %d of line %d"
+            start_char start_line end_char end_line
+
+let parse_error str = 
+    let start_pos = Parsing.symbol_start_pos() in
+    let end_pos   = Parsing.symbol_end_pos()   in
+    prerr_endline ("Syntax error " ^  string_of_two_positions start_pos end_pos);
+    exit(2)
+
 %}
 
 %token <int> IF ELSE ELSEIF RETURN

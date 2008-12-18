@@ -1,5 +1,6 @@
 {
 	open Drul_parser
+	open Lexing
 	let debugging   = ref false
 	let standalone  = ref false
 	let line_number = ref 1
@@ -8,6 +9,22 @@
 	let escape_re   = Str.regexp "\\\\\\(\\\\\\|\"\\)"
 	(* "\\\\\\([\\\"]\\)" also works, almost as ugly *)
 	let escape_repl = "\\1"
+
+
+	(* In 3.11 this is built in to Lexing, but alas, I have 3.10...*)
+	(* This code largely borrowed from a newgroup post by Till Varoquaux 
+	 * complaining about it not being built in: 
+	 * http://caml.inria.fr/pub/ml-archives/caml-list/2008/03/4575c51493931878a25de6b1712a4b24.en.html
+	 *)
+	let new_line lexbuf = 
+	incr line_number; 
+	let pos = lexbuf.lex_curr_p in
+	lexbuf.lex_curr_p <- { 
+		pos with 
+			pos_lnum = pos.pos_lnum + 1;
+			pos_bol = pos.pos_cnum 
+	}
+
 }
 
 let digit      =  ['0' - '9']+
@@ -17,7 +34,9 @@ rule token = parse
 		' '                             { debug("whitespace 'b '"); token lexbuf }
    |    '\t'                            { debug("whitespace 't'");  token lexbuf }
    |    '\r'                            { debug("whitespace 'r'");  token lexbuf }
-   |    '\n'                            { debug("whitespace 'n'"); incr line_number; token lexbuf }
+   |    '\n'                            { debug("whitespace 'n'"); 
+                                            new_line lexbuf;
+                                            token lexbuf }
    |    "//"                            { debug "COMMENT"; comment lexbuf }
    |    '('                             { debug "LPAREN"; LPAREN(!line_number) }
    |    ')'                             { debug "RPAREN"; RPAREN(!line_number) }
@@ -73,7 +92,7 @@ rule token = parse
    |    _  as char                      { raise (Failure("illegal character " ^ Char.escaped char)) }
 
 and comment = parse
-		'\n'                            { incr line_number; token lexbuf }
+		'\n'                            { new_line lexbuf; token lexbuf }
    |    eof                             { debug "EOF"; EOF(!line_number) }
    |    _                               { comment lexbuf                 }
 
