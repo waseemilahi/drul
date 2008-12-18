@@ -1,0 +1,3 @@
+p = pattern("10");
+mapper pattern (p) {}
+print("bad");

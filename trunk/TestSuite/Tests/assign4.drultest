@@ -1,0 +1,3 @@
+p = pattern("10");
+mapper slice (p) {}
+print("bad");

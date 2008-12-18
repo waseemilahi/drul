@@ -1,0 +1,3 @@
+p = pattern("10");
+mapper concat (p) {}
+print("bad");
