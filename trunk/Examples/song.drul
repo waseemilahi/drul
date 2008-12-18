@@ -72,4 +72,5 @@ hat     = concat(rests,   hat1,   hat2,   hat3);
 song = clip(hat, snare, kick, cowbell);
 print(song);
 song.outputMidi("song.mid", 500);
+song.outputLilypond("song.ly","My Very First Song");
 
