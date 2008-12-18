@@ -166,7 +166,7 @@ if __name__ == '__main__' :
 
     # check if testing program exists and can be found
     if not os.path.exists(mainprog):
-        print "you didn't install the main program, make interpret"
+        print "you didn't install the main program, make drul"
         sys.exit(0)
 
 
