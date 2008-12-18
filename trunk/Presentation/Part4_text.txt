@@ -1,1 +1,15 @@
 *** Text for Part 4 - lessons learned ***
+
+
+We have learned many things during this project, but most of them can
+be easily summarized... not by another layer of indirection, but simply
+by saying that some things are more simple to implement than others!
+
+First of all, some standards are standards for exactly that reason.
+We wanted to have list only separated by white spaces, but adding commas
+disambiguate many things for the parser.
+Dynamic scoping is also easier than static scoping: pass along a list of
+environment, and look for a variable starting from the most recent one.
+About if, ifelse, else, they seem to be efficient as a list, like (cond ...)
+in LISP. However, the easiest way to implement them is as a tree, which
+is the same representation as in the AST.
