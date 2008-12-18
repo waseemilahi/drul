@@ -216,12 +216,7 @@ and function_call fname fargs env lineno =
 			|	Int(y)     -> print_endline(string_of_int y); Void
 			|	Bool(z)    -> print_endline(if z then "TRUE" else "FALSE"); Void
 			|	Pattern(p) -> let pstr = string_of_pattern p in print_endline pstr;Void
-			|	Beat(_,_)  -> let state = state_of_beat v in print_endline
-				(
-					match state with
-						None    -> "NULL"
-					|	Some(b) -> if b then "NOTE" else "REST"
-				); Void
+			|	Beat(_,_)  -> print_endline(string_of_beat v); Void
 			|	Clip(ar) -> print_endline(string_of_clip ar env); Void
 				| _ -> print_endline("Dunno how to print this yet."); Void
 			)

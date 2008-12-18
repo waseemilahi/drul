@@ -123,17 +123,6 @@ and  beat_of_alias env alias lineno =
 			Int(currentVal) -> Beat(alias,currentVal)
 		|	_  -> raise (Failure "in beat_of_alias, can't have a non-integer in $current")
 
-(* turn a pattern into a string, using predefined strings for "yes" and "no" *)
-let folded_pattern p ifyes ifno =
-	List.fold_left (fun a x -> a ^ (if x then ifyes else ifno)) "" p
-
-
-(* get a string out of a pattern, pattern("0101") becomes "0101" *)
-let string_of_pattern p = folded_pattern p "1" "0"
-
-(* get a midge-formatted string for the supplied instrument out of a pattern *)
-let string_of_instr_pattern p i = folded_pattern p (i ^ " ") "r "
-
 let state_of_beat beat =
 	match beat with
 		Beat(pattern_data,idx) ->
@@ -228,32 +217,3 @@ let make_clip argVals env lineno =
 	)
 	with Undefined_identifier("instruments",i) -> raise (Illegal_assignment ("trying to create a clip before defining instruments", i))
 
-let string_of_clip clip_contents env =
-	let instrument_names = get_instr_name_array env in
-	assert ((Array.length instrument_names) >= (Array.length clip_contents));
-	let formatted_strings = Array.mapi 
-		(fun idx p -> instrument_names.(idx) ^":\t" ^ string_of_pattern p) 
-		clip_contents in
-	let all_patterns = Array.fold_left 
-		(fun a str -> a ^ "\t" ^ str ^ "\n") 
-		"" formatted_strings in
-	"[\n" ^ all_patterns ^ "]"
-	
-
-
-let midge_of_clip clip_contents env tempo =
-	let inames = get_instr_name_array env in
-	assert ((Array.length inames) >= (Array.length clip_contents));
-	let pattern_strings = Array.mapi
-		(fun idx p -> if (0 < List.length p) 
-			then ("\t@channel 10 " ^ inames.(idx) ^ " { /L4/" ^ (string_of_instr_pattern p inames.(idx)) ^ " }\n")
-			else ""
-		)
-		clip_contents in
-	"@head {\n" 
-		^ "$tempo " ^ (string_of_int tempo) ^ "\n" 
-		^ "$time_sig 4/4" ^ "\n"
-		^ "}\n"
-		^"@body {\n"
-		^ (Array.fold_left (fun a s->a^s) "" pattern_strings)
-		^ "\n}\n"
