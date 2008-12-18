@@ -143,6 +143,7 @@ let state_of_beat beat =
 
 (* get an array with the names of the current instruments in it *)
 let get_instr_name_array env =
+	(* TODO: make this a less hackish way to avoid passing that line-number around? *)
 	let drulInstrList = get_key_from_env env "instruments" 0 in
 	match drulInstrList with 
 			Instruments(l) -> Array.of_list l
@@ -228,7 +229,7 @@ let make_clip argVals env lineno =
 	with Undefined_identifier("instruments",i) -> raise (Illegal_assignment ("trying to create a clip before defining instruments", i))
 
 let string_of_clip clip_contents env =
-	let instrument_names = get_instr_name_array env in(* TODO: make line-number situation less stupid when dealing with instruments *)
+	let instrument_names = get_instr_name_array env in
 	assert ((Array.length instrument_names) >= (Array.length clip_contents));
 	let formatted_strings = Array.mapi 
 		(fun idx p -> instrument_names.(idx) ^":\t" ^ string_of_pattern p) 
@@ -238,3 +239,21 @@ let string_of_clip clip_contents env =
 		"" formatted_strings in
 	"[\n" ^ all_patterns ^ "]"
 	
+
+
+let midge_of_clip clip_contents env tempo =
+	let inames = get_instr_name_array env in(* TODO: make line-number situation less stupid when dealing with instruments *)
+	assert ((Array.length inames) >= (Array.length clip_contents));
+	let pattern_strings = Array.mapi
+		(fun idx p -> if (0 < List.length p) 
+			then ("\t@channel 10 " ^ inames.(idx) ^ " { /L4/" ^ (string_of_instr_pattern p inames.(idx)) ^ " }\n")
+			else ""
+		)
+		clip_contents in
+	"@head {\n" 
+		^ "$tempo " ^ (string_of_int tempo) ^ "\n" 
+		^ "$time_sig 4/4" ^ "\n"
+		^ "}\n"
+		^"@body {\n"
+		^ (Array.fold_left (fun a s->a^s) "" pattern_strings)
+		^ "\n}\n"
