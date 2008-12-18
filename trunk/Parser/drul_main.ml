@@ -23,7 +23,13 @@ open Drul_helpers
 open Drul_output
 
 (* default instruments *)
-let default_instr = ["hh_c"; "sd_ac"; "bd"; "cowbell"];
+let default_instr = ["hh_c"; "sd_ac"; "bd"; "cowbell"]
+
+let keyword_map = 
+	List.fold_left 
+	(fun m k -> NameMap.add k true m) 
+	NameMap.empty 
+	["clip";"rand";"mapper";"concat";"pattern";"return";"instruments"]
 
 (* exception used to handle return statement, similar to MicroC from Edwards *)
 exception Return_value of drul_env
@@ -387,11 +393,10 @@ and execute s env = match s with
 	)
 |	Assign(varName,valExpr, lineno) ->
 	(
-		match varName with
-			"pattern" -> raise(Illegal_assignment ("can't assign to 'pattern'", lineno))
-		|	"rand"    -> raise(Illegal_assignment ("can't assign to 'rand'",    lineno))
-		|	"clip"    -> raise(Illegal_assignment ("can't assign to 'clip'",    lineno))
-		|	_         -> let valVal = evaluate valExpr env in
+		if (NameMap.mem varName keyword_map) then 
+			raise(Illegal_assignment("can't use keyword '" ^ varName ^ "' as a variable", lineno))
+		else 
+		let valVal = evaluate valExpr env in
 			(
 				match valVal with
 					Bool(x)         -> raise(Illegal_assignment ("can't assign a boolean", lineno))
