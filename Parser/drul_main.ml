@@ -29,7 +29,7 @@ let keyword_map =
 	List.fold_left 
 	(fun m k -> NameMap.add k true m) 
 	NameMap.empty 
-	["clip";"rand";"mapper";"concat";"pattern";"return";"instruments"]
+	["clip";"rand";"mapper";"concat";"pattern";"return";"instruments";"slice"]
 
 (* exception used to handle return statement, similar to MicroC from Edwards *)
 exception Return_value of drul_env
@@ -408,6 +408,9 @@ and execute s env = match s with
 			)
 	)
 |	MapDef(mapname, formal_params, contents, lineno) ->
+	        if (NameMap.mem mapname keyword_map) 
+		then raise(Illegal_assignment("can't use keyword '" ^ mapname ^ "' as a mapper name", lineno))
+		else 
 		if (NameMap.mem mapname env.symbols) 
 		then raise (Illegal_assignment("can't give an in-use name to a mapper", lineno))
 		else
