@@ -123,13 +123,16 @@ and  beat_of_alias env alias lineno =
 			Int(currentVal) -> Beat(alias,currentVal)
 		|	_  -> raise (Failure "in beat_of_alias, can't have a non-integer in $current")
 
+(* turn a pattern into a string, using predefined strings for "yes" and "no" *)
+let folded_pattern p ifyes ifno =
+	List.fold_left (fun a x -> a ^ (if x then ifyes else ifno)) "" p
+
 
 (* get a string out of a pattern, pattern("0101") becomes "0101" *)
-let string_of_pattern       p   = List.fold_left (fun a x -> a ^ (if x then "1" else "0")      ) "" p
+let string_of_pattern p = folded_pattern p "1" "0"
 
-let string_of_instr_pattern p i = List.fold_left (fun a x -> a ^ (if x then  i  else "r") ^ " ") "" p
-
-
+(* get a midge-formatted string for the supplied instrument out of a pattern *)
+let string_of_instr_pattern p i = folded_pattern p (i ^ " ") "r "
 
 let state_of_beat beat =
 	match beat with
@@ -137,6 +140,14 @@ let state_of_beat beat =
 			let pattern_length = Array.length pattern_data in
 			if (idx < 0 or idx >= pattern_length) then None else Some(pattern_data.(idx))
 	|	_ -> raise (Failure "in state_of_beat, should not happen (not a beat?)")
+
+(* get an array with the names of the current instruments in it *)
+let get_instr_name_array env =
+	let drulInstrList = get_key_from_env env "instruments" 0 in
+	match drulInstrList with 
+			Instruments(l) -> Array.of_list l
+		| _ -> raise (Failure "slot for instruments does not contain instruments")
+
 
 (* 
 find the position of an instrument in the instruments in the env, returns -1 if doesn't find it 
@@ -185,7 +196,6 @@ similar as fill_in_clip_patterns, but deals with the InstrumentAssignments 'hiha
 let rec fill_in_clip_instr_assigns empty_clip assignment_list env lineno = match assignment_list with
 		[]	-> Clip(empty_clip) (* not technically empty any more *)
 	|	InstrumentAssignment(instrName,p)::tail ->
-			(* TODO catch possible exception from incorrect instrument name *)
 			let idx = get_instrument_pos env instrName lineno in
 			  if idx < 0 
 			  then raise (Invalid_argument ("unknown instrument name '" ^ instrName ^"'",lineno))
@@ -217,3 +227,14 @@ let make_clip argVals env lineno =
 	)
 	with Undefined_identifier("instruments",i) -> raise (Illegal_assignment ("trying to create a clip before defining instruments", i))
 
+let string_of_clip clip_contents env =
+	let instrument_names = get_instr_name_array env in(* TODO: make line-number situation less stupid when dealing with instruments *)
+	assert ((Array.length instrument_names) >= (Array.length clip_contents));
+	let formatted_strings = Array.mapi 
+		(fun idx p -> instrument_names.(idx) ^":\t" ^ string_of_pattern p) 
+		clip_contents in
+	let all_patterns = Array.fold_left 
+		(fun a str -> a ^ "\t" ^ str ^ "\n") 
+		"" formatted_strings in
+	"[\n" ^ all_patterns ^ "]"
+	

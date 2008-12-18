@@ -221,23 +221,7 @@ and function_call fname fargs env lineno =
 						None    -> "NULL"
 					|	Some(b) -> if b then "NOTE" else "REST"
 				); Void
-			|	Clip(ar) -> let instrVal = get_key_from_env env "instruments" lineno in
-					let instr_names =
-					(
-						match instrVal with
-							Instruments(l) -> l
-						|	_ -> raise (Failure "in gunction_call, case (print,[v]), should not happen")
-					) in
-					print_endline "[";
-					ignore
-					(
-						List.fold_left
-						(fun i name -> print_endline ("\t" ^ name ^ ":\t" ^ (string_of_pattern ar.(i))); (i+1))
-						0
-						instr_names
-					);
-					print_endline "]";
-					Void
+			|	Clip(ar) -> print_endline(string_of_clip ar env); Void
 				| _ -> print_endline("Dunno how to print this yet."); Void
 			)
 	|	("concat", concat_args) -> let catenated = concat_pattern_list concat_args lineno in Pattern(catenated)
@@ -342,26 +326,17 @@ and method_call objectExpr mname margs env =
 		(
 			match fileVal with
 			Str(fileName) ->
-				if (String.length fileName) < 1 then raise (Invalid_argument ("Output filename must have 1 or more characters", objectExpr.lineno))
-				else let instrVal = get_key_from_env env "instruments" objectExpr.lineno in
-					let instr_names =
-					(
-						match instrVal with
-							Instruments(l) -> l
-						|	_ -> raise (Failure "can't happen")
-					) in
+				if (String.length fileName) < 1 
+				then raise (
+					Invalid_argument ("Output filename is empty", objectExpr.lineno)
+				)
+				else 
+					let formatted_clip = string_of_clip ar env in
 					let out = open_out fileName in
-					output_string out "[\n";
-					ignore
-					(
-						List.fold_left
-						(fun i name -> output_string out ("\t" ^ name ^ ":\t" ^ (string_of_pattern ar.(i)) ^ "\n"); (i+1))
-						0
-						instr_names
-					);
-					output_string out "]\n";
-					Void
-					| _ -> raise (Invalid_function ("Clip method 'outputText' requires an string argument for the output file", objectExpr.lineno))
+						output_string out formatted_clip;
+						close_out out;
+						Void
+			| _ -> raise (Invalid_function ("Clip method 'outputText' requires an string argument for the output file", objectExpr.lineno))
 		)
 	|	(Clip(ar), "outputMidi", [fileVal; tempoVal]) ->
 		(
