@@ -285,6 +285,12 @@ and method_call objectExpr mname margs env =
 				[]  ->  Int(List.length x)
 			|	_   -> raise (Invalid_function ("Method function length expects no arguments",objectExpr.lineno))
 		)
+	|	(Pattern(x), "reverse",argVal) -> 
+					(
+						match argVal with 
+							[]		   -> Pattern(List.rev x)
+						|	_		   -> raise (Invalid_function("Method function reverse expects no arguments",objectExpr.lineno))
+					)
 	|	(Pattern(x), "slice", [startVal; lenVal]) ->
 		(
 			match (startVal, lenVal) with
