@@ -187,7 +187,8 @@ let rec fill_in_clip_instr_assigns empty_clip assignment_list env lineno = match
 	|	InstrumentAssignment(instrName,p)::tail ->
 			(* TODO catch possible exception from incorrect instrument name *)
 			let idx = get_instrument_pos env instrName lineno in
-			  if idx < 0 then raise (Invalid_argument ("unknown instrument name",lineno))
+			  if idx < 0 
+			  then raise (Invalid_argument ("unknown instrument name '" ^ instrName ^"'",lineno))
 			  else
 			ignore(empty_clip.(idx) <- p); fill_in_clip_instr_assigns empty_clip tail env lineno
 	|	Pattern(_)::tail ->raise (Invalid_argument ("clip arguments may not mix styles",lineno))
