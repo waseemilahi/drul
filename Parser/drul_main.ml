@@ -430,7 +430,12 @@ and execute s env = match s with
 			ignore(get_key_from_env env "instruments" lineno);
 			raise (Instruments_redefined ("don't do that", lineno)) (*XXX could be improved...*)
 		with
-			Undefined_identifier (_,_) -> let strList = eval_arg_list argList env in
+			Undefined_identifier (_,_) ->
+			  (* make sure were not in a map, so env.parent == None *)
+			  (match env.parent with Some(_) ->
+			   raise (Illegal_assignment ("can't define instruments inside mappers", lineno))
+			    | _ ->
+			  let strList = eval_arg_list argList env in
 				let str_to_string a =
 				(
 					match a with
@@ -444,7 +449,9 @@ and execute s env = match s with
 					|	_  -> let instVal = Instruments(stringList) in
 								add_key_to_env env "instruments" instVal
 				)
+			  )
 			| Instruments_redefined(e,i) -> raise (Instruments_redefined (e,i))
+			(*| Illegal_assignment(e,i) -> raise (Illegal_assignment (e,i))*)
 			| _ -> raise (Failure "in execute, case InstrDef, unexpected exception")
 	)
 |	EmptyStat(_) -> env
