@@ -1,1 +1,1 @@
-Illegal assignment attempted on line 1: can't assign to 'rand'
+Illegal assignment attempted on line 1: can't use keyword 'rand' as a variable

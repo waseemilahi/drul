@@ -1,1 +1,1 @@
-Illegal assignment attempted on line 1: can't assign to 'pattern'
+Illegal assignment attempted on line 1: can't use keyword 'pattern' as a variable
