@@ -1,0 +1,2 @@
+p = map (pattern("1")) {instruments("a");};
+print("bad");
