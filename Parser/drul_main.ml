@@ -322,10 +322,10 @@ and method_call objectExpr mname margs env =
 				Some(yesno) -> Pattern([yesno])
 			|	None        -> Pattern([])
 		)
-	|	(Clip(ar), "outputText", [fileVal]) ->
+	|	(Clip(ar), "outputText", args) ->
 		(
-			match fileVal with
-			Str(fileName) ->
+			match args with
+			[Str(fileName)] ->
 				if (String.length fileName) < 1 
 				then raise (
 					Invalid_argument ("Output filename is empty", objectExpr.lineno)
@@ -336,46 +336,23 @@ and method_call objectExpr mname margs env =
 						output_string out formatted_clip;
 						close_out out;
 						Void
-			| _ -> raise (Invalid_function ("Clip method 'outputText' requires an string argument for the output file", objectExpr.lineno))
+			| _ -> raise (Invalid_function ("clip method 'outputText' requires a filename", objectExpr.lineno))
 		)
-	|	(Clip(ar), "outputMidi", [fileVal; tempoVal]) ->
+	|	(Clip(ar), "outputMidi", args) ->
 		(
-			match (fileVal, tempoVal) with
-			(Str(fileName), Int(tempo)) ->
+			match args with
+			[Str(fileName); Int(tempo)] ->
 				if (String.length fileName) < 1 then raise (Invalid_argument ("Output filename must have 1 or more characters", objectExpr.lineno))
 				else if tempo < 1               then raise (Invalid_argument ("Tempo must be postive", objectExpr.lineno))
-				else let instrVal = get_key_from_env env "instruments" objectExpr.lineno in
-					let instr_names =
-					(
-						match instrVal with
-							Instruments(l) -> l
-						|	_ -> raise (Failure "can't happen")
-					) in
-					(* let out = open_out fileName in *)
+				else 
 					let out = Unix.open_process_out ("midge -q -o " ^ fileName) in
-					output_string out ("@head {\n");
-					output_string out ("$tempo " ^ (string_of_int tempo) ^ "\n");
-					output_string out ("$time_sig 4/4" ^ "\n");
-					output_string out ("}\n");
-					output_string out "@body {\n";
-					ignore
-					(
-						List.fold_left
-						(
-							fun i name ->
-							(
-								if (List.length ar.(i)) > 0
-								then output_string out ("\t@channel 10 " ^ name ^ " { /L4/" ^ (string_of_instr_pattern ar.(i) name) ^ " }\n")
-								else ignore()
-							);
-							(i+1)
-						)
-						0
-						instr_names
-					);
-					output_string out "}\n";
+					output_string out (midge_of_clip ar env tempo);
+					let output_status = (Unix.close_process_out out) in (match output_status with
+						Unix.WEXITED(_) -> ignore();
+						| _ -> raise (Failure "midge process terminated abnormally")
+						);
 					Void
-					| _ -> raise (Invalid_function ("Clip method 'outputText' requires an string argument for the output file", objectExpr.lineno))
+					| _ -> raise (Invalid_function ("clip method 'outputMidi' requires a filename and tempo", objectExpr.lineno))
 		)
 	| _ -> raise (Invalid_function ("Undefined method function",objectExpr.lineno))
 
