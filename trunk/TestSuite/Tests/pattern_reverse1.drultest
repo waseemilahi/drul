@@ -1,0 +1,5 @@
+p1 = pattern("010101");
+p2 = pattern("101010");
+
+print(concat(p2.reverse(),p1.reverse()));
+
