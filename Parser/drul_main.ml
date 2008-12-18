@@ -352,8 +352,12 @@ and method_call objectExpr mname margs env =
 		)
 	|	(Clip(ar), "outputLilypond", args) ->
 		(
-			match args with
-			[Str(fileName); Str(clipname)] ->
+			let fileName = (match args with Str(f)::_ -> f 
+				|  _ -> raise (Invalid_function ("clip method 'outputLilypond' requires a filename and title", objectExpr.lineno)))
+				in
+			let clipname = (match args with _::[] -> "DruL Output" | _::[Str(n)] -> n
+				|  _ ->raise (Invalid_function ("clip method 'outputLilypond' requires a filename and title", objectExpr.lineno)))
+				in
 				if (String.length fileName) < 1 
 				then raise (Invalid_argument ("Output filename empty", objectExpr.lineno))
 				else 
@@ -361,7 +365,6 @@ and method_call objectExpr mname margs env =
 					output_string out (lilypond_page_of_clip ar env clipname);
 					close_out out;
 					Void
-			| _ -> raise (Invalid_function ("clip method 'outputLilypond' requires a filename and title", objectExpr.lineno))
 		)
 	| _ -> raise (Invalid_function ("Undefined method function",objectExpr.lineno))
 
@@ -400,7 +403,8 @@ and execute s env = match s with
 			)
 	)
 |	MapDef(mapname, formal_params, contents, lineno) ->
-		if (NameMap.mem mapname env.symbols) then raise (Failure"don't do that")
+		if (NameMap.mem mapname env.symbols) 
+		then raise (Illegal_assignment("can't give an in-use name to a mapper", lineno))
 		else
 			let newMapper = Mapper(mapname,formal_params,contents) in
 			let newST = NameMap.add mapname newMapper env.symbols in
