@@ -29,7 +29,7 @@ let keyword_map =
 	List.fold_left 
 	(fun m k -> NameMap.add k true m) 
 	NameMap.empty 
-	["clip";"rand";"mapper";"concat";"pattern";"return";"instruments";"slice"]
+	["clip";"rand";"mapper";"concat";"pattern";"return";"instruments";"slice";"print";"output";"map";"if";"else";"elseif";"true";"false"]
 
 (* exception used to handle return statement, similar to MicroC from Edwards *)
 exception Return_value of drul_env
