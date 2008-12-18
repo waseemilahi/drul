@@ -20,6 +20,7 @@
 open Drul_ast
 open Drul_types
 open Drul_helpers
+open Drul_output
 
 (* default instruments *)
 let default_instr = ["hh_c"; "sd_ac"; "bd"; "cowbell"];
@@ -342,8 +343,8 @@ and method_call objectExpr mname margs env =
 		(
 			match args with
 			[Str(fileName); Int(tempo)] ->
-				if (String.length fileName) < 1 then raise (Invalid_argument ("Output filename must have 1 or more characters", objectExpr.lineno))
-				else if tempo < 1               then raise (Invalid_argument ("Tempo must be postive", objectExpr.lineno))
+				if (String.length fileName) < 1 then raise (Invalid_argument ("Output filename empty", objectExpr.lineno))
+				else if tempo < 1               then raise (Invalid_argument ("Tempo must be positive", objectExpr.lineno))
 				else 
 					let out = Unix.open_process_out ("midge -q -o " ^ fileName) in
 					output_string out (midge_of_clip ar env tempo);
@@ -353,6 +354,19 @@ and method_call objectExpr mname margs env =
 						);
 					Void
 					| _ -> raise (Invalid_function ("clip method 'outputMidi' requires a filename and tempo", objectExpr.lineno))
+		)
+	|	(Clip(ar), "outputLilypond", args) ->
+		(
+			match args with
+			[Str(fileName); Str(clipname)] ->
+				if (String.length fileName) < 1 
+				then raise (Invalid_argument ("Output filename empty", objectExpr.lineno))
+				else 
+					let out = open_out fileName in
+					output_string out (lilypond_page_of_clip ar env clipname);
+					close_out out;
+					Void
+			| _ -> raise (Invalid_function ("clip method 'outputLilypond' requires a filename and title", objectExpr.lineno))
 		)
 	| _ -> raise (Invalid_function ("Undefined method function",objectExpr.lineno))
 

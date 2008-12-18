@@ -2,7 +2,7 @@ OC = ocamlc
 CFLAGS = # none for now
 
 OBJS = drul_scanner.cmo drul_parser.cmo drul_types.cmo \
-	drul_helpers.cmo drul_main.cmo 
+	drul_helpers.cmo drul_output.cmo drul_main.cmo 
 LIBS = str.cma unix.cma
 
 all : $(OBJS) drul
@@ -44,6 +44,8 @@ drul_interpreter.cmx: drul_types.cmx drul_scanner.cmx drul_parser.cmx \
     drul_main.cmx drul_ast.cmi 
 drul_main.cmo: drul_types.cmo drul_helpers.cmo drul_ast.cmi 
 drul_main.cmx: drul_types.cmx drul_helpers.cmx drul_ast.cmi 
+drul_output.cmo: drul_types.cmo drul_helpers.cmo 
+drul_output.cmx: drul_types.cmx drul_helpers.cmx 
 drul_parser.cmo: drul_ast.cmi drul_parser.cmi 
 drul_parser.cmx: drul_ast.cmi drul_parser.cmi 
 drul_printer.cmo: drul_ast.cmi 
