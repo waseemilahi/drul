@@ -24,7 +24,7 @@ import tempfile
 drulpath = "../"
 testspath = "./Tests/"
 logspath = "./LOGS/"
-mainprog = "../Parser/interpret"
+mainprog = "../Parser/drul"
 
 # returns a list of file in current dir
 # to use with os.walk
