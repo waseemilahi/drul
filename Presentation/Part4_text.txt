@@ -13,3 +13,27 @@ environment, and look for a variable starting from the most recent one.
 About if, ifelse, else, they seem to be efficient as a list, like (cond ...)
 in LISP. However, the easiest way to implement them is as a tree, which
 is the same representation as in the AST.
+
+Another lessons learned is that tests are important! Fortunately, we did
+listen to you on that one, and we build our test suite early on in the
+process. We had many little random tests, done by everyone, and we did
+catch important flaws, often on matters not directly related to what was
+tested. One example, a precedence problem with the method calls: one line
+to fix, but quite some time to figure out, would have been awful to debug if 
+we had find out about it 500 hundred lines of code later.
+
+We also realized the merit of some other languages that are able to catch
+errors early, before interpreting anything. For DruL, we kept pushing the 
+errors toward the interpreter, where we would catch them when they become
+obvious. This may be due to the fact that DruL is not strongly-typed (the
+type of a variable can change).
+
+About OCaml, its inference is great... when it guess the type you want him
+to guess! otherwise, we sometimes needed almost "useless" 'match' in order
+to convince him that it will receive the right type. At the beginning of
+the project, we thought that we could have type inference ourselves...
+which fortunately we didn't try.
+
+Finally, from an organization point of view, pair programming seems to be the
+most efficient. One by itself can't take many decisions, and more than 2
+around a computer seems useless.
