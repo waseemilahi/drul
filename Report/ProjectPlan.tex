@@ -75,7 +75,7 @@ Due to the fact that all of our team members started as novice OCaml programmers
 	\item Specify pattern matched arguments and use ``match with'' syntax instead of the ``function'' shorthand for pattern matching
 	\item Encapsulate each ``match with'' clause in parentheses
 	\item Put each match case on a new line
-	\item Indent each match case and put a tab after the ``|'' separator
+	\item Indent each match case and put a tab after the ``$|$'' separator
 	\item Begin results of a match case on the same line as the ``->''
 	\item Indent subsequent lines of the results of a match case
 	\item Horizontally align similar lines of code using extra whitespace
@@ -124,13 +124,11 @@ We never reached a conensus on whether to make our OCaml identifiers CamelCase o
 \section{Roles and Responsibilities}
 * Identify roles and responsibilities of each team member
 
-Each team member volunteered for the completion of tasks.  Tasks were not divied up amongst team members in advance.  Rather, after team members finished their tasks they simply discussed what they should (or would like to) work on next with the rest of the team.  Many tasks (especially the more difficult ones) were tackled in pairs.  We found having an extra pair of eyes examining code and documentation as it was being written (i.e. paired programming) drastically cut down on the number of initial bugs and the amount of refactoring done later.
+Each team member volunteered for the completion of tasks.  Tasks were not divied up amongst team members in advance.  Rather, afte team members finished their tasks they simply discussed what they should (or would like to) work on next with the rest of the team.  Many tasks (especially the more diffuclt ones) were tackled in pairs.  We found having an extra pair of eyes examining code and documentation as it was being written (i.e. paired programming) drastically cut down on the number of initial bugs and the amount of refactoring done later.
 
 Below is a general description of the major tasks completed by each team member.  Paired efforts are noted in parentheses.  Note, that most work was with the group all in one room at one common table.  This allowed and individual or pair to ask for help or advice from the rest of the team.  This is done consistently and resulted with all members of the team being at least somewhat familiar with the impementation of almost all parts of the system.
 
-\begin{itemize}
-
-\item \textbf{Rob:}
+\subsection{Rob}
 \begin{enumerate}
 	\item As team leader, resolved minor conflicts
 	\item Proposed drumming language idea
@@ -153,7 +151,7 @@ Below is a general description of the major tasks completed by each team member.
 	\item Wrote the Project Plan section of the report
 \end{enumerate}
 
-\item \textbf{Ben:}
+\subsection{Ben}
 \begin{enumerate}
 	\item Decided on map/mapper idea
 	\item Proposal???
@@ -177,7 +175,7 @@ Below is a general description of the major tasks completed by each team member.
 	\item Updated the LRM for the report (with Waseem).  Wrote the tutorial section of the report (with Waseem)
 \end{enumerate}
 
-\item \textbf{Thierry:}
+\subsection{Thierry}
 \begin{enumerate}
 	\item Proposal???
 	\item Assisted with language design
@@ -190,14 +188,14 @@ Below is a general description of the major tasks completed by each team member.
 	\item Coded named mapper
 	\item Coded instruments and clip constructs (with Rob)
 	\item Refactored scanner, parser, and interpreter to include line numbers in error messages (with Ben)
-	\item Added tests for error messages
+	\item Added tests for error messages (with Waseem)
 	\item Fixed corner-case symbol-table bugs
 	\item Wrote part 4 of the presentation
 	\item Made the mapper animation for the presentation
 	\item Wrote the testing section of the report
 \end{enumerate}
 
-\item \textbf{Waseem:}
+\subsection{Waseem}
 \begin{enumerate}
 	\item Proposal???
 	\item Assisted with lanuage design
@@ -207,12 +205,11 @@ Below is a general description of the major tasks completed by each team member.
 	\item Coded the initial ``helloworld'' interpreter (with Rob)
 	\item Coded DruL's built-in functions and methods and added corresponding test cases (with Rob)
 	\item Coded text output
+	\item Added tests for error messages (with Thierry)
 	\item Wrote part 3 of the presentation
 	\item Updated the LRM for the report (with Ben)
 	\item Wrote the tutorial section of the report (with Ben)
 \end{enumerate}
-
-\end{itemize}
 
 \section{Tools and Languages}
 * Describe the software development environment used (tools and languages)
@@ -250,5 +247,6 @@ All documentation was produced using LaTeX with the exception of the presentatio
 We used Google Code and Subversion (SVN) for our source version control and issue tracking.
 
 \section{Project Log}
-* Include your project log
+
+See \ref{svnlog} in the Appendix for our Subversion commit log.
 
