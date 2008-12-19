@@ -29,7 +29,8 @@ let keyword_map =
 	List.fold_left 
 	(fun m k -> NameMap.add k true m) 
 	NameMap.empty 
-	["clip";"rand";"mapper";"concat";"pattern";"return";"instruments";"slice";"print";"output";"map";"if";"else";"elseif";"true";"false"]
+	["clip";"rand";"mapper";"concat";"pattern";"return";"instruments";
+	"slice";"print";"output";"map";"if";"else";"elseif";"true";"false"]
 
 (* exception used to handle return statement, similar to MicroC from Edwards *)
 exception Return_value of drul_env
@@ -293,6 +294,12 @@ and method_call objectExpr mname margs env =
 									)
 									in Pattern(subList x 1 s (s+l-1))
 			|	(_, _) -> raise (Invalid_argument ("slice must be given integers values for the start position and length", objectExpr.lineno))
+		)
+	|	(Beat(a,i), "isnull", []) -> let beatval = state_of_beat objectVal in
+		(
+			match beatval with
+				Some(_)     -> Bool(false)
+			|	None        -> Bool(true)
 		)
 	|	(Beat(a,i), "note", []) -> let beatval = state_of_beat objectVal in
 		(
