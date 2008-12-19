@@ -1,7 +1,9 @@
 \chapter{Project Plan}
 
 \section{Processes}
-* Identify process used for planning, specification, development and testing
+% Identify process used for planning, specification, development and testing
+
+Almost all planning and decision making was done as group.  The team leader resolved only very few disagreements of less importance, on which spending the time to come to a consensus was not warranted.  As explained in more detail in section 4, we made liberal use of paired programming and most coding was done in group sessions.  Documentation, including the Reference Manual and this report, was mostly done individually; each team member soley responsible for specific sections.  Our testing process made use of an automated test-suite.  After each change to the code base, the regression tests were all run, making sure that the number of tests passed always increased.  This was somewhat done in the spirit of test driven development, as we made many test cases for language features before they were implemented, and used the test cases as a ``ToDo'' list.  Our development process was also in the spirit of Agile or Extreme Programming.  We started with a minimal, yet functioning language, and incrementally added features to it, all the while maintaining a working system.  
 
 Our plan was to complete tasks in the following order, working on tasks in paralell where possible:
 
@@ -66,7 +68,7 @@ Our plan was to complete tasks in the following order, working on tasks in paral
 We initially used our own SVN server for source and documentation management.  However, we soon moved to Google Code to make used of its issues list for keeping track of bugs and the ToDo's correpsonding to the above features.
 
 \section{Style Guide}
-* Include a one-page programming style guide used by the team
+% Include a one-page programming style guide used by the team
 
 Due to the fact that all of our team members started as novice OCaml programmers and OCaml's syntax is unlike any languages our team was already familiar with, we lacked much intuition regarding good OCaml coding style.  However, over the course of our coding, the following coding practice emerged:
 
@@ -84,45 +86,45 @@ Due to the fact that all of our team members started as novice OCaml programmers
 We never reached a conensus on whether to make our OCaml identifiers CamelCase or underscore\_separated.
 
 \section{Timeline}
-* Show your project timeline
+% Show your project timeline
 
 \begin{tabular}{ | l | l | } \hline
-	\textbf{Task} & \textbf{Date(s)} \\ \hline \hline
-	Specify syntax & Oct 8 \\ \hline
-	Specify semantics & Oct 15\\ \hline
-	Write the LRM & Oct 22\\ \hline
-	AST & Nov 2 \\ \hline
-	Scanner & Nov 2 \\ \hline
-	Parser & Nov 3 \\ \hline
-	Test Suite Driver & Nov 8\\ \hline
-	Initial test cases & Nov 8\\ \hline
-	Basic Interpreter & Nov 12\\ \hline
-	Integer arithmetic & Nov 19\\ \hline
-	Boolean operations & Nov 19\\ \hline
-	Assignment statments and symbol table & Nov 19\\ \hline
-	Selection statements & Nov 19\\ \hline
-	Pattern creation and printing & Nov 19\\ \hline
-	Pattern built-in functions and methods & Nov 26\\ \hline
-	Map, mappers, and beats & Nov 26\\ \hline
-	Named mappers & Dec 03\\ \hline
-	Beat built-in methods & Dec 03\\ \hline
-	DruL GCD & Dec 10 \\  \hline
-	Instrument definition & Dec 10\\ \hline
-	Clip creation and printing & Dec 10\\ \hline
-	Clip text output & Dec 15 \\ \hline
-	Clip MIDI output & Dec 16-17 \\ \hline
-	Interpreter command-line argument & Dec 16 \\ \hline
-	Detailed error messages & Dec 16 \\ \hline
-	Error message line numbers & Dec 16 \\ \hline
-	Clip Lilypond output & Dec 17 \\ \hline
-	Trapped parse errors & Dec 17 \\ \hline
-	DruL song & Dec 17 \\ \hline
-	Presentation slides & Dec 17-18 \\ \hline
-	Report & Dec 18-19 \\ \hline
+	\textbf{Task}                          & \textbf{Date(s)}\\ \hline\hline
+	Specify syntax                         & Oct  8          \\ \hline
+	Specify semantics                      & Oct 15          \\ \hline
+	Write the LRM                          & Oct 22          \\ \hline
+	AST                                    & Nov  2          \\ \hline
+	Scanner                                & Nov  2          \\ \hline
+	Parser                                 & Nov  3          \\ \hline
+	Test Suite Driver                      & Nov  8          \\ \hline
+	Initial test cases                     & Nov  8          \\ \hline
+	Basic Interpreter                      & Nov 12          \\ \hline
+	Integer arithmetic                     & Nov 19          \\ \hline
+	Boolean operations                     & Nov 19          \\ \hline
+	Assignment statments and symbol table  & Nov 19          \\ \hline
+	Selection statements                   & Nov 19          \\ \hline
+	Pattern creation and printing          & Nov 19          \\ \hline
+	Pattern built-in functions and methods & Nov 26          \\ \hline
+	Map, mappers, and beats                & Nov 26          \\ \hline
+	Named mappers                          & Dec 03          \\ \hline
+	Beat built-in methods                  & Dec 03          \\ \hline
+	DruL GCD                               & Dec 10          \\ \hline
+	Instrument definition                  & Dec 10          \\ \hline
+	Clip creation and printing             & Dec 10          \\ \hline
+	Clip text output                       & Dec 15          \\ \hline
+	Clip MIDI output                       & Dec 16-17       \\ \hline
+	Interpreter command-line argument      & Dec 16          \\ \hline
+	Detailed error messages                & Dec 16          \\ \hline
+	Error message line numbers             & Dec 16          \\ \hline
+	Clip Lilypond output                   & Dec 17          \\ \hline
+	Trapped parse errors                   & Dec 17          \\ \hline
+	DruL song                              & Dec 17          \\ \hline
+	Presentation slides                    & Dec 17-18       \\ \hline
+	Report                                 & Dec 18-19       \\ \hline
 \end{tabular}
 
 \section{Roles and Responsibilities}
-* Identify roles and responsibilities of each team member
+% Identify roles and responsibilities of each team member
 
 Each team member volunteered for the completion of tasks.  Tasks were not divied up amongst team members in advance.  Rather, after team members finished their tasks they simply discussed what they should (or would like to) work on next with the rest of the team.  Many tasks (especially the more difficult ones) were tackled in pairs.  We found having an extra pair of eyes examining code and documentation as it was being written (i.e. paired programming) drastically cut down on the number of initial bugs and the amount of refactoring done later.
 
@@ -156,7 +158,7 @@ Below is a general description of the major tasks completed by each team member.
 \item \textbf{Ben:}
 \begin{enumerate}
 	\item Decided on map/mapper idea
-	\item Proposal???
+	\item Assisted with writing proposal
 	\item Assited with language design
 	\item Wrote the Types, Statments, Blocks and Scoping sections of the LRM
 	\item Coded the AST (with Rob)
@@ -179,7 +181,7 @@ Below is a general description of the major tasks completed by each team member.
 
 \item \textbf{Thierry:}
 \begin{enumerate}
-	\item Proposal???
+	\item Assisted with writing proposal
 	\item Assisted with language design
 	\item Wrote the Instrument, Clip, and Output sections of the LRM
 	\item Setup replacement Google Code repository
@@ -199,7 +201,7 @@ Below is a general description of the major tasks completed by each team member.
 
 \item \textbf{Waseem:}
 \begin{enumerate}
-	\item Proposal???
+	\item Assisted with writing proposal
 	\item Assisted with lanuage design
 	\item Wrote the Example Code section of the LRM
 	\item Coded the scanner
@@ -216,7 +218,7 @@ Below is a general description of the major tasks completed by each team member.
 \end{itemize}
 
 \section{Tools and Languages}
-* Describe the software development environment used (tools and languages)
+% Describe the software development environment used (tools and languages)
 
 All of our source code was written using OCaml with the exception of the special syntaxes used by ocamllex and ocamlyacc, and the test-suite driver which was written in Python.
 
@@ -251,5 +253,5 @@ All documentation was produced using LaTeX with the exception of the presentatio
 We used Google Code and Subversion (SVN) for our source version control and issue tracking.
 
 \section{Project Log}
-* Include your project log
+% Include your project log
 
