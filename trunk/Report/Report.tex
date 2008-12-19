@@ -5,7 +5,19 @@
 \usepackage{amsmath}
 \usepackage[usenames]{color}
 \usepackage{listings}
-
+\usepackage{lscape}
+\usepackage{appendix}
+%Margin fix from http://www.tex.ac.uk/cgi-bin/texfaq2html?label=chngmargonfly
+\newenvironment{changemargin}[2]{%
+  \begin{list}{}{%
+    \setlength{\topsep}{0pt}%
+    \setlength{\leftmargin}{#1}%
+    \setlength{\rightmargin}{#2}%
+    \setlength{\listparindent}{\parindent}%
+    \setlength{\itemindent}{\parindent}%
+    \setlength{\parsep}{\parskip}%
+  }%
+  \item[]}{\end{list}}
 \pagestyle{plain}
 
 \setlength{\voffset}{0pt}
@@ -51,9 +63,12 @@
 \input{Lessons}
 
 \appendix
+\appendixpage
+\addappheadtotoc
+
 \chapter{Project Log (SVN Commit Log)}
 \label{svnlog}
 \lstinputlisting{SvnLog.txt}
-
+\input{CodeListings}
 \end{document}
 
