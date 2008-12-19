@@ -375,8 +375,8 @@ associative-array notation:
 \begin{verbatim}
 clip1 = clip
 (
-    bassdrum <- downbeats
-    hihat    <- alternate_beats
+    ``bassdrum'' <- downbeats,
+    ``hihat''    <- alternate_beats
 );
 \end{verbatim}
 The same result can be achieved by simply listing the patterns for each instrument in the order they are defined using the \textbf{instruments} function:
@@ -384,7 +384,7 @@ The same result can be achieved by simply listing the patterns for each instrume
 \begin{verbatim}
 clip2 = clip
 (
-    alternate_beats
+    alternate_beats,
     downbeats
     // remaining instruments have an empty beat-pattern
 );
@@ -393,14 +393,13 @@ clip2 = clip
 The patterns passed into clips are passed by value, not by reference.
 
 
-
+Clips also have a small selection of output methods, discussed in the section below.
 
 
 \subsection{Outputs}
 
-DruL has two kinds of outputs, the first one displays a
-representation of some data, the second one transforms a clip into a
-more complex representation, like MIDI.
+DruL has two kinds of outputs: any data structure can be printed to standard output for debugging purposes, and clips may be output into files as text or using some
+more complex representation, such as MIDI or Lilypond (for PDF conversion).
 
 \subsubsection{Standard output}
 
@@ -420,145 +419,42 @@ the pattern. For example, if we have a pattern
 \end{verbatim}
 The output is "0101";
 
-The \textbf{print} function always include a plateform appropriate line
+The \textbf{print} function always include a platform-appropriate line
 ending.
 
-\subsubsection{Text}
+\subsubsection{Text file}
 
-Similar as \textbf{print}, DruL can output the representation of any type 
-to a file. The command is:
+Using the same format as is used by \textbf{print}, DruL can print a text representation of a clip to a file
+using the \textbf{outputText} method of the clip:
+
 \begin{verbatim}
-output.txtfile("myfile.txt","DruL");
-output.txtfile("myfile.txt",pattern("01"));
+myClip.outputText("myfile.txt");
 \end{verbatim}
 
 The file being written to is truncated if it exists, and created if it does not exist.
 
-\subsubsection{MIDI}
+\subsubsection{MIDI file}
 
-The function \textbf{output.midi("my.file",clip,tempo)} outputs a clip as a MIDI
-file with filename "my.file". \textbf{tempo} is a positive integer that
-represents the beats per minute (BPM). 
+The method \textbf{outputMidi} requires a filename and a tempo for the MIDI file to be produced (in beats per minute--this must be a positive integer).
+
+\begin{verbatim}
+myClip.outputMidi(``myfile.mid'',120);
+\end{verbatim}
+
 The transformation from clip to MIDI may rely
 on external libraries like MIDGE\footnote{\url{http://www.undef.org.uk/code/midge/}}. There is no guarantee on which of the three existing MIDI formats is used.
 DruL tries to match its instrument definition with MIDI instruments definitions
 using the names. If no match can be found, DruL will use a default MIDI instrument (first one is cow bell).
 
+\subsubsection{Lilypond file}
 
-
-
-\clearpage
-
-\section{Example Code}
-
-The following example DruL code demonstrates the use of the basic functions of the language.
-Consult the definitions above for verification purposes.
+The clip method \textbf{outputLilypond} operates similarly to the above, but takes a title (to be printed at the top of the page of typeset music) as an optional second argument:
 
 \begin{verbatim}
-//This code manipulates some patterns, associate them to instruments and
-//sends them to outputs.
-//First the Instrument definition. It has to be done before 
-//any clips are created, otherwise there will be an error.
-
-instruments(hihat bassdrum crash snare); //define four instruments
-
-//Integer variables used as tempos for clips.
-
-a = 350;
-b = 300;
-
-//Patterns.
-
-p1 = pattern("100100100");
-p2 = pattern("");//empty pattern
-p3 = pattern("0");//pattern with only one 'rest' in it.
-p4 = pattern("1");//pattern with only one 'note' in it.
-
-//p_concat is essentially concatenation of three patterns.
-
-p_concat = concat(p1 pattern("11110000") pattern("00011"));
-
-//Make a new pattern using above patterns and 
-//the library methods 'repeat' and 'slice'. 
-
-p_custom = concat( p2 p3.repeat(2) p4.repeat(3) 
-    p3.repeat(2) p4.repeat(4) p_concat );
-p_custom_new = concat(p_custom p3.repeat(2) p_concat p4.repeat(3));
-p_new = concat( p_custom_new.slice(4,10) 
-    p_concat.slice(5,p1.length) p3.repeat(7) );
-
+myClip.outputLilypond(``myfile.ly'', ``My New Drum Loop'');
 \end{verbatim}
+
+
+For best results, the resulting Lilypond file will need to be typeset using an external program (Lilypond, one presumes).
+
 \clearpage
-\begin{verbatim}
-//Now some complex pattern manipulation.
-
-//New Patterns.
-
-alternate_beats = pattern("10").repeat(8);
-P_concat_new = concat(p_concat p_custom);
-
-//Anonymous mapping.
-
-p_new_rev = map (p_new)
-{
-    if ($1.rest) { pattern("1"); }
-    else 	       { pattern("0");  }
-};
-
-//Mapper definitions. 
-
-mapper newMapper1 (p_any)
-{
-    if (p_any.note) 			 { return pattern("1"); }
-    else        	   	 { return pattern("");  }
-}
-
-mapper newMapper2 (p_any alternate_beats)
-{
-    if (alternate_beats.rest) { return pattern("");} //pattern of length 0
-    elseif (p_any.note)       { return pattern("1");}
-    else                      { return pattern("0");}
-}
-
-mapper improved_newMapper2(p_any alternate_beats)
-{
-    if (alternate_beats.rest)   { return pattern("");  }
-    elseif (p_any.note)         { return pattern("1"); }
-    elseif (p_any.next(1).note) { return pattern("1"); }
-    else                        { return pattern("0"); }
-}
-
-p_custom_new_notes 		 = map (p_custom_new) myMapper1;
-p_concat_new_downbeats = map (p_concat_new) newMapper2;
-
-//print out the created patterns to Standard Output.
-
-print("Output from Sample DruL Code:");
-print(p_concat);
-print(p_custom);
-print(p_custom_new);
-print(p_new);
-print(p_new_rev);
-print(p_custom_new_notes);
-print(p_concat_new_downbeats);
-print("END OF OUTPUT");
-
-//Pattern associations using clips.
-
-clip_complete = clip
-(
- hihat    = p_concat_new_downbeats 
- bassdrum = p_custom_new_notes
- crash    = p_new_rev
- snare    = p_new
-);
-
-//output clip as a midi file
-out.midi("out_file1.midi",clip_complete,a);//a = tempo (Beats per minute)
-
-// Last instrument has an empty beat-pattern.
-clip_partial = clip(p_concat p_custom_new p_custom);
-
-//output clip as a midi file
-out.midi("out_file2.midi",clip_partial,b);//b = tempo
-\end{verbatim}
