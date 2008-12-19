@@ -143,7 +143,7 @@ and evaluate e env = match e.real_expr with
 				(Int(a), Add,  Int(b)) -> Int(a + b)
 			|	(Int(a), Sub,  Int(b)) -> Int(a - b)
 			|	(Int(a), Mult, Int(b)) -> Int(a * b)
-			|	(Int(a), Div,  Int(b)) -> Int(a / b)
+			|	(Int(a), Div,  Int(b)) -> if(b != 0) then Int(a / b) else raise (Illegal_division( "Divisor evaluates to 0", e.lineno))
 			|	(Int(a), Mod,  Int(b)) -> Int(a mod b)
 			|	_ -> raise (Type_error ("cannot do arithmetic on non-integers", e.lineno))
 		)
