@@ -29,6 +29,7 @@ exception Invalid_argument      of string * int
 exception Undefined_identifier  of string * int
 exception Illegal_assignment    of string * int
 exception Instruments_redefined of string * int
+exception Illegal_division		of string * int
 
 type pattern       = bool list
 type pattern_alias = bool array

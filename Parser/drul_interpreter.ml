@@ -40,3 +40,4 @@ with Type_error(msg,line)         -> Printf.fprintf stderr "Type error on line %
 | Illegal_assignment(msg,line)    -> Printf.fprintf stderr "Illegal assignment attempted on line %d: %s\n" line msg
 | Instruments_redefined(msg,line) -> Printf.fprintf stderr "Instrument redefinition attempted on line %d: %s\n" line msg
 | Failure(msg)                    -> Printf.fprintf stderr "Untrapped internal error! (error message: %s)\n" msg
+| Illegal_division(msg,line)	  -> Printf.fprintf stderr "Division by zero attempted on line %d: %s\n" line msg
