@@ -7,11 +7,11 @@ Let me get back to you on taht one
 
 \section{The Very Basics}
 
-The {\tt drul}  command can take DruL code either from the standard input or as a file specified on the command line ({\tt drul mysource.drul}).  Examples in this section should work equally well if passed in either way.  
+The {\tt drul} command can take DruL code either from the standard input or as a file specified on the command line ({\tt drul mysource.drul}).  Examples in this section should work equally well if passed in either way.
 
 \subsection{Say hello!}
 
-Because it is traditional, albeit almost completely irrelevant to this language, here is our first 
+Because it is traditional, albeit almost completely irrelevant to this language, here is our first
 DruL program:
 
 \begin{lstlisting}
@@ -32,7 +32,7 @@ print(a + b);
 
 This should print out the number ``650'', again on a line by itself.
 
-Now, with some variables defined, we can proceed quickly through the rest of the features that 
+Now, with some variables defined, we can proceed quickly through the rest of the features that
 you might guess are present from the above:
 
 
@@ -68,7 +68,7 @@ p4 = pattern("100100100");
 \end{lstlisting}
 
 Each time a ``1'' appears in the string you pass to {\tt pattern}, the resulting pattern carries the instruction to play on that beat; when a ``0'' appears, the pattern contains a rest.
-You may notice that we also have explanatory comments in this code: comments in DruL begin with ``//'' and continue to the end of the current line (there are no multi-line comments). 
+You may notice that we also have explanatory comments in this code: comments in DruL begin with ``//'' and continue to the end of the current line (there are no multi-line comments).
 
 To see the contents of a pattern you have created, you can always just print it out:
 
@@ -79,12 +79,12 @@ print(p);
 
 
 \section{Combining Patterns}
-	
+
 Once you have a pattern or two, DruL gives you several ways to build new ones.  Using the {\tt concat} function, you can combine them end-to-end:
 \begin{lstlisting}
 catenated = concat(
-	p1, 
-	pattern("11110000"), 
+	p1,
+	pattern("11110000"),
 	pattern("00011")
 );
 \end{lstlisting}
@@ -94,13 +94,13 @@ Pattern objects also have a {\tt repeat} method, which produces a new pattern co
 
 \begin{lstlisting}
 p_custom = concat(
-	p2, 
+	p2,
 	p3.repeat(2),
 	p4.repeat(3),
 	p3.repeat(2),
 	p4.repeat(4)
 );
-\end{lstlisting}	
+\end{lstlisting}
 \section{Manipulating Patterns}
 
 Patterns also have methods that allow you to produce new patterns that are not simply combinations of old ones laid end to end.
@@ -125,12 +125,12 @@ But the most powerful mechanism for creating new and different patterns is the {
 
 \begin{lstlisting}
 reversed = map (p_new) {
-    if ($1.rest()) { return pattern("1"); }
-    else 	       { return pattern("0");  }
+	if ($1.rest()) { return pattern("1"); }
+	else 	       { return pattern("0"); }
 };
 \end{lstlisting}
 
-The {\tt map} function moves from beat to beat of the pattern it is passed, setting the variable {\tt \$1} to the point to the current beat of the first (and in this case, the only) pattern in its argument list.  After each step, it stores the value that is returned, and in the end, it concatenates all these patterns together to form the new pattern that is created by this map.  
+The {\tt map} function moves from beat to beat of the pattern it is passed, setting the variable {\tt \$1} to the point to the current beat of the first (and in this case, the only) pattern in its argument list.  After each step, it stores the value that is returned, and in the end, it concatenates all these patterns together to form the new pattern that is created by this map.
 
 You might be wondering, at this point, if it is legal to return a pattern that is longer or shorter than one beat.  The answer, happily, is ``yes!''  To produce, for example, a pattern that has an extra rest inserted after every note, we could do this:
 
@@ -156,7 +156,7 @@ The same result could be achieved using a series of calls to {\tt slice} and {\t
 If one of the patterns passed to {\tt map} is longer than the others, {\tt map} will continue until it reaches the end of the longest pattern--the beats of the patterns that have already ended are considered to be neither notes nor rests (and will return false if either of those methods is called).
 
 We've mentioned beats as if they were objects once or twice, and in fact they are--you can't create them directly, but {\tt map} does it for you.  You've seen two of the methods you can call on beats ({\tt note} and {\tt rest}, but there are two more that make {\tt map} even more powerful:  {\tt prev} and {\tt next}.
-Calling {\tt prev} with an integer argument returns the beat in the same pattern from that many beats ago in the pattern (and you can probably guess now {\tt next} works).  These beats may be from before the beginning or after the end of the pattern, in which case they behave just as described in the previous paragraph: both the {\tt note} and {\tt rest} methods will return {\tt false}.
+Calling {\tt prev} with an integer argument returns the beat in the same pattern from that many beats ago in the pattern (and you can probably guess how {\tt next} works).  These beats may be from before the beginning or after the end of the pattern, in which case they behave just as described in the previous paragraph: both the {\tt note} and {\tt rest} methods will return {\tt false}.
 
 \begin{lstlisting}
 new_pattern = map (old_pattern) {
@@ -188,32 +188,32 @@ instruments("hihat","bassdrum","crash","snare");
 If you want to use the default instruments, you can simply call {\tt instruments} with no arguments, but you have to call it once (and exactly once) before you get to the next step: using the {\tt clip} function to bring all of your patterns into one place.
 \begin{lstlisting}
 my_first_clip = clip(
-    "hihat" <- pattern("00100010"),
-    "bassdrum" <- pattern("10001000"),
-    "crash" <- pattern("10000000"),
-    "snare" <- pattern("01110111")
+	"hihat" <- pattern("00100010"),
+	"bassdrum" <- pattern("10001000"),
+	"crash" <- pattern("10000000"),
+	"snare" <- pattern("01110111")
 );
 \end{lstlisting}
 Of course, this is a little verbose--if you're specifying the patterns in the order they appear in the instrument definition list, you can just pass the patterns you want as arguments, instead of using the fancy syntax above:
 \begin{lstlisting}
 my_first_clip = clip(
-    	pattern("00100010"),
-    	pattern("10001000"),
+	pattern("00100010"),
+	pattern("10001000"),
 	pattern("10000000"),
 	pattern("01110111")
 );
 \end{lstlisting}
 
 \section{The Big Payoff}
-Now that we know how to assemble patterns into a song, all that's left is to see what our song looks like 
+Now that we know how to assemble patterns into a song, all that's left is to see what our song looks like
 when we bring it back to the outside world.  There are three easy ways to do this (other, of course, than a simple {\tt print} call).  First, you can call the {\tt outputText} method to print your song to a text file:
 \begin{lstlisting}
 instruments();  // default instruments: hihat, snare, kick-drum and cowbell
 
 song = clip(
-    	pattern("00100010"),
+	pattern("00100010"),
 	pattern("01110111"),
-    	pattern("10001000"),
+	pattern("10001000"),
 	pattern("10000000")
 );
 song.outputText("my_song.txt");

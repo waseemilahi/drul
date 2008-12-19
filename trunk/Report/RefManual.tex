@@ -4,7 +4,7 @@
 
 DruL is mainly an imperative programming language, however it borrows ideas (map and filter) from the functional paradigm.  In addition to integers, DruL's main datatypes are pattern and clip. Instruments are defined as constants.
 
-DruL programs do not contain any loops or user-defined functions.  All pattern 
+DruL programs do not contain any loops or user-defined functions.  All pattern
 and clip creation and manipulation is done using the map construct described below.
 
 \section{Language Manual}
@@ -18,7 +18,7 @@ DruL has no multi-line comment syntax.
 
 \subsubsection{Whitespace}
 
-Space, tab, end of line, and return are all considered the same 
+Space, tab, end of line, and return are all considered the same
 and their only use is to seperate tokens.
 
 \subsubsection{Characters}
@@ -39,16 +39,16 @@ All identifiers in a given scope, be they mapper names, variables, or built-in f
 \subsubsection{Keywords}
 
 \begin{table}[htb]
-\begin{center} 
-\begin{tabular}{llll} 
-  return   & rand    & clip       & mapper \\
+\begin{center}
+\begin{tabular}{llll}
+  return & rand    & clip       & mapper \\
   if     & pattern & instrument & print  \\
-  elseif & concat  & map     & output \\
-  else   & true    & false & rand 
+  elseif & concat  & map        & rand   \\
+  else   & true    & false      &
 \end{tabular}
 %\caption{\small{.}}
 \label{tab:keywords}
-\end{center} 
+\end{center}
 \end{table}
 
 
@@ -65,7 +65,7 @@ Values in DruL are strongly typed, but the type of a variable is determined dyna
 All integers are base 10, and may optionally be preceded by a sign ({\tt \textbf + -}).
 Any sequence of digits ($0$ through $9$) is valid.  Leading $0$s are ignored, so a sequence such as $0000123$  is interpreted as $123$.  Integers are mutable.
 
-\textbf{rand} is the function that returns a non-negative number. It either accepts a positive integer argument, in which case it returns a random number between 0(including 0 of course) and the value of the argument provided to \textbf{rand} , or no argument in which case \textbf{rand} returns either 0 or 1.
+\textbf{rand} is a function that returns a non-negative number.  It either accepts a positive integer argument, in which case it returns a random number between 0 (inclusive) the argument (exclusive), or no argument in which case \textbf{rand} returns either 0 or 1.
 \begin{verbatim}
 r = rand();
 s = rand(19);
@@ -85,14 +85,10 @@ A clip is a mapping of patterns to instruments. Clips are processed in sequence 
 
 \subsubsection{string}
 
-A string constant begins with an ASCII double-quote character, continues 
-with an arbitrary sequence of ASCII characters other than $\backslash$, $''$, and the ASCII newline character, 
-and concludes with another $''$ character.  If a $\backslash$ or $''$ character is 
+A string constant begins with an ASCII double-quote character, continues
+with an arbitrary sequence of ASCII characters other than $\backslash$, $''$, and the ASCII newline character,
+and concludes with another $''$ character.  If a $\backslash$ or $''$ character is
 desired, it can be escaped using the $\backslash$ character.
-
-
-
-
 
 \subsection{Statements}
 
@@ -106,8 +102,8 @@ The precedence table for operators in DruL is given here:
 
 \begin{tabular}{ l |l| l}
 \hline\hline
-Operators         & Notes                            & Associativity \\
-\hline $ . $      & Method call                      & left to right \\
+Operators         & Notes                            & Associativity \\ \hline
+$ . $             & Method call                      & left to right \\
 $-$  $!$          & Unary minus and logical negation & right to left \\
 $*$ $/$ $\%$      & Standard C meanings              & left to right \\
 $+$ $-$           & Addition/subtraction             & left to right \\
@@ -127,10 +123,10 @@ A primary expression consists of a constant (integer or string), an identifier, 
 
 Arguments to functions, methods and mappers are evaluated in applicative order, left to right within a given list.  (Arguments are also passed by value, not by reference.)  Depending on the function or method in question, functions and methods may return values of any type, including boolean values (which cannot be assigned to variables); mappers, by their nature, always return patterns.
 
-\emph{arglist}: \textbf ( \emph{expression} \textbf ) $|$  \textbf ( \emph{expression} 
+\emph{arglist}: \textbf ( \emph{expression} \textbf ) $|$  \textbf ( \emph{expression}
 \textbf{,} \emph{arglist} \textbf )
 
-\emph{method-call} : \emph{identifier} \textbf . \emph{identifier arglist} 
+\emph{method-call} : \emph{identifier} \textbf . \emph{identifier arglist}
 
 \emph{function-call} : \emph{identifier} \emph{arglist}
 
@@ -138,7 +134,7 @@ Arguments to functions, methods and mappers are evaluated in applicative order, 
 
 \emph{mapper} : \emph{identifier} $|$ \emph{block}
 
-\emph{block} : \textbf{\{} \emph{statement-list} \textbf{\}} 
+\emph{block} : \textbf{\{} \emph{statement-list} \textbf{\}}
 
 \emph{statement-list}: \emph{statement} $|$ \emph{statement statement-list}
 
@@ -162,7 +158,7 @@ Here again we follow the conventions of C, and give $\&\&$ precedence over $||$.
 
 \subsubsection{Assignment Statements}
 
-Assignment in DruL is not a simple operator to be placed in the middle of an expression.  Rather, it is a separate type of statement, which may appear anywhere another statement may appear.  
+Assignment in DruL is not a simple operator to be placed in the middle of an expression.  Rather, it is a separate type of statement, which may appear anywhere another statement may appear.
 
 \begin{center}
 \emph{assignment-statement}: \emph{identifier} \textbf{=}  \emph{expression-statement}
@@ -179,17 +175,17 @@ Selection statements in DruL take the following form: the string \textbf{if}, fo
 \emph{selection-statement} : \textbf{if ( } \emph{boolean-expression} \textbf{ )}\emph{block if-tail}
 
 \emph{if-tail} : $\epsilon$ $|$ \emph{if-middle} $|$
-	\emph{if-middle} \textbf{else \{} \emph{statement-list} \textbf{\}} 
+\emph{if-middle} \textbf{else \{} \emph{statement-list} \textbf{\}}
 
-\emph{if-middle} : $\epsilon$ $|$   \textbf{elseif ( } \emph{boolean-expression} \textbf{ ) \{} \emph{statement-list} \textbf{\}} \emph{if-middle} 
+\emph{if-middle} : $\epsilon$ $|$ \textbf{elseif ( } \emph{boolean-expression} \textbf{ ) \{} \emph{statement-list} \textbf{\}} \emph{if-middle}
 
 \subsubsection{Mapper Definition Statements}\label{MapperDefinitionStatement}
 
 A mapper definition consists of the word \textbf{Mapper}, followed by an identifier, followed by a parenthesized list of comma-separated identifiers, followed by a block.
 
-\emph{mapper-definition} : \textbf{mapper} \emph{identifier namelist block} 
+\emph{mapper-definition} : \textbf{mapper} \emph{identifier namelist block}
 
-\emph{namelist}: \textbf ( \emph{identifier} \textbf ) $|$  \textbf ( \emph{identifier} 
+\emph{namelist}: \textbf ( \emph{identifier} \textbf ) $|$  \textbf ( \emph{identifier}
 \textbf{,} \emph{namelist} \textbf )
 
 \subsubsection{Return statements}
@@ -198,7 +194,7 @@ A return statement can only appear inside the statement block of a named or anon
 
 \emph{return} : \textbf{return} \emph{expression}
 
-If this statement is reached, the value of  \emph{expression} will be the output of this iteration of the mapper block.  Accordingly, this expression must evaluate to either a pattern or a beat value.
+If this statement is reached, the value of \emph{expression} will be the output of this iteration of the mapper block.  Accordingly, this expression must evaluate to either a pattern or a beat value.
 
 \subsubsection{Instrument definition}
 
@@ -206,7 +202,7 @@ This is a special statement that closely resembles a function call:
 
 \emph{instrument-definition}: \textbf{instruments (} \emph{arglist} \textbf{)}
 
-The arguments to this pseudo-function must all evaluate to strings.  See section \ref{instrSection} for 
+The arguments to this pseudo-function must all evaluate to strings.  See section \ref{instrSection} for
 a detailed discussion.
 
 \subsection{Blocks, namespace and scoping}
@@ -219,22 +215,17 @@ Mapper definitions define a new closed scope (one from within which externally d
 
 \subsubsection{Namespace}
 
-DruL has one namespace shared by variables, built-in functions and 
+DruL has one namespace shared by variables, built-in functions and
 mapper names. Additionally, each type has an associated namespace for methods.  Technically speaking, mappers are values like any other, and their names can be re-used, but this is strongly discouraged.
 
 \subsubsection{Scoping}
 
-Variables in DruL are dynamically scoped.  
+Variables in DruL are dynamically scoped.
 DruL has one top level scope, and one scope for each mapper that the program enters
 (named or anonymous). Mappers may call each other (or themselves) recursively, and may be defined within other mappers, so a hierarchy of substantial depth can (in principle) be achieved.
 Within each scope, a program has read-only access to all variables and mapper names
 defined in the scopes above it in this hierarchy: attempts to assign to a variable from an outer scope
 will produce a new variable in the inner scope, which masks the original variable.
-
-
-
-
-
 
 \subsection{Patterns and pattern operations}
 
@@ -275,26 +266,23 @@ The value of \textit{len} is $6$.
 The \textbf{slice} method gives you a subpattern from a pattern.
 It takes two arguments: first is index (starting at $1$) and second is
 length of the desired subpattern. Requesting a subpattern out of range will
-raise an error. Example:
+raise an error.  Example:
 \begin{verbatim}
   psub = pattern("101010").slice(2, 3);
 \end{verbatim}
-\textit{psub} is "010".
+\textit{psub} is ``010''.
 
-The \textbf{reverse} method gives the reverse pattern from a pattern.
-\textbf{reverse} doesn't take any arguments and simply returns the reverse of the original pattern.
-
+The \textbf{reverse} method returns the reverse of a pattern.
+It doesn't take any arguments.
 \begin{verbatim}
-  prev = pattern("101010").reverse();
+  preverse = pattern("111000").reverse();
 \end{verbatim}
-\textit{prev} is "010101".
+\textit{preverse} is ``000111''.
 
 Finally, you can have an empty pattern of length $0$:
 \begin{verbatim}
   p8 = pattern("");
 \end{verbatim}
-
-
 
 \subsubsection{Map}\label{MapSection}
 
@@ -303,7 +291,7 @@ The \textbf{map} construct is used to create new patterns from existing ones.
 The beats in the patterns are iterated over from left to right.
 The output of a map is a new pattern.  For example:
 \begin{verbatim}
-p9 = pattern("101");
+p9  = pattern("101");
 p10 = map(p9)
 {
     if ($1.note()) { return pattern("11"); }
@@ -317,24 +305,36 @@ p10 is ``11011''.
 Within a mapper function, the current beat of each pattern argument is aliased to the special mapper variables \$1, \$2, \$3... and so on.  This notation is mandatory in anonymous mapper functions such as the example above. If you use \$N while there is fewer than N arguments, DruL will raise an error.
 
 DruL uses the \textbf{beat} methods \textbf{note}, \textbf{rest} and \textbf{null} to check whether
-the current beat is a note, a rest, or null.  
+the current beat is a note, a rest, or null.
 \textit{\$1.note} returns \textbf{true} if there is a note on the current beat in the first pattern argument, and \textbf{false} otherwise.
 
-DruL uses the \textbf{beat} methods \textbf{prev} and \textbf{next} to access the previous and following beats of the pattern to which a given beat belongs. These methods can be passed a single argument which specifies how far forward or back in the pattern to go.  For example:
+One can use the \textbf{beat} method \textbf{asPattern} to convert as beat to a pattern.  This way, one can then make use
+of functions and methods of patterns.  For example:
 \begin{verbatim}
-p11 = map( pattern("1101") )
+p11 = map( pattern("1111") )
+{
+    return concat($1.asPattern(), pattern("0"));
+};
+\end{verbatim}
+p11 is ``10101010''.
+
+DruL uses the \textbf{beat} methods \textbf{prev} and \textbf{next} to access the previous and following beats of the pattern to which a given beat belongs.  These methods can be passed a single argument which specifies how far forward or back in the pattern to go.  For example:
+\begin{verbatim}
+p12 = map( pattern("1101") )
 {
     if ($1.note() && $1.next(1).note()) { return pattern("1"); }
     else                                { return pattern("0"); }
 };
 \end{verbatim}
-p11 is ``1000''.  \textbf{next} may return a NULL beat as it does when called in the last iteration of the above example.  When used with a NULL beat, both the \textbf{note} and \textbf{rest} methods will return \textit{false}.  
+p12 is ``1000''.
+
+\textbf{next} may return a NULL beat as it does when called in the last iteration of the above example.  When used with a NULL beat, both the \textbf{note} and \textbf{rest} methods will return \textit{false}.
 
 If you call map on multiple patterns that are not of the same length, the shorter patterns will be padded with NULL beats.
 
-Each new pattern constructed by map begins as an empty string.  As the pattern arugments are iterated over, the return values of the mapper function (which are also patterns) are concatenated onto the end of the new pattern.
+By default, an empty pattern is returned for each iteration.
 
-By default, an empty pattern is returned.
+Each new pattern constructed by map begins as an empty string.  As the pattern arugments are iterated over, the return values of the mapper function (which are also patterns) are concatenated onto the end of the new pattern.
 
 Variables defined in a mapper function are garbage collected at the end of the map.
 
@@ -344,12 +344,12 @@ Mapper functions may also be defined with a name, to be used elsewhere in the pr
 
 For example, the above example could have been written in the following way:
 \begin{verbatim}
-mapper mymapper (p)
+mapper myMapper(p)
 {
-    if (p.note()) { return pattern("11"); }
-    else        { return pattern("0");  }
-}
-p10 = map(p9) mymapper;
+    if (p.note() && p.next(1).note()) { return pattern("1"); }
+    else                              { return pattern("0"); }
+};
+p12 = map(pattern("1101")) myMapper;
 \end{verbatim}
 
 Recall from section \ref{MapperDefinitionStatement} that a  Mapper definition includes a name for the mapper and  a \emph{namelist} of formal arguments.
@@ -357,10 +357,6 @@ When a named mapper is used in a \textbf{map} call, each pattern that is passed 
 Then, within the body of the mapper, the current beat of each pattern is aliased to that name, as well as to ``\$$n$''.
 
 A mapper function must be defined before it is used.
-
-
-
-
 
 \subsection{Clips}
 
@@ -375,7 +371,7 @@ This function can take a variable number of arguments.  Each argument is the nam
 instruments(``hihat'',``bassdrum'',``crash'',``snare'');
 \end{verbatim}
 
-Instruments must be defined before any clips have been defined. This function 
+Instruments must be defined before any clips have been defined. This function
 can only be called once. Also, it cannot be called from inside a mapper.
 
 \subsubsection{Clips}
@@ -388,12 +384,11 @@ associative-array notation:
 \begin{verbatim}
 clip1 = clip
 (
-    ``bassdrum'' <- downbeats,
-    ``hihat''    <- alternate_beats
+    "bassdrum" <- downbeats,
+    "hihat"    <- alternate_beats
 );
 \end{verbatim}
 The same result can be achieved by simply listing the patterns for each instrument in the order they are defined using the \textbf{instruments} function:
-% TODO comment got moved then moved back
 \begin{verbatim}
 clip2 = clip
 (
@@ -405,9 +400,7 @@ clip2 = clip
 \end{verbatim}
 The patterns passed into clips are passed by value, not by reference.
 
-
 Clips also have a small selection of output methods, discussed in the section below.
-
 
 \subsection{Outputs}
 
@@ -466,7 +459,6 @@ The clip method \textbf{outputLilypond} operates similarly to the above, but tak
 \begin{verbatim}
 myClip.outputLilypond(``myfile.ly'', ``My New Drum Loop'');
 \end{verbatim}
-
 
 For best results, the resulting Lilypond file will need to be typeset using an external program (Lilypond, one presumes).
 
