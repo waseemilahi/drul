@@ -84,11 +84,14 @@ and run_named_mapper mapname argList env lineno =
 	match savedmapper with
 	Mapper(mapname2,a_list,stat_list) ->
 	  (* check if we receive the good number of patterns *)
-	  if List.length a_list != List.length argList then raise (Invalid_argument ("wrong number of inputs for named mapper", lineno))
-	  else if String.compare mapname mapname2 != 0 then raise (Failure "in run_named_mapper, should not happen (intern mapper name problem)")
+	  if List.length a_list != List.length argList then raise 
+	  	(Invalid_argument ("wrong number of inputs for named mapper", lineno))
+	  else if String.compare mapname mapname2 != 0 then raise 
+	  	(Failure "in run_named_mapper, should not happen (intern mapper name problem)")
 	  else run_mapper stat_list argList env a_list
 	  (* if given name is not bound to a mapper, Type_error *)
-	  | _ -> raise (Type_error ("we were expecting a mapper, name associated with something else", lineno))
+	  | _ -> raise 
+	  	(Type_error ("we were expecting a mapper, name associated with something else", lineno))
 
 (*
 	main function of a map, takes a list of statement (body of the mapper)
@@ -144,7 +147,8 @@ and evaluate e env = match e.real_expr with
 				(Int(a), Add,  Int(b)) -> Int(a + b)
 			|	(Int(a), Sub,  Int(b)) -> Int(a - b)
 			|	(Int(a), Mult, Int(b)) -> Int(a * b)
-			|	(Int(a), Div,  Int(b)) -> if(b != 0) then Int(a / b) else raise (Illegal_division( "Divisor evaluates to 0", e.lineno))
+			|	(Int(a), Div,  Int(b)) -> if(b != 0) then Int(a / b) else raise 
+					(Illegal_division( "Divisor evaluates to 0", e.lineno))
 			|	(Int(a), Mod,  Int(b)) -> Int(a mod b)
 			|	_ -> raise (Type_error ("cannot do arithmetic on non-integers", e.lineno))
 		)
@@ -207,7 +211,8 @@ and function_call fname fargs env lineno =
 								match str with
 									"0" -> false
 								|	"1" -> true
-								|	_   -> raise (PatternParse_error ("Patterns definitions must be a string of 0's and 1's", lineno))
+								|	_   -> raise (PatternParse_error 
+									("Patterns definitions must be a string of 0's and 1's", lineno))
 							) :: bl
 						)
 						[] charlist
@@ -233,12 +238,15 @@ and function_call fname fargs env lineno =
 		(
 			match argVal with
 				Int(bound) -> if bound > 0 then Int(Random.int bound)
-							  else raise (Invalid_argument ("the rand function expects a positive integer argument", lineno))
-			|	_ -> raise (Invalid_argument ("the rand function expects an integer argument", lineno))
+							  else raise 
+							  	(Invalid_argument ("'rand' expects a positive integer argument", lineno))
+			|	_ -> raise (Invalid_argument ("'rand' expects an integer argument", lineno))
 		)
-	|	("rand", _) -> raise (Invalid_argument ("the rand function expects a single, optional, positive, integer argument", lineno))
+	|	("rand", _) -> raise 
+			(Invalid_argument ("'rand' expects a single, optional, positive, integer argument", lineno))
 	|	("clip", argList) -> make_clip argList env lineno
-	|	(other, _) -> (* TODO: currently also catches invalid argument-counts, which should probably be intercepted further up the line *)
+	|	(other, _) -> (* TODO: currently also catches invalid argument-counts, 
+						which should probably be intercepted further up the line *)
 			let msg = "Function name '" ^ other ^ "' is not a valid function." in
 				raise (Invalid_function (msg, lineno))
 
@@ -251,6 +259,7 @@ the major 'match' is usually done on both a and b
 and method_call objectExpr mname margs env =
 	let objectVal = evaluate objectExpr env in
 	let argVals	  = eval_arg_list margs env in
+	let lineno = objectExpr.lineno 		    in
 	match (objectVal, mname, argVals) with
 		(Pattern(x), "repeat", margs) ->
 		(
@@ -258,31 +267,35 @@ and method_call objectExpr mname margs env =
 				[argVal] ->
 				(
 					match argVal with
-					Int(y) -> if      (y  < 0) then raise (Invalid_argument ("Repeat can only accept non-negative integers", objectExpr.lineno))
+					Int(y) -> if      (y  < 0) then raise 
+								(Invalid_argument ("Repeat can only accept non-negative integers", lineno))
 							  else if (y == 0) then Pattern([])
 							  else let rec repeatPattern p n = if n == 1 then p else p @ repeatPattern p (n-1)
 							  in Pattern(repeatPattern x y)
-					| _ -> raise (Invalid_function ("Method function repeat expects an integer argument", objectExpr.lineno))
+					| _ -> raise 
+						(Invalid_function ("Method repeat expects an integer argument", lineno))
 				)
-			|	_ -> raise (Invalid_function ("Method function repeat expects a single argument", objectExpr.lineno))
+			|	_ -> raise (Invalid_function ("Method repeat expects a single argument", lineno))
 		)
 	|	(Pattern(x), "length", margs) ->
 		(
 			 match margs with
 				[]  ->  Int(List.length x)
-			|	_   -> raise (Invalid_function ("Method function length expects no arguments",objectExpr.lineno))
+			|	_   -> raise (Invalid_function ("Method length expects no arguments", lineno))
 		)
 	|	(Pattern(x), "reverse",argVal) -> 
 					(
 						match argVal with 
 							[]		   -> Pattern(List.rev x)
-						|	_		   -> raise (Invalid_function("Method function reverse expects no arguments",objectExpr.lineno))
+						|	_		   -> raise (Invalid_function("Method reverse expects no arguments",lineno))
 					)
 	|	(Pattern(x), "slice", [startVal; lenVal]) ->
 		(
 			match (startVal, lenVal) with
-				(Int(s), Int(l)) -> if s < 1 || (s > List.length x && List.length x > 0) then raise (Invalid_argument("the start position is out of bounds", objectExpr.lineno))
-									else if l < 0  then raise (Invalid_argument ("the length must be non-negative",objectExpr.lineno))
+				(Int(s), Int(l)) -> if s < 1 || (s > List.length x && List.length x > 0) 
+									then raise (Invalid_argument("the start position is out of bounds", lineno))
+									else if l < 0  then raise 
+										(Invalid_argument ("the length must be non-negative", lineno))
 									else  let rec subList inList i minPos maxPos =
 									(
 										match inList with
@@ -290,10 +303,11 @@ and method_call objectExpr mname margs env =
 										| head::tail -> if      i < minPos then subList tail (i+1) minPos maxPos
 														else if i = maxPos then [head]
 														else if i > maxPos then []
-														else                    head :: (subList tail (i+1) minPos maxPos)
+														else           head :: (subList tail (i+1) minPos maxPos)
 									)
 									in Pattern(subList x 1 s (s+l-1))
-			|	(_, _) -> raise (Invalid_argument ("slice must be given integers values for the start position and length", objectExpr.lineno))
+			|	(_, _) -> raise 
+				(Invalid_argument ("slice must be given integer values for start position and length", lineno))
 		)
 	|	(Beat(a,i), "isnull", []) -> let beatval = state_of_beat objectVal in
 		(
@@ -317,13 +331,15 @@ and method_call objectExpr mname margs env =
 		(
 			match offsetVal with
 				Int(offsetInt) -> let newidx = i - offsetInt in Beat(a,newidx)
-			|	_              -> raise (Invalid_function ("Beat method 'prev' requires an integer argument", objectExpr.lineno))
+			|	_              -> raise 
+					(Invalid_function ("Beat method 'prev' requires an integer argument", lineno))
 		)
 	|	(Beat(a,i), "next", [offsetVal]) ->
 		(
 			match offsetVal with
 				Int(offsetInt) -> let newidx = i + offsetInt in Beat(a,newidx)
-			|	_              -> raise (Invalid_function ("Beat method 'next' requires an integer argument", objectExpr.lineno))
+			|	_              -> raise 
+					(Invalid_function ("Beat method 'next' requires an integer argument", lineno))
 		)
 	|	(Beat(a,i), "asPattern", []) -> let beatval = state_of_beat objectVal in
 		(
@@ -337,7 +353,7 @@ and method_call objectExpr mname margs env =
 			[Str(fileName)] ->
 				if (String.length fileName) < 1 
 				then raise (
-					Invalid_argument ("Output filename is empty", objectExpr.lineno)
+					Invalid_argument ("Output filename is empty", lineno)
 				)
 				else 
 					let formatted_clip = string_of_clip ar env in
@@ -345,14 +361,16 @@ and method_call objectExpr mname margs env =
 						output_string out formatted_clip;
 						close_out out;
 						Void
-			| _ -> raise (Invalid_function ("clip method 'outputText' requires a filename", objectExpr.lineno))
+			| _ -> raise (Invalid_function ("clip method 'outputText' requires a filename", lineno))
 		)
 	|	(Clip(ar), "outputMidi", args) ->
 		(
 			match args with
 			[Str(fileName); Int(tempo)] ->
-				if (String.length fileName) < 1 then raise (Invalid_argument ("Output filename empty", objectExpr.lineno))
-				else if tempo < 1               then raise (Invalid_argument ("Tempo must be positive", objectExpr.lineno))
+				if (String.length fileName) < 1
+					then raise (Invalid_argument ("Output filename empty", lineno))
+				else if tempo < 1               
+					then raise (Invalid_argument ("Tempo must be positive", lineno))
 				else 
 					let out = Unix.open_process_out ("midge -q -o " ^ fileName) in
 					output_string out (midge_of_clip ar env tempo);
@@ -361,25 +379,28 @@ and method_call objectExpr mname margs env =
 						| _ -> raise (Failure "midge process terminated abnormally")
 						);
 					Void
-					| _ -> raise (Invalid_function ("clip method 'outputMidi' requires a filename and tempo", objectExpr.lineno))
+					| _ -> raise 
+						(Invalid_function ("clip method 'outputMidi' requires a filename and tempo", lineno))
 		)
 	|	(Clip(ar), "outputLilypond", args) ->
 		(
 			let fileName = (match args with Str(f)::_ -> f 
-				|  _ -> raise (Invalid_function ("clip method 'outputLilypond' requires a filename and title", objectExpr.lineno)))
+				|  _ -> raise 
+					(Invalid_function ("clip method 'outputLilypond' requires a filename and title", lineno)))
 				in
 			let clipname = (match args with _::[] -> "DruL Output" | _::[Str(n)] -> n
-				|  _ ->raise (Invalid_function ("clip method 'outputLilypond' requires a filename and title", objectExpr.lineno)))
+				|  _ ->raise 
+					(Invalid_function ("clip method 'outputLilypond' requires a filename and title", lineno)))
 				in
 				if (String.length fileName) < 1 
-				then raise (Invalid_argument ("Output filename empty", objectExpr.lineno))
+				then raise (Invalid_argument ("Output filename empty", lineno))
 				else 
 					let out = open_out fileName in
 					output_string out (lilypond_page_of_clip ar env clipname);
 					close_out out;
 					Void
 		)
-	| _ -> raise (Invalid_function ("Undefined method function",objectExpr.lineno))
+	| _ -> raise (Invalid_function ("Undefined method function",lineno))
 
 
 
@@ -409,9 +430,10 @@ and execute s env = match s with
 					Bool(x)         -> raise(Illegal_assignment ("can't assign a boolean", lineno))
 				|	Str(x)          -> raise(Illegal_assignment ("can't assign a string", lineno))
 				|	Beat(x,y)       -> raise(Illegal_assignment ("can't assigna beat", lineno))
-				|	PatternAlias(x) -> raise(Illegal_assignment ("can't assign a PatternAlias, whatever it is", lineno))
+				|	PatternAlias(x) -> raise(Illegal_assignment ("can't assign a PatternAlias", lineno))
 				|	Mapper(_,_,_)	-> raise(Illegal_assignment ("can't assign a mapper",lineno))
-				| _ -> add_key_to_env env varName valVal (* Does in fact mask variables in outer scope! Not an error! *)
+				| _ -> add_key_to_env env varName valVal 
+					(* Does in fact mask variables in outer scope! Not an error! *)
 			)
 	)
 |	MapDef(mapname, formal_params, contents, lineno) ->

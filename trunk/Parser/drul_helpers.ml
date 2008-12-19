@@ -176,9 +176,13 @@ and fills it from a pattern list
 let rec fill_in_clip_patterns empty_clip pattern_list idx lineno = match pattern_list with
 		[] -> Clip(empty_clip) (* not technically empty any more *)
 			(* TODO: catch array out of bounds here *)
-	|	Pattern(p)::tail -> ignore(empty_clip.(idx) <- p); fill_in_clip_patterns empty_clip tail (idx + 1) lineno
-	|	InstrumentAssignment(_,_)::tail -> raise (Invalid_argument ("clip arguments may not mix styles", lineno))
-	| 	_ -> raise (Invalid_argument ("clip arguments must all evaluate to patterns", lineno))
+	|	Pattern(p)::tail -> 
+			ignore(empty_clip.(idx) <- p); 
+			fill_in_clip_patterns empty_clip tail (idx + 1) lineno
+	|	InstrumentAssignment(_,_)::tail -> 
+			raise (Invalid_argument ("clip arguments may not mix styles", lineno))
+	| 	_ -> 
+			raise (Invalid_argument ("clip arguments must all evaluate to patterns", lineno))
 
 (*
 similar as fill_in_clip_patterns, but deals with the InstrumentAssignments 'hihat' <- pattern("1")
@@ -212,8 +216,10 @@ let make_clip argVals env lineno =
 			match first_arg with
 				Pattern(_) -> fill_in_clip_patterns new_clip argVals 0 lineno
 			|	InstrumentAssignment(_,_) ->fill_in_clip_instr_assigns new_clip argVals env lineno
-			|	_ -> raise (Invalid_argument ("clip arguments must be patterns or instrument assignments", lineno))
+			|	_ -> raise 
+					(Invalid_argument ("clip arguments must be patterns or instrument assignments", lineno))
 		)
 	)
-	with Undefined_identifier("instruments",i) -> raise (Illegal_assignment ("trying to create a clip before defining instruments", i))
+	with Undefined_identifier("instruments",i) -> raise 
+		(Illegal_assignment ("trying to create a clip before defining instruments", i))
 

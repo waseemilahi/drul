@@ -1,5 +1,6 @@
-(* helper functions for fancy forms of output 
-	* created by Ben Warfield
+(* helper functions for all non-trivial forms of output 
+	* created by Ben Warfield 
+	* (contents also authored partially by Rob Stewart--this file is a refactor)
 	* 12/17/2008
 *)
 
@@ -12,7 +13,11 @@ open Drul_helpers
  *)
 
 let lilypond_staff_format  = (
-	"\t\\new DrumStaff\n\t\\with{ \n\t\tinstrumentName = \"%s\"\n\t\tdrumStyleTable = #percussion-style \n\t\t\\override StaffSymbol #'line-count = #1\n\t\t\\remove Time_signature_engraver	\n\t}\n\t\\drummode { %s }\n"
+	"	\\new DrumStaff\n\t\\with{
+		instrumentName = \"%s\"
+		drumStyleTable = #percussion-style 
+		\\override StaffSymbol #'line-count = #1
+		\\remove Time_signature_engraver	\n\t}\n\t\\drummode { %s }\n"
 	: ('a -> 'b -> 'c, unit, string) format 
 	)
 
@@ -75,7 +80,10 @@ let midge_of_clip clip_contents env tempo =
 	assert ((Array.length inames) >= (Array.length clip_contents));
 	let pattern_strings = Array.mapi
 		(fun idx p -> if (0 < List.length p) 
-			then ("\t@channel 10 " ^ inames.(idx) ^ " { /L4/" ^ (string_of_instr_pattern p inames.(idx)) ^ " }\n")
+			then (
+				"\t@channel 10 " ^ inames.(idx) ^ " { /L4/" 
+				^ (string_of_instr_pattern p inames.(idx)) ^ " }\n"
+			)
 			else ""
 		)
 		clip_contents in
