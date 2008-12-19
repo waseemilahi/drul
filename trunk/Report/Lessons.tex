@@ -1,3 +1,4 @@
+%!TEX root =  Report.tex
 % lessons learned, one section per team member
 
 \chapter{Lessons Learned}
@@ -10,6 +11,34 @@ again.
 \section{Rob (team leader)}
 
 \section{Ben}
+
+I was surprised and impressed with how effective pair programming turned out to be.
+Leaving aside the technical issues, having  second check on "the obvious way to do things"
+prevented me from getting into several potentially painful situations, when there was a
+much simpler solution available (this is especially relevant when working with a new 
+language, of course).
+
+Despite the amount of work done with pair programming, we still ran into some 
+forms of communication trouble.  In retrospect, a little more discussion up front
+about standards for code format and design (and for version control use) would 
+have been helpful, at least in theory (it's hard to have a 
+coding standard for a language that you don't actually know).  
+Our error messages ended up 
+somewhat inconsistent, and our log messages were sometimes uninformative (especially at first):
+better up-front coordination could have prevented those problems.  
+
+It is tempting to say that a more careful up-front design would have been well-advised, since it would 
+definitely have been helpful--but since we were creating something we didn't really know how to create,
+using a language none of us was tremendously familiar with, it is unclear that spending more time on
+up-front design would actually have been productive in this case.  
+Smaller-scale design issues, on the other hand, would have benefitted from a bit more forethought:
+we ended up with several somewhat inconsistent APIs for related helper functions, which could easily have been avoided by a little up-front communication or earlier and more aggressive refactoring.
+We did refactor often to retrofit better design onto the code we had written (made simpler by the easy-to-run regression test suite), but more aggressive refactoring of minor concerns would probably have sped things up toward the end, and would certainly have left us  with a more maintainable final product.  The type-checking and type-inference features of OCaml make this form of refactoring much safer than it is in many languages, and we should have taken more advantage.
+
+More importantly,from the moment that we had working code, we should have made more active use
+of Subversion's branching capabilities, to avoid worries about breaking the main source tree while working on major features.  We ended up re-inventing branching at least once, and leaving the entire 
+tree in a non-working state for a couple of evenings, which could readily have been avoided.
+
 
 \section{Thierry}
 One part of the code I especially worked on is the test suite, but I still
