@@ -44,7 +44,7 @@ All identifiers in a given scope, be they mapper names, variables, or built-in f
   return   & rand    & clip       & mapper \\
   if     & pattern & instrument & print  \\
   elseif & concat  & map     & output \\
-  else   & true    & false &
+  else   & true    & false & rand 
 \end{tabular}
 %\caption{\small{.}}
 \label{tab:keywords}
@@ -65,6 +65,11 @@ Values in DruL are strongly typed, but the type of a variable is determined dyna
 All integers are base 10, and may optionally be preceded by a sign ({\tt \textbf + -}).
 Any sequence of digits ($0$ through $9$) is valid.  Leading $0$s are ignored, so a sequence such as $0000123$  is interpreted as $123$.  Integers are mutable.
 
+\textbf{rand} is the function that returns a non-negative number. It either accepts a positive integer argument, in which case it returns a random number between 0(including 0 of course) and the value of the argument provided to \textbf{rand} , or no argument in which case \textbf{rand} returns either 0 or 1.
+\begin{verbatim}
+r = rand();
+s = rand(19);
+\end{verbatim}
 \subsubsection{pattern}
 
 A pattern is essentially an object that holds binary, discrete, time-series data.  At each discrete-time step, which will henceforth be referred to as a beat, there is either a note or a rest.  For the non-musically inclined, a note represents sound produced by the striking of a drum (or similar instrument) and a rest represents the absence of any such sound.  Patterns are immutable.  When a pattern is manipulated, the target pattern remains intact and a new copy is created.  The length of a patten can be any non-negative integer.
@@ -252,6 +257,7 @@ Patterns can be concatenated to form new patterns.  The \textbf{concat} function
 \end{verbatim}
 \textit{pcat} will be equal to 1010101110001.
 
+
 The \textbf{repeat} method is a shortcut to concatenate the same pattern many times:
 \begin{verbatim}
   pcat2 = concat(p1, p1, p1);
@@ -275,6 +281,13 @@ raise an error. Example:
 \end{verbatim}
 \textit{psub} is "010".
 
+The \textbf{reverse} method gives the reverse pattern from a pattern.
+\textbf{reverse} doesn't take any arguments and simply returns the reverse of the original pattern.
+
+\begin{verbatim}
+  prev = pattern("101010").reverse();
+\end{verbatim}
+\textit{prev} is "010101".
 
 Finally, you can have an empty pattern of length $0$:
 \begin{verbatim}
@@ -359,7 +372,7 @@ This can only be done once per program, and uses the instruments function.
 This function can take a variable number of arguments.  Each argument is the name of an instrument to be defined.  In the example below, four instruments are defined:
 
 \begin{verbatim}
-instruments("hihat","bassdrum","crash","snare");
+instruments(``hihat'',``bassdrum'',``crash'',``snare'');
 \end{verbatim}
 
 Instruments must be defined before any clips have been defined. This function 
@@ -375,8 +388,8 @@ associative-array notation:
 \begin{verbatim}
 clip1 = clip
 (
-    "bassdrum" <- downbeats,
-    "hihat"    <- alternate_beats
+    ``bassdrum'' <- downbeats,
+    ``hihat''    <- alternate_beats
 );
 \end{verbatim}
 The same result can be achieved by simply listing the patterns for each instrument in the order they are defined using the \textbf{instruments} function:
@@ -438,11 +451,11 @@ The file being written to is truncated if it exists, and created if it does not 
 The method \textbf{outputMidi} works similarly, but in addition to the filename, it requires a tempo for the MIDI file to be produced (in beats per minute--this must be a positive integer).
 
 \begin{verbatim}
-myClip.outputMidi("myfile.mid",120);
+myClip.outputMidi(``myfile.mid'',120);
 \end{verbatim}
 
 The transformation from clip to MIDI may rely
-on external libraries like MIDGE\footnote{Still \url{http://www.undef.org.uk/code/midge/}}. There is no guarantee on which of the three existing MIDI formats is used.
+on external libraries like MIDGE\footnote{\url{http://www.undef.org.uk/code/midge/}}. There is no guarantee on which of the three existing MIDI formats is used.
 DruL tries to match its instrument definition with MIDI instruments definitions
 using the names. If no match can be found, DruL will use a default MIDI instrument (first one is cow bell).
 
@@ -451,7 +464,7 @@ using the names. If no match can be found, DruL will use a default MIDI instrume
 The clip method \textbf{outputLilypond} operates similarly to the above, but takes a title (to be printed at the top of the page of typeset music) as an optional second argument:
 
 \begin{verbatim}
-myClip.outputLilypond("myfile.ly", "My New Drum Loop");
+myClip.outputLilypond(``myfile.ly'', ``My New Drum Loop'');
 \end{verbatim}
 
 
