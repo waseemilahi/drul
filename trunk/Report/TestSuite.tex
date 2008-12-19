@@ -12,10 +12,32 @@ Section \ref{ts:samples} and explain what they test.
 
 
 \subsection{Overview} \label{ts:overview}
+We built two different testing functions in order to debug DruL and help is
+maintainability: \textbf{LaunchTestParser} and \textbf{LaunchTest}. There
+usage is very similar.
 
+\textbf{LaunchTestParser}'s goal is to make sure every meaningful DruL code
+passes throught the scanner and parser without errors. We do not make sure
+that malformed DruL code is intercepted. The program passes a set of DruL code
+samples to the interpreter, and report whether a message error was produced.
+This sort of testing was very useful at the beginning of the project, but
+was later replaced by the more general \textbf{LaunchTest}.
+
+\textbf{LaunchTest} takes a set of DruL code samples, pass them to the
+interpreter, and compares the output with some predefined output. Therefore,
+we can test both cases that fail (by catching the error message) or that
+correctly pass (by printing to the standard output).
 
 
 \subsection{Implementation} \label{ts:implem}
+We implemented the two above testing programs in Python. This scripting
+language allows for rapid development and has an excellent packages for
+handling files. A test file has to have a certain extension (\textit{.drultest})
+and so does the desired output (\textit{.drultestout}).
+We 
+
+
+
 
 
 \subsection{Sample tests} \label{ts:samples}
