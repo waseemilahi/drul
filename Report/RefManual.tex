@@ -2,16 +2,10 @@
 \chapter{Language Reference Manual}
 \section{Introduction}
 
-DruL is a programming language designed for composing drum music.  Unlike other more general-purpose music programming languages (ChucK, SuperCollider, Nyquist, Haskore), DruL's focus is on defining and manipulating beat patterns and is unconcerned with pitches, sound durations, or audio effects.
-
-DruL is mainly an imperative programming language, however it borrows ideas (map and filter) from the functional paradigm.  In additions to integers, DruL's main datatypes are pattern and clip. Instruments are defined as constants.  See below for further details.
+DruL is mainly an imperative programming language, however it borrows ideas (map and filter) from the functional paradigm.  In additions to integers, DruL's main datatypes are pattern and clip. Instruments are defined as constants.
 
 DruL programs do not contain any loops or user-defined functions.  All pattern 
 and clip creation and manipulation is done using the map construct described below.
-
-
-
-
 
 \section{Language Manual}
 
@@ -87,7 +81,7 @@ A clip is a mapping of patterns to instruments. Clips are processed in sequence 
 \subsubsection{string}
 
 A string constant begins with an ASCII double-quote character, continues 
-with an arbitrary sequence of ASCII characters other than $\backslash$ and $''$, 
+with an arbitrary sequence of ASCII characters other than $\backslash$, $''$, and the ASCII newline character, 
 and concludes with another $''$ character.  If a $\backslash$ or $''$ character is 
 desired, it can be escaped using the $\backslash$ character.
 
@@ -97,7 +91,7 @@ desired, it can be escaped using the $\backslash$ character.
 
 \subsection{Statements}
 
-In the most common case, a statement consists of a single expression followed by a semicolon (``;'').  Importantly, unlike many languages with similar syntax, DruL does \emph{not} consider a block to be equivalent to a statement.  Instead, statements in DruL take one of the four forms below.
+In the most common case, a statement consists of a single expression followed by a semicolon (``;'').  Importantly, unlike many languages with similar syntax, DruL does \emph{not} consider a block to be equivalent to a statement.  Instead, statements in DruL take one of the six forms below.
 
 \subsubsection{Expression Statements}
 
@@ -124,16 +118,18 @@ The subsections that follow use the model of the C Language Reference Manual to 
 
 A primary expression consists of a constant (integer or string), an identifier, or a parenthesized expression.
 
-\paragraph{Function and Method calls}
+\paragraph{Function, Method, and Mapper calls}
 
-Functions and method calls associate right to left.  Depending on the function or method in question, they may return values of any type, including boolean values (which cannot be assigned to variables). Arguments to function and method calls are passed by value, not by reference.
+Arguments to functions, methods and mappers are evaluated in applicative order, left to right within a given list.  (Arguments are also passed by value, not by reference.)  Depending on the function or method in question, functions and methods may return values of any type, including boolean values (which cannot be assigned to variables); mappers, by their nature, always return patterns.
 
 \emph{arglist}: \textbf ( \emph{expression} \textbf ) $|$  \textbf ( \emph{expression} 
-$<$SPACE$>$ \emph{arglist} \textbf )
+\textbf{,} \emph{arglist} \textbf )
 
 \emph{method-call} : \emph{identifier} \textbf . \emph{identifier arglist} 
 
-\emph{function-call} : \emph{identifier} \emph{arglist} $|$ \textbf{map} \emph{arglist mapper}
+\emph{function-call} : \emph{identifier} \emph{arglist}
+
+\emph{mapper-call}:  \textbf{map} \emph{arglist mapper}
 
 \emph{mapper} : \emph{identifier} $|$ \emph{block}
 
@@ -184,13 +180,29 @@ Selection statements in DruL take the following form: the string \textbf{if}, fo
 
 \subsubsection{Mapper Definition Statements}\label{MapperDefinitionStatement}
 
-A mapper definition consists of the word \textbf{Mapper}, followed by an identifier, followed by a parenthesized list of space-separated identifiers, followed by a block.
+A mapper definition consists of the word \textbf{Mapper}, followed by an identifier, followed by a parenthesized list of comma-separated identifiers, followed by a block.
 
 \emph{mapper-definition} : \textbf{mapper} \emph{identifier namelist block} 
 
 \emph{namelist}: \textbf ( \emph{identifier} \textbf ) $|$  \textbf ( \emph{identifier} 
-$<$SPACE$>$ \emph{namelist} \textbf )
+\textbf{,} \emph{namelist} \textbf )
 
+\subsubsection{Return statements}
+
+A return statement can only appear inside the statement block of a named or anonymous mapper:
+
+\emph{return} : \textbf{return} \emph{expression}
+
+If this statement is reached, the value of  \emph{expression} will be the output of this iteration of the mapper block.  Accordingly, this expression must evaluate to either a pattern or a beat value.
+
+\subsubsection{Instrument definition}
+
+This is a special statement that closely resembles a function call:
+
+\emph{instrument-definition}: \textbf{instruments (} \emph{arglist} \textbf{)}
+
+The arguments to this pseudo-function must all evaluate to strings.  See section \ref{instrSection} for 
+a detailed discussion.
 
 \subsection{Blocks, namespace and scoping}
 
@@ -203,15 +215,17 @@ Mapper definitions define a new closed scope (one from within which externally d
 \subsubsection{Namespace}
 
 DruL has one namespace shared by variables, built-in functions and 
-mapper names. Additionally, each type has an associated namespace for methods.
+mapper names. Additionally, each type has an associated namespace for methods.  Technically speaking, mappers are values like any other, and their names can be re-used, but this is strongly discouraged.
 
 \subsubsection{Scoping}
 
-DruL has one top level scope and one scope per each mapper
-(named or anonymous). Mapper scopes may be nested.
-Each scope has read-only access to all variables and mapper names
-defined in the scopes above it in the scope hierarchy.
-This allows for recursive mappers.
+Variables in DruL are dynamically scoped.  
+DruL has one top level scope, and one scope for each mapper that the program enters
+(named or anonymous). Mappers may call each other (or themselves) recursively, and may be defined within other mappers, so a hierarchy of substantial depth can (in principle) be achieved.
+Within each scope, a program has read-only access to all variables and mapper names
+defined in the scopes above it in this hierarchy: attempts to assign to a variable from an outer scope
+will produce a new variable in the inner scope, which masks the original variable.
+
 
 
 
@@ -337,10 +351,12 @@ A mapper function must be defined before it is used.
 
 \subsection{Clips}
 
-\subsubsection{Instruments}
+\subsubsection{Instruments}\label{instrSection}
 
 Before we define any clips, we must tell the compiler what instruments they will use.
-This can only be done once per program, and uses the instruments function.  This function can take a variable number of arguments.  Each argument is the name of an instrument to be defined.  In the example below, four instruments are defined:
+This can only be done once per program, and uses the instruments function.
+(Technically speaking, this is not a function but a special statement type that uses a function-like syntax.  The distinction is largely academic, however.)
+This function can take a variable number of arguments.  Each argument is the name of an instrument to be defined.  In the example below, four instruments are defined:
 
 \begin{verbatim}
 instruments(``hihat'',``bassdrum'',``crash'',``snare'');
