@@ -32,12 +32,21 @@ let input_stream = if 1 < arglen then open_in Sys.argv.(1) else stdin in
 let lexbuf = Lexing.from_channel input_stream in
 let programAst = Drul_parser.program Drul_scanner.token lexbuf in
 try run programAst unscoped_env
-with Type_error(msg,line)         -> Printf.fprintf stderr "Type error on line %d: %s\n" line msg
-| Invalid_function(msg,line)      -> Printf.fprintf stderr "Invalid function call on line %d: %s\n" line msg
-| PatternParse_error(msg,line)    -> Printf.fprintf stderr "Invalid pattern string on line %d: %s\n" line msg
-| Invalid_argument(msg,line)      -> Printf.fprintf stderr "Incorrect function arguments on line %d: %s\n" line msg
-| Undefined_identifier(msg,line)  -> Printf.fprintf stderr "Reading undefined identifier '%s' attempted on line %d.\n" msg line
-| Illegal_assignment(msg,line)    -> Printf.fprintf stderr "Illegal assignment attempted on line %d: %s\n" line msg
-| Instruments_redefined(msg,line) -> Printf.fprintf stderr "Instrument redefinition attempted on line %d: %s\n" line msg
-| Failure(msg)                    -> Printf.fprintf stderr "Untrapped internal error! (error message: %s)\n" msg
-| Illegal_division(msg,line)	  -> Printf.fprintf stderr "Division by zero attempted on line %d: %s\n" line msg
+with Type_error(msg,line)         -> 
+	Printf.fprintf stderr "Type error on line %d: %s\n" line msg
+| Invalid_function(msg,line)      ->
+	Printf.fprintf stderr "Invalid function call on line %d: %s\n" line msg
+| PatternParse_error(msg,line)    ->
+	Printf.fprintf stderr "Invalid pattern string on line %d: %s\n" line msg
+| Invalid_argument(msg,line)      ->
+	Printf.fprintf stderr "Incorrect function arguments on line %d: %s\n" line msg
+| Undefined_identifier(msg,line)  ->
+	Printf.fprintf stderr "Reading undefined identifier '%s' attempted on line %d.\n" msg line
+| Illegal_assignment(msg,line)    -> 
+	Printf.fprintf stderr "Illegal assignment attempted on line %d: %s\n" line msg
+| Instruments_redefined(msg,line) -> 
+	Printf.fprintf stderr "Instrument redefinition attempted on line %d: %s\n" line msg
+| Illegal_division(msg,line)	  ->
+	Printf.fprintf stderr "Division by zero attempted on line %d: %s\n" line msg
+| Failure(msg)                    -> 
+	Printf.fprintf stderr "Untrapped internal error! (error message: %s)\n" msg
