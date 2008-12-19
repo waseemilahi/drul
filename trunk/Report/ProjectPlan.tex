@@ -1,3 +1,177 @@
 \chapter{Project Plan}
 
+\section{Processes}
+Identify process used for planning, specification, development and testing
+
+Our plan was to complete tasks in the following order, working on tasks in paralell where possible:
+
+\begin{enumeration}
+
+\item Design DruL
+\begin{itemize}
+	\item Specify syntax
+	\item Specify semantics
+\end{itemize}
+
+\item Write the LRM
+
+\item Implement Basic Building Blocks
+\begin{itemize}
+	\item AST
+	\item Scanner
+	\item Parser
+	\item Test Suite Driver
+	\item Initial test cases
+	\item Basic Interpreter (with evaluate, execute, and built-in print for string literals)
+\end{itemize}
+
+\item Implement Generic Language Features
+\begin{itemize}
+	\item Integer arithmetic
+	\item Boolean operations
+	\item Assignment statments and symbol table
+	\item Selection statements
+\end{itemize}
+
+\item Core DruL Language Features
+\begin{itemize}
+	\item Pattern creation and printing
+	\item Pattern built-in functions and methods
+	\item Map, mappers, and beats
+	\item Named mappers
+	\item Beat built-in methods
+	\item Instrument definition
+	\item Clip creation and printing
+\end{itemize}
+
+\item Advanced DruL Language Features
+\begin{itemize}
+	\item Clip text output
+	\item Clip MIDI output
+	\item Clip Lilypond output
+	\item Clip built-ins concat and repeat (not implemented)
+\end{itemize}
+
+\item Fit and Finish
+\begin{itemize}
+	\item Interpreter command-line arguments
+	\item Detailed error messages
+	\item Error message line numbers
+	\item Trapped parse errors
+	\item Static semantic checks (not implemented)
+\end{itemize}
+
+\end{enumeration}
+
+We initially used our own SVN server for source and documentation management.  However, we soon moved to Google Code to make used of its issues list for keeping track of bugs and the ToDo's correpsonding to the above features.
+
+\section{Style Guide}
+Include a one-page programming style guide used by the team
+
+Due to the fact that all of our team members started as novice OCaml programmers and OCaml's syntax is unlike any languages our team was already familiar with, we lacked much intuition regarding good OCaml coding style.  However, over the course of our coding, the following coding practice emerged:
+
+\begin{itemize}
+	\item Use hard tabs for indentation
+	\item Specify pattern matched arguments and use ``match with'' syntax instead of the ``function'' shorthand for pattern matching
+	\item Encapsulate each ``match with'' clause in parentheses
+	\item Put each match case on a new line
+	\item Indent each match case and put a tab after the ``|'' separator
+	\item Begin results of a match case on the same line as the ``->''
+	\item Indent subsequent lines of the results of a match case
+	\item Horizontally align similar lines of code using extra whitespace
+\end{itemize}
+
+\section{Timeline}
+Show your project timeline
+
+\begin{tabular}{ | l | l | } \hline
+
+	Specify syntax & & \\
+	Specify semantics & & \\
+	Write the LRM & & \\
+	AST & & \\
+	Scanner & & \\
+	Parser & & \\
+	Test Suite Driver & & \\
+	Initial test cases & & \\
+	Basic Interpreter & & \\
+	Integer arithmetic & & \\
+	Boolean operations & & \\
+	Assignment statments and symbol table & & \\
+	Selection statements & & \\
+	Pattern creation and printing & & \\
+	Pattern built-in functions and methods & & \\
+	Map, mappers, and beats & & \\
+	Named mappers & & \\
+	Beat built-in methods & & \\
+	DruL GCD & & \\
+	Instrument definition & & \\
+	Clip creation and printing & & \\
+	Clip text output & Dec 15 \\
+	Clip MIDI output & Dec 16-17 \\
+	Interpreter command-line argument & Dec 16 \\
+	Detailed error messages & Dec 16 \\
+	Error message line numbers & Dec 16 \\
+	Clip Lilypond output & Dec 17 \\
+	Trapped parse errors & Dec 17 \\
+	DruL song & Dec 17
+	Presentation slides & Dec 17-18 \\
+	Report & Dec 18-19 \\
+
+\end{tabular}
+
+\section{Roles and Responsibilities}
+Identify roles and responsibilities of each team member
+
+Each team member volunteered for the completion of tasks.  Tasks were not divied up amongst team members in advance.  Rather, afte team members finished their tasks they simply discussed what they should (or would like to) work on next with the rest of the team.  Many tasks (especially the more diffuclt ones) were tackled in pairs.  We found having an extra pair of eyes examining code and documentation as it was being written (i.e. paired programming) drastically cut down on the number of initial bugs and the amount of refactoring done later.
+
+Below is a general description of the major tasks completed by each team member.  Paired efforts are noted in parentheses.  Note, that most work was with the group all in one room at one common table.  This allowed and individual or pair to ask for help or advice from the rest of the team.  This is done consistently and resulted with all members of the team being at least somewhat familiar with the impementation of almost all parts of the system.
+
+\begin{Itemize}
+
+\item \textbf{Rob:} As team leader, resolved minor conflicts.  Decided on drumming language idea.  Setup intial SVN repository.  Wrote introduction for all documents.  Assisted with language design.  Wrote the Pattern, Map, and Mapper sections of the LRM.  Coded the AST (with Ben).  Assisted with coding the parser.  Coded the initial "helloworld" interpreter (with Waseem).  Coded pattern construct (with Ben).  Coded DruL's built-in functions and methods and added corresponding test cases (with Waseem).  Coded instrument and clip constructs (with Theirry).  Performed built-ins code refactoring (with Ben).  Performed code cleanup.  Refactored text output.  Coded MIDI output.  Wrote an example drum song using DruL.  Edited all the presentation slides.  Wrote the Project Plan section of the report.
+
+\item \textbf{Ben:} Decided on map/mapper idea.  Proposal???  Assited with language design.  Wrote the Types, Statments, Blocks and Scoping sections of the LRM.  Coded the AST (with Rob).  Assisted with coding the parser.  Coded the parse-tree dumper.  Coded selecton and assignment statements.  Coded pattern construct (with Rob).  Coded map and mapper (with Theirry).  Coded GCD implementation using DruL.  Refactored built-ins (with Rob).  Refactored interpreter into smaller files.  Refactored scanner, parser, and interpreter to inculde line numbers in error messages with (with Thierry).  Added tests for error messages.  Coded Coded Lilypond output.  Refactored output code.  Fixed corner-case symbol-table bugs.  Wrote parts 1 and 2 of the presentation (except for the mapper animation).  Updated the LRM for the report (with Waseem).  Wrote the tutorial section of the report (with Waseem).
+
+\item \textbf{Thierry:} Proposal???  Assisted with language design.  Wrote the Instrument, Clip, and Output sections of the LRM.  Setup replacement Google Code repository.  Coded the test-suite driver.  Manualy created initial suite of test input and corresponding output files.  Assisted with coding the parser.  Coded map and mapper (with Ben).  Coded named mapper.  Coded instruments and clip constructs (with Rob).  Refactored scanner, parser, and interpreter to include line numbers in error messages (with Ben).  Added tests for error messages.  Fixed corner-case symbol-table bugs.  Wrote part 4 of the presentation.  Made the mapper animation for the presentation.  Wrote the testing section of the report.
+
+\item \textbf{Waseem:} Proposal???  Assisted with lanuage design.  Wrote the Example Code section of the LRM.  Coded the scanner.  Assisted with coding the parser.  Coded the initial "helloworld" interpreter (with Rob).  Coded DruL's built-in functions and methods and added corresponding test cases (with Rob).  Coded text output.  Wrote part 3 of the presentation. Updated the LRM for the report (with Ben).  Wrote the tutorial section of the report (with Ben).
+
+\end{itemize}
+
+\section{Tools and Languages}
+All of our source code was written using OCaml with the exception of the special syntaxes used by ocamllex and ocamlyacc, and the test-suite driver which was written in Python.
+
+\section{Tools}
+
+\begin{itemize}
+\item \textbf{Lexer:} We used ocamllex to compile our ocamllex code into an Ocaml lexer/tokenizer, which given DruL source code, produces a token stream.
+
+\item \textbf{Parser:} We used ocamlyacc to compile our ocamlyacc code into an Ocaml parser, which given a token stream, produces a DruL abstract-syntax-tree.
+
+\item \textbf{MIDI Output:} MIDI (Musical Instrument Digital Interface) is a binary music protocal and file format that contains ``event messags'' for an audio device (e.g. a sound card or synthesizer).  MIDI files are playable on many common multimedia players (e.g. Quicktime).  DruL does not generate MIDI files directly.  Rather it uses midge, which is yet another music composition language that compiles to MIDI.  The language is not entirely different from DruL, however it allows for other instruments than drums and thus also has different note pitches and durations.  However, midge doesn't not have contructs for algorithmic compositions comparable to the power of DruL's.  In short, when DruL's outputMIDI method is called on a clip, the DruL interpreter produces midge code which is then piped to midge to produce the desired MIDI output file.
+
+\item \textbf{Lilypond:} Lilypond is a typesetting lanuage.  DruL can produce Lilypond files.  These output files can then be compiled into typeset PDF's (of sheetmusic) using Lilypond.  DruL does not automate this however.
+
+\end{itemize}
+
+\subsection{Code Editors}
+
+No one on our used the same code editor.  None of us used an IDE.  Team members used the following editors for all of their code (OCaml, latex, etc.):
+
+\begin{itemize}
+\item \textbf{Rob:} jEdit
+\item \textbf{Ben:} BBEdit
+\item \textbf{Thierry:} emacs
+\item \textbf{Waseem:} gedit
+\end{itemize}
+
+\subsection{Documentation}
+All documentation was produced using LaTeX with the exception of the presentation, which was made using Microsoft PowerPoint.
+
+\subsection{Version Control}
+We used Google Code and Subversion (SVN) for our source version control and issue tracking.
+
+\section{Project Log}
+Include your project log
 
