@@ -1,6 +1,6 @@
 % test suite part written by T. Bertin-Mahieux
 % tb2332@columbia.edu (2008) PLT
-
+%!TEX root =  Report.tex
 
 \chapter{Test Suite}
 In the section we present the test suite we built and used for the DruL 
@@ -47,20 +47,19 @@ second case, we also give the desired output.
 \subsection{Tests for DruL Parser}
 
 /TestSuite/ParserTests/logicalORAND.drultest
-{\color{red}
-\begin{verbatim}
+\lstset{basicstyle=\color{red}\small}
+\begin{lstlisting}
 a = 1;
 b = 2;
 (false || true && false);
 (true && false || true);
 (a || b && 3 || false && true);
 (true || false) && ((false && true || true) || true);
-\end{verbatim}
-}
+\end{lstlisting}
+
 
 /TestSuite/ParserTests/print.drultest
-{\color{red}
-\begin{verbatim}
+\begin{lstlisting}
 print ("1");
 print(        "allo");
 print ("yo!3748473222937`1-232-/._(*&^%$#@");
@@ -72,14 +71,13 @@ b = 3;
 print( b );
 c = clip(a);
 print (c);
-\end{verbatim}
-}
+\end{lstlisting}
+
 
 \subsection{Tests for DruL}
 
 /TestSuite/Tests/pattern12.drultest
-{\color{red}
-\begin{verbatim}
+\begin{lstlisting}
 p11 = map(pattern("1111"))
 {
  if ($1.note() && $1.next(1).note() && $1.next(2).note() ) { return pattern("1")
@@ -87,55 +85,56 @@ p11 = map(pattern("1111"))
  else { return pattern("0"); }
 };
 print(p11); // should return 1100
-\end{verbatim}
-}
+\end{lstlisting}
+
 /TestSuite/Tests/pattern12.drultestout
-{\color{blue}
-\begin{verbatim}
+
+\lstset{basicstyle=\color{blue}\small}
+\begin{lstlisting}
 1100
-\end{verbatim}
-}
+\end{lstlisting}
 
 
 /TestSuite/Tests/clip2.drultest
-{\color{red}
-\begin{verbatim}
+\lstset{basicstyle=\color{red}\small}
+\begin{lstlisting}
 instruments();
 print(
         clip(
                 pattern("1010")
         )
 );
-\end{verbatim}
-}
+\end{lstlisting}
+
 TestSuite/Tests/clip2.drultestout
-{\color{blue}
-\begin{verbatim}
+
+\lstset{basicstyle=\color{blue}\small}
+\begin{lstlisting} 
 [
         hh_c:   1010
         sd_ac:
         bd:
         cowbell:
 ]
-\end{verbatim}
-}
+\end{lstlisting}
+
 
 
 
 /TestSuite/Tests/assign5.drultest
-{\color{red}
-\begin{verbatim}
+\lstset{basicstyle=\color{red}\small}
+\begin{lstlisting}
 p = pattern("10");
 mapper pattern (p) {}
 print("bad");
-\end{verbatim}
-}
+\end{lstlisting}
+
 /TestSuite/Tests/assign5.drultestout
-{\color{blue}
-\begin{verbatim}
+\lstset{basicstyle=\color{blue}\small}
+\begin{lstlisting}
 Illegal assignment attempted on line 2: can't use keyword 'pattern' as a mapper name
-\end{verbatim}
-}
+\end{lstlisting}
+
 
 
 
