@@ -47,8 +47,8 @@ second case, we also give the desired output.
 \subsection{Tests for DruL Parser}
 
 /TestSuite/ParserTests/logicalORAND.drultest
-\lstset{basicstyle=\color{red}\small}
-\begin{lstlisting}
+
+\begin{lstlisting}[basicstyle=\color{red}\small]
 a = 1;
 b = 2;
 (false || true && false);
@@ -59,7 +59,7 @@ b = 2;
 
 
 /TestSuite/ParserTests/print.drultest
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\color{red}\small]
 print ("1");
 print(        "allo");
 print ("yo!3748473222937`1-232-/._(*&^%$#@");
@@ -77,7 +77,7 @@ print (c);
 \subsection{Tests for DruL}
 
 /TestSuite/Tests/pattern12.drultest
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\color{red}\small]
 p11 = map(pattern("1111"))
 {
  if ($1.note() && $1.next(1).note() && $1.next(2).note() ) { return pattern("1")
@@ -89,15 +89,14 @@ print(p11); // should return 1100
 
 /TestSuite/Tests/pattern12.drultestout
 
-\lstset{basicstyle=\color{blue}\small}
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\color{blue}\small]
 1100
 \end{lstlisting}
 
 
 /TestSuite/Tests/clip2.drultest
-\lstset{basicstyle=\color{red}\small}
-\begin{lstlisting}
+
+\begin{lstlisting}[basicstyle=\color{red}\small]
 instruments();
 print(
         clip(
@@ -108,8 +107,7 @@ print(
 
 TestSuite/Tests/clip2.drultestout
 
-\lstset{basicstyle=\color{blue}\small}
-\begin{lstlisting} 
+\begin{lstlisting}[basicstyle=\color{blue}\small]
 [
         hh_c:   1010
         sd_ac:
@@ -122,16 +120,14 @@ TestSuite/Tests/clip2.drultestout
 
 
 /TestSuite/Tests/assign5.drultest
-\lstset{basicstyle=\color{red}\small}
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\color{red}\small]
 p = pattern("10");
 mapper pattern (p) {}
 print("bad");
 \end{lstlisting}
 
 /TestSuite/Tests/assign5.drultestout
-\lstset{basicstyle=\color{blue}\small}
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\color{blue}\small]
 Illegal assignment attempted on line 2: can't use keyword 'pattern' as a mapper name
 \end{lstlisting}
 
