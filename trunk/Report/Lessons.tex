@@ -10,6 +10,8 @@ again.
 
 \section{Rob (team leader)}
 
+Coding standards are important, especially when using a new language that's unlike anything the team members have seen before.  Unfortunately, this is when stanards are least likely to be used because no one knows of any relevant standards.  Our team attemped to fit the square peg that is OCaml into the round holes that are the C and Java coding standards.  This didn't work very well.  In hindsight, we should have spent some time reading about suggested coding conventions for OCaml and researched how to organize a non-trivial OCaml code-base.  We spent a long time agonizing over the monolithic spaghetti code that was our intereter before we finally got our heads straight and refactored it.  However, we never reached a conensus on the proper way to format (e.g. indent) OCaml.  I still find our code very hard to read.  Also, domain specific conventions (assuming they exist) for writing a translator would have been useful.  For exmaple, it got very confusing trying to keep track which of ``int'', ``Int'', and ``CInt'' were an OCaml type, a DruL type, or a DruL AST type.  I had to look back to our type definitions almost everytime.  In retrospect, prefixes such as ``ast\_int'' and ``drul\_int'' might have been less confusing.
+
 \section{Ben}
 
 I was surprised and impressed with how effective pair programming turned out to be.
