@@ -586,7 +586,8 @@ r268 | waseemilahi | 2008-12-16 16:33:50 -0500 (Tue, 16 Dec 2008) | 1 line
 ------------------------------------------------------------------------
 r267 | thierrybm@hotmail.com | 2008-12-16 16:32:08 -0500 (Tue, 16 Dec 2008) | 1 line
 
-in parser, tokens take at least one int, the line number, this upload BREAKS EVERYTHING but we're fixing it
+in parser, tokens take at least one int, the line number, this upload BREAKS EVERYTHING
+but we're fixing it
 ------------------------------------------------------------------------
 r266 | benwarfield | 2008-12-16 15:40:38 -0500 (Tue, 16 Dec 2008) | 1 line
 
@@ -643,19 +644,24 @@ clip assignment test, fails for the moment
 ------------------------------------------------------------------------
 r253 | waseemilahi | 2008-12-14 12:02:42 -0500 (Sun, 14 Dec 2008) | 1 line
 
-Removed .txt check. File name can be anything the user wants it to be, as far as we are concerned.
+Removed .txt check. File name can be anything the user wants it to be, as far as
+we are concerned.
 ------------------------------------------------------------------------
 r252 | waseemilahi | 2008-12-14 11:33:44 -0500 (Sun, 14 Dec 2008) | 1 line
 
-Just added file name check. I think as far as Linux is concerned we do not need file name checks. But it looks better for a text file to have .txt extension.
+Just added file name check. I think as far as Linux is concerned we do not need
+file name checks. But it looks better for a text file to have .txt extension.
 ------------------------------------------------------------------------
 r251 | waseemilahi | 2008-12-10 21:45:13 -0500 (Wed, 10 Dec 2008) | 1 line
 
- output.txtfile functions now output clips to the files, just like print does on the stdout. (I will look into the issue of outputting clips in mapper.)
+ output.txtfile functions now output clips to the files, just like print
+does on the stdout. (I will look into the issue of outputting clips in mapper.)
 ------------------------------------------------------------------------
 r250 | waseemilahi | 2008-12-10 21:31:45 -0500 (Wed, 10 Dec 2008) | 1 line
 
-output.txtfile_*** functions do what print does except it doesn't output clips yet. The two extensions are append and truncate to choose what the user wants to do with the already existing file.
+output.txtfile_*** functions do what print does except it doesn't output clips yet.
+The two extensions are append and truncate to choose what the user wants to do with
+the already existing file.
 ------------------------------------------------------------------------
 r249 | waseemilahi | 2008-12-10 19:08:43 -0500 (Wed, 10 Dec 2008) | 1 line
 
@@ -671,7 +677,8 @@ r247 | waseemilahi | 2008-12-10 18:07:40 -0500 (Wed, 10 Dec 2008) | 1 line
 ------------------------------------------------------------------------
 r246 | waseemilahi | 2008-12-10 17:56:44 -0500 (Wed, 10 Dec 2008) | 1 line
 
- output.txtfile() outputs a string to the file with extension .txt, if the file already exists, it truncates it and if it doesn't then it creates it.
+ output.txtfile() outputs a string to the file with extension .txt, if the
+file already exists, it truncates it and if it doesn't then it creates it.
 ------------------------------------------------------------------------
 r245 | waseemilahi | 2008-12-10 17:33:11 -0500 (Wed, 10 Dec 2008) | 1 line
 
@@ -679,7 +686,8 @@ Need to flush the out_channel and close it.
 ------------------------------------------------------------------------
 r244 | waseemilahi | 2008-12-10 16:53:15 -0500 (Wed, 10 Dec 2008) | 1 line
 
-The check for file extension added (I don't know if we need it for Linux, but windoes cares about extensions). output.txtfile(..) should only care about .txt files.
+The check for file extension added (I don't know if we need it for Linux, but
+windoes cares about extensions). output.txtfile(..) should only care about .txt files.
 ------------------------------------------------------------------------
 r243 | benwarfield | 2008-12-10 16:47:09 -0500 (Wed, 10 Dec 2008) | 1 line
 
@@ -691,7 +699,9 @@ Commented out useless extra prints.
 ------------------------------------------------------------------------
 r241 | waseemilahi | 2008-12-10 16:18:20 -0500 (Wed, 10 Dec 2008) | 1 line
 
-Added a new token OUTPUT. Changed ast, scanner and parser to accomodate for output.txtfile format. Haven't yet finished with the output function yet. For now it only creates/opens a file to write to it. 
+Added a new token OUTPUT. Changed ast, scanner and parser to accomodate for
+output.txtfile format. Haven't yet finished with the output function yet.
+For now it only creates/opens a file to write to it. 
 ------------------------------------------------------------------------
 r240 | benwarfield | 2008-12-10 15:42:49 -0500 (Wed, 10 Dec 2008) | 1 line
 
@@ -957,7 +967,8 @@ added concat and slice to the intepreter
 ------------------------------------------------------------------------
 r175 | thierrybm@hotmail.com | 2008-11-24 18:01:05 -0500 (Mon, 24 Nov 2008) | 1 line
 
-Ben, this is for you, I cannot fix the eval_arg_list, I've created two dummy functions, still doesnt compile.... but we're almost there
+Ben, this is for you, I cannot fix the eval_arg_list, I've created two dummy
+functions, still doesnt compile.... but we're almost there
 ------------------------------------------------------------------------
 r174 | thierrybm@hotmail.com | 2008-11-24 17:46:49 -0500 (Mon, 24 Nov 2008) | 1 line
 
@@ -1513,11 +1524,13 @@ Made a folder for AST.
 ------------------------------------------------------------------------
 r40 | waseemilahi | 2008-10-22 09:14:40 -0400 (Wed, 22 Oct 2008) | 1 line
 
-I did add semicolons at the end of each mapper definition. They are statements and statements end with a semicolon.
+I did add semicolons at the end of each mapper definition. They are
+statements and statements end with a semicolon.
 ------------------------------------------------------------------------
 r39 | waseemilahi | 2008-10-22 08:55:37 -0400 (Wed, 22 Oct 2008) | 1 line
 
-Semicolons added at the end,of where anonymous mapper is used, because those are definitely assignment statements.
+Semicolons added at the end,of where anonymous mapper is used, because those
+are definitely assignment statements.
 ------------------------------------------------------------------------
 r38 | benwarfield | 2008-10-22 01:45:50 -0400 (Wed, 22 Oct 2008) | 1 line
 
@@ -1529,7 +1542,8 @@ Spruced up expression/statement section.
 ------------------------------------------------------------------------
 r36 | waseemilahi | 2008-10-21 21:27:07 -0400 (Tue, 21 Oct 2008) | 1 line
 
-Example Code Added. Some of the explanation in example section moved to the appropriate earlier sections
+Example Code Added. Some of the explanation in example section moved to the
+appropriate earlier sections
 ------------------------------------------------------------------------
 r35 | thierrybm@hotmail.com | 2008-10-20 17:50:00 -0400 (Mon, 20 Oct 2008) | 1 line
 
