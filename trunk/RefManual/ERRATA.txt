@@ -6,6 +6,8 @@ CHANGES:
 	strings cannot contain newlines
 	output functions are substantially revised
 	clip creation syntax
+	"reverse" method of pattern
 
 ERRATA:
 	"return" statement
+	"rand" function
