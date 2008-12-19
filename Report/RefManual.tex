@@ -359,7 +359,7 @@ This can only be done once per program, and uses the instruments function.
 This function can take a variable number of arguments.  Each argument is the name of an instrument to be defined.  In the example below, four instruments are defined:
 
 \begin{verbatim}
-instruments(``hihat'',``bassdrum'',``crash'',``snare'');
+instruments("hihat","bassdrum","crash","snare");
 \end{verbatim}
 
 Instruments must be defined before any clips have been defined. This function 
@@ -375,8 +375,8 @@ associative-array notation:
 \begin{verbatim}
 clip1 = clip
 (
-    ``bassdrum'' <- downbeats,
-    ``hihat''    <- alternate_beats
+    "bassdrum" <- downbeats,
+    "hihat"    <- alternate_beats
 );
 \end{verbatim}
 The same result can be achieved by simply listing the patterns for each instrument in the order they are defined using the \textbf{instruments} function:
@@ -438,7 +438,7 @@ The file being written to is truncated if it exists, and created if it does not 
 The method \textbf{outputMidi} works similarly, but in addition to the filename, it requires a tempo for the MIDI file to be produced (in beats per minute--this must be a positive integer).
 
 \begin{verbatim}
-myClip.outputMidi(``myfile.mid'',120);
+myClip.outputMidi("myfile.mid",120);
 \end{verbatim}
 
 The transformation from clip to MIDI may rely
@@ -451,7 +451,7 @@ using the names. If no match can be found, DruL will use a default MIDI instrume
 The clip method \textbf{outputLilypond} operates similarly to the above, but takes a title (to be printed at the top of the page of typeset music) as an optional second argument:
 
 \begin{verbatim}
-myClip.outputLilypond(``myfile.ly'', ``My New Drum Loop'');
+myClip.outputLilypond("myfile.ly", "My New Drum Loop");
 \end{verbatim}
 
 
