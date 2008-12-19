@@ -34,7 +34,8 @@ Minor fix in the timeline
 ------------------------------------------------------------------------
 r411 | waseemilahi | 2008-12-19 10:51:22 -0500 (Fri, 19 Dec 2008) | 1 line
 
-Time line updated a bit; don't know whether to writer the date they were done or the time period they were worked on
+Time line updated a bit; don't know whether to writer the date they were done 
+or the time period they were worked on
 ------------------------------------------------------------------------
 r410 | benwarfield | 2008-12-19 05:15:45 -0500 (Fri, 19 Dec 2008) | 1 line
 
