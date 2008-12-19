@@ -4,6 +4,8 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage[usenames]{color}
+\usepackage{listings}
+
 
 \pagestyle{plain}
 
@@ -14,21 +16,23 @@
 \setlength{\textwidth}{400pt}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{10pt plus 2pt minus 1pt}
+%\lstset{language=[Objective]Caml}
+\lstset{language=C++,showstringspaces=false}
 
 \title{\textbf{DruL} Final Report \\
-COMS W4115: Programming Language and Translators}
-\author{Team Leader: Rob Stewart (rs2660) \and Thierry Bertin-Mahieux (tb2332) \and Benjamin Warfield (bbw2108) \and Waseem Ilahi (wki2001)\\
+COMS W4115: Programming Language and Translators\\
+\setlength\fboxsep{36pt}
+\setlength\fboxrule{0pt}
+\fbox{\includegraphics[width=.2\columnwidth]{Water_Drop.pdf}}
+}
+\author{Team Leader: Rob Stewart (rs2660) \and Thierry Bertin-Mahieux (tb2332) \and Benjamin Warfield (bbw2108) \and Waseem Ilahi (wki2001)
 }
 \date{December 19th, 2008}
 
 \begin{document}
 \maketitle
 
-\begin{figure}[h]
-\begin{center}
-\includegraphics[width=.2\columnwidth]{Water_Drop.pdf}
-\end{center}
-\end{figure}
+
 
 \newpage
 \setcounter{tocdepth}{2} 
