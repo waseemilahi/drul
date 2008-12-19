@@ -2,7 +2,7 @@
 % tb2332@columbia.edu (2008) PLT
 
 
-\section{Test Suite}
+\chapter{Test Suite}
 In the section we present the test suite we built and used for the DruL 
 project. We start in Section \ref{ts:overview} by showing the basic idea
 and limits for our testing program. In Section \ref{ts:implem} we give details
@@ -11,7 +11,7 @@ Section \ref{ts:samples} and explain what they test.
 
 
 
-\subsection{Overview} \label{ts:overview}
+\section{Overview} \label{ts:overview}
 We built two different testing functions in order to debug DruL and help is
 maintainability: \textbf{LaunchTestParser} and \textbf{LaunchTest}. There
 usage is very similar.
@@ -29,33 +29,126 @@ we can test both cases that fail (by catching the error message) or that
 correctly pass (by printing to the standard output).
 
 
-\subsection{Implementation} \label{ts:implem}
+\section{Implementation} \label{ts:implem}
 We implemented the two above testing programs in Python. This scripting
 language allows for rapid development and has an excellent packages for
 handling files. A test file has to have a certain extension (\textit{.drultest})
 and so does the desired output (\textit{.drultestout}).
-We 
+The core of the testing programs, aside from finding the test files and passing
+them to the interpreter, is a simple ``diff'' function. This ``diff'' tells
+us if every line of two files are exactly the same or not.
+Everything is recorded in a LOG, whose name encodes the date and time of the test.
 
 
+\section{Sample tests} \label{ts:samples}
+We present some typical tests for both the parser and the interpreter. In the
+second case, we also give the desired output.
 
+\subsection{Tests for DruL Parser}
 
-
-\subsection{Sample tests} \label{ts:samples}
-
-
-\subsubsection{Parser}
-
+/TestSuite/ParserTests/logicalORAND.drultest
 {\color{red}
-testing1
+\begin{verbatim}
+a = 1;
+b = 2;
+(false || true && false);
+(true && false || true);
+(a || b && 3 || false && true);
+(true || false) && ((false && true || true) || true);
+\end{verbatim}
 }
 
+/TestSuite/ParserTests/print.drultest
+{\color{red}
+\begin{verbatim}
+print ("1");
+print(        "allo");
+print ("yo!3748473222937`1-232-/._(*&^%$#@");
+print(pattern(""));
+print( pattern ("010111001"));
+a = pattern("11110");
+print (a);
+b = 3;
+print( b );
+c = clip(a);
+print (c);
+\end{verbatim}
+}
+
+\subsection{Tests for DruL}
+
+/TestSuite/Tests/pattern12.drultest
+{\color{red}
+\begin{verbatim}
+p11 = map(pattern("1111"))
+{
+ if ($1.note() && $1.next(1).note() && $1.next(2).note() ) { return pattern("1")
+; }
+ else { return pattern("0"); }
+};
+print(p11); // should return 1100
+\end{verbatim}
+}
+/TestSuite/Tests/pattern12.drultestout
 {\color{blue}
 \begin{verbatim}
-testing2
+1100
 \end{verbatim}
 }
 
 
-\subsubsection{DruL}
+/TestSuite/Tests/clip2.drultest
+{\color{red}
+\begin{verbatim}
+instruments();
+print(
+        clip(
+                pattern("1010")
+        )
+);
+\end{verbatim}
+}
+TestSuite/Tests/clip2.drultestout
+{\color{blue}
+\begin{verbatim}
+[
+        hh_c:   1010
+        sd_ac:
+        bd:
+        cowbell:
+]
+\end{verbatim}
+}
 
+
+
+/TestSuite/Tests/assign5.drultest
+{\color{red}
+\begin{verbatim}
+p = pattern("10");
+mapper pattern (p) {}
+print("bad");
+\end{verbatim}
+}
+/TestSuite/Tests/assign5.drultestout
+{\color{blue}
+\begin{verbatim}
+Illegal assignment attempted on line 2: can't use keyword 'pattern' as a mapper name
+\end{verbatim}
+}
+
+
+
+\section{Conclusion}
+Our test suite (programs and test files) add up to about $11000$ lines, almost
+as much as DruL itself. However, we felt it was time well spent for two major
+reasons:
+\begin{itemize}
+\item We did find bugs early in the coding process thanks to the test suite. One
+particular example is the precedance for member functions that we had forgotten.
+\item A complete test suite seems the only way to allow multiple programmers to
+modify a file without breaking code written by someone else
+\end{itemize}
+Thus we believe that a complete test suite is an essential part of a compiler's
+project and should be started before the actual language compiler.
 
