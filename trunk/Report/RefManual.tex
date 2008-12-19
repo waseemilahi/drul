@@ -254,7 +254,7 @@ Patterns can be concatenated to form new patterns.  The \textbf{concat} function
 
 The \textbf{repeat} method is a shortcut to concatenate the same pattern many times:
 \begin{verbatim}
-  pcat2 = concat(p1 p1 p1);
+  pcat2 = concat(p1, p1, p1);
   pcat3 = pattern("101010").repeat(3);
   pcat4 = p1.repeat(3);
 \end{verbatim}
@@ -271,7 +271,7 @@ It takes two arguments: first is index (starting at $1$) and second is
 length of the desired subpattern. Requesting a subpattern out of range will
 raise an error. Example:
 \begin{verbatim}
-  psub = pattern("101010").slice(2 3);
+  psub = pattern("101010").slice(2, 3);
 \end{verbatim}
 \textit{psub} is "010".
 
@@ -309,7 +309,7 @@ the current beat is a note, a rest, or null.
 
 DruL uses the \textbf{beat} methods \textbf{prev} and \textbf{next} to access the previous and following beats of the pattern to which a given beat belongs. These methods can be passed a single argument which specifies how far forward or back in the pattern to go.  For example:
 \begin{verbatim}
-p11 = map(pattern("1101")
+p11 = map( pattern("1101") )
 {
     if ($1.note() && $1.next(1).note()) { return pattern("1"); }
     else                                { return pattern("0"); }
@@ -333,7 +333,7 @@ For example, the above example could have been written in the following way:
 \begin{verbatim}
 mapper mymapper (p)
 {
-    if (p.note) { return pattern("11"); }
+    if (p.note()) { return pattern("11"); }
     else        { return pattern("0");  }
 }
 p10 = map(p9) mymapper;
