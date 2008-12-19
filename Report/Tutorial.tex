@@ -1,15 +1,21 @@
 %!TEX root =  Report.tex
 \chapter{Tutorial}
 \section{Introduction}
+In this section we present some quick tutorials that explain the main features of DruL
+language. We start with the basics: ``Hello World'' is in Section \ref{tu:hello}, integers
+and if/else are shown in \ref{tu:fund} and finally patterns are introduced in \ref{tu:pat1}.
+That being done, we learn how to combine patterns (\ref{tu:combpat}), manipulate patterns
+(\ref{tu:manippat}, create a named mapper (\ref{tu:namedmap}), create a clip (\ref{tu:clip}),
+and finally how to bring all this together and create a sheet of music (\ref{tu:payoff}).
 
-Let me get back to you on taht one
 %TODO: get back to this one
+%DOING: getting back on this one
 
 \section{The Very Basics}
 
 The {\tt drul} command can take DruL code either from the standard input or as a file specified on the command line ({\tt drul mysource.drul}).  Examples in this section should work equally well if passed in either way.
 
-\subsection{Say hello!}
+\subsection{Say hello!} \label{tu:hello}
 
 Because it is traditional, albeit almost completely irrelevant to this language, here is our first
 DruL program:
@@ -20,7 +26,7 @@ print("hello, world!");
 
 This will print the string ``hello, world!'' to the standard output, on a line by itself.  Note that unlike many languages, DruL does not require you to place a newline character at the end of a string to have it print on a single line (conversely, it gives you no method to print \emph{without} a newline at the end).
 
-\subsection{Fundamentals}
+\subsection{Fundamentals} \label{tu:fund}
 
 Variables in DruL must have names that begin with a letter or underscore, and contain only letters, numbers, and underscores thereafter.  Variables are dynamically typed and scoped, so to create one, you need only assign a value to it:
 
@@ -56,7 +62,7 @@ if (e > 1) {
 
 Why does the second line print, and not the first?  DruL's types do not include floating-point numbers, so all arithmetic is done using integers, and non-integral results are truncated (as is done in C and other related languages) to their integer parts.
 
-\subsection{One more variable type: patterns}
+\subsection{One more variable type: patterns} \label{tu:pat1}
 
 We will now introduce the first data type that distinguishes DruL from most other languages: the pattern.  A pattern is a sequence of true/false values, telling the drummer (or MIDI sequencer) whether or not to play on a particular beat.  They are created using the {\tt pattern} function:
 
@@ -78,7 +84,7 @@ print(p);
 \end{lstlisting}
 
 
-\section{Combining Patterns}
+\section{Combining Patterns}\label{tu:combpat}
 
 Once you have a pattern or two, DruL gives you several ways to build new ones.  Using the {\tt concat} function, you can combine them end-to-end:
 \begin{lstlisting}
@@ -101,7 +107,7 @@ p_custom = concat(
 	p4.repeat(4)
 );
 \end{lstlisting}
-\section{Manipulating Patterns}
+\section{Manipulating Patterns}\label{tu:manippat}
 
 Patterns also have methods that allow you to produce new patterns that are not simply combinations of old ones laid end to end.
 
@@ -165,7 +171,7 @@ new_pattern = map (old_pattern) {
 };
 \end{lstlisting}
 
-\section{Named mappers}
+\section{Named mappers}\label{tu:namedmap}
 
 In all of the examples so far, we have simply supplied the {\tt map} function with a block of statements to run for this particular set of patterns.  This block is what we refer to as an ``anonymous mapper.''  In reality, of course, it is likely you would want perform the same type of transformation on more than one pattern (or set of patterns).  To do this without annoying repetition of code, you can define a named mapper, then use the name instead of the code block.  The named mapper can also have named parameters, which may be easier to keep track of than the shell-like variables used in anonymous mappers.  This allows us to re-write the previous example in a somewhat more readable way:
 \begin{lstlisting}
@@ -179,7 +185,7 @@ filtered_pattern =
 
 
 
-\section{Assembling clips}
+\section{Assembling clips}\label{tu:clip}
 
 Now that we have a bunch of patterns, the next thing to do with them is assemble them into pieces of music, where each instrument has a (presumably) different pattern to play.  Before we do that, however, we have to define what instruments we are using.  This is done using the {\tt instruments} function (which isn't actually a function at all, but we're going to ignore that for now--see section \ref{instrSection} in the Language Reference Manual if you want the grizzly details).
 \begin{lstlisting}
@@ -204,7 +210,7 @@ my_first_clip = clip(
 );
 \end{lstlisting}
 
-\section{The Big Payoff}
+\section{The Big Payoff}\label{tu:payoff}
 Now that we know how to assemble patterns into a song, all that's left is to see what our song looks like
 when we bring it back to the outside world.  There are three easy ways to do this (other, of course, than a simple {\tt print} call).  First, you can call the {\tt outputText} method to print your song to a text file:
 \begin{lstlisting}
