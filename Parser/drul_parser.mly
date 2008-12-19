@@ -36,11 +36,10 @@ let parse_error str =
 %token <int    * int> INTLITERAL
 %token <string * int> STRLITERAL ID
 
-%left LIST /* is this correct? I mean, it *works*, but... */
-%nonassoc NOELSE /* which we define somehow, somewhere */
+%left LIST
 %nonassoc ELSE
-%left ASSIGN LARROW /* needs no associativity, may need no precedence? */
-%left INSTRUMENTS /* same comment, may not need to be here */
+%left ASSIGN LARROW
+%left INSTRUMENTS
 %left OR
 %left AND
 %left NEQ EQ
