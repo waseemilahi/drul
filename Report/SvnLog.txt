@@ -1,4 +1,103 @@
 ------------------------------------------------------------------------
+r412 | waseemilahi | 2008-12-19 10:52:34 -0500 (Fri, 19 Dec 2008) | 1 line
+
+Minor fix in the timeline
+------------------------------------------------------------------------
+r411 | waseemilahi | 2008-12-19 10:51:22 -0500 (Fri, 19 Dec 2008) | 1 line
+
+Time line updated a bit; don't know whether to writer the date they were done 
+or the time period they were worked on
+------------------------------------------------------------------------
+r410 | benwarfield | 2008-12-19 05:15:45 -0500 (Fri, 19 Dec 2008) | 1 line
+
+Made log a little less too wide.
+------------------------------------------------------------------------
+r409 | waseemilahi | 2008-12-19 05:11:04 -0500 (Fri, 19 Dec 2008) | 1 line
+
+ Removed extra rand from table of keywords
+------------------------------------------------------------------------
+r408 | waseemilahi | 2008-12-19 05:01:25 -0500 (Fri, 19 Dec 2008) | 1 line
+
+:)
+------------------------------------------------------------------------
+r407 | robstewart2 | 2008-12-19 04:56:25 -0500 (Fri, 19 Dec 2008) | 1 line
+
+bunch of updates to report
+------------------------------------------------------------------------
+r406 | benwarfield | 2008-12-19 04:48:44 -0500 (Fri, 19 Dec 2008) | 1 line
+
+Added code listings to appendices.  Some are kind of wide.
+------------------------------------------------------------------------
+r405 | robstewart2 | 2008-12-19 04:39:57 -0500 (Fri, 19 Dec 2008) | 1 line
+
+put tutoiral section back in
+------------------------------------------------------------------------
+r404 | benwarfield | 2008-12-19 04:38:22 -0500 (Fri, 19 Dec 2008) | 1 line
+
+Tweaked colored-code sections.
+------------------------------------------------------------------------
+r403 | benwarfield | 2008-12-19 04:25:29 -0500 (Fri, 19 Dec 2008) | 1 line
+
+Stripped useless comments.
+------------------------------------------------------------------------
+r402 | benwarfield | 2008-12-19 04:25:09 -0500 (Fri, 19 Dec 2008) | 1 line
+
+Made the end of this file a little less... wide.
+------------------------------------------------------------------------
+r401 | benwarfield | 2008-12-19 04:24:29 -0500 (Fri, 19 Dec 2008) | 1 line
+
+Test for divide by zero.
+------------------------------------------------------------------------
+r400 | benwarfield | 2008-12-19 04:21:05 -0500 (Fri, 19 Dec 2008) | 1 line
+
+Added isnull method to beat.
+------------------------------------------------------------------------
+r399 | waseemilahi | 2008-12-19 04:20:31 -0500 (Fri, 19 Dec 2008) | 1 line
+
+ division by zero caught inside drul
+------------------------------------------------------------------------
+r398 | waseemilahi | 2008-12-19 04:01:41 -0500 (Fri, 19 Dec 2008) | 1 line
+
+ rand and reverse added in LRM
+------------------------------------------------------------------------
+r397 | waseemilahi | 2008-12-19 03:59:10 -0500 (Fri, 19 Dec 2008) | 1 line
+
+Lessons added
+------------------------------------------------------------------------
+r396 | benwarfield | 2008-12-19 03:24:25 -0500 (Fri, 19 Dec 2008) | 1 line
+
+Promoted a bunch of deserving subsections.
+------------------------------------------------------------------------
+r395 | benwarfield | 2008-12-19 03:13:41 -0500 (Fri, 19 Dec 2008) | 1 line
+
+Dumbed quotation marks in code sections back down.
+------------------------------------------------------------------------
+r394 | benwarfield | 2008-12-19 03:09:55 -0500 (Fri, 19 Dec 2008) | 1 line
+
+That should be \ref not \label...
+------------------------------------------------------------------------
+r393 | benwarfield | 2008-12-19 03:00:53 -0500 (Fri, 19 Dec 2008) | 2 lines
+
+Changed all the verbatims to lstlistings.  Also fixed the everything-is-red
+problem.  Two things may not be actually connected.
+------------------------------------------------------------------------
+r392 | benwarfield | 2008-12-19 02:36:44 -0500 (Fri, 19 Dec 2008) | 2 lines
+
+Added Tutorial section, and tweaked one footnote in the RefManual out of 
+general puckishness.
+------------------------------------------------------------------------
+r391 | robstewart2 | 2008-12-19 02:35:51 -0500 (Fri, 19 Dec 2008) | 1 line
+
+changed intro to proposal
+------------------------------------------------------------------------
+r390 | robstewart2 | 2008-12-19 01:50:54 -0500 (Fri, 19 Dec 2008) | 1 line
+
+added SvnLog.txt
+------------------------------------------------------------------------
+r389 | thierrybm@hotmail.com | 2008-12-19 01:40:24 -0500 (Fri, 19 Dec 2008) | 1 line
+
+two minor typos fixed
+------------------------------------------------------------------------
 r388 | robstewart2 | 2008-12-19 01:38:29 -0500 (Fri, 19 Dec 2008) | 1 line
 
 added an overview of drul to intro
