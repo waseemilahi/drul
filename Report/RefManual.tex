@@ -7,25 +7,24 @@ DruL is mainly an imperative programming language, however it borrows ideas (map
 DruL programs do not contain any loops or user-defined functions.  All pattern
 and clip creation and manipulation is done using the map construct described below.
 
-\section{Language Manual}
 
-\subsection{Lexical Conventions}
+\section{Lexical Conventions}
 
-\subsubsection{Comments}
+\subsection{Comments}
 
 Comments in DruL start with the token ``//'' and continue until the end of the current line.
 DruL has no multi-line comment syntax.
 
-\subsubsection{Whitespace}
+\subsection{Whitespace}
 
 Space, tab, end of line, and return are all considered the same
 and their only use is to seperate tokens.
 
-\subsubsection{Characters}
+\subsection{Characters}
 
 DruL uses the ASCII character set.
 
-\subsubsection{Identifiers}
+\subsection{Identifiers}
 
 An identifier consists of any uppercase or lowercase character
 or an underscore, followed by any sequence of uppercase or lowercase characters,
@@ -36,7 +35,7 @@ In addition, within the context of a mapper, special variables \$1 through \$$n$
 
 All identifiers in a given scope, be they mapper names, variables, or built-in functions, belong to a single namespace.
 
-\subsubsection{Keywords}
+\subsection{Keywords}
 
 \begin{table}[htb]
 \begin{center}
@@ -53,14 +52,14 @@ All identifiers in a given scope, be they mapper names, variables, or built-in f
 
 
 
-\subsection{Types}
+\section{Types}
 
 There are $3$ basic types in DruL: \textbf{integer}s, \textbf{pattern}s,
 and \textbf{clip}s.  In addition, `string' constants may be used in DruL source code, but there is no variable type to which they can be directly assigned.
 Likewise, boolean expressions exist, but cannot be assigned to variables.
 Values in DruL are strongly typed, but the type of a variable is determined dynamically.
 
-\subsubsection{integer}
+\subsection{integer}
 
 All integers are base 10, and may optionally be preceded by a sign ({\tt \textbf + -}).
 Any sequence of digits ($0$ through $9$) is valid.  Leading $0$s are ignored, so a sequence such as $0000123$  is interpreted as $123$.  Integers are mutable.
@@ -70,31 +69,31 @@ Any sequence of digits ($0$ through $9$) is valid.  Leading $0$s are ignored, so
 r = rand();
 s = rand(19);
 \end{verbatim}
-\subsubsection{pattern}
+\subsection{pattern}
 
 A pattern is essentially an object that holds binary, discrete, time-series data.  At each discrete-time step, which will henceforth be referred to as a beat, there is either a note or a rest.  For the non-musically inclined, a note represents sound produced by the striking of a drum (or similar instrument) and a rest represents the absence of any such sound.  Patterns are immutable.  When a pattern is manipulated, the target pattern remains intact and a new copy is created.  The length of a patten can be any non-negative integer.
 
-\subsubsection{beat}
+\subsection{beat}
 
 A beat is a lightweight object that cannot be created directly by the user: it exists only within a mapper (for more discussion of which, see section \ref{MapSection} below).  It gives direct access to information about a single beat of a \textbf{pattern} object (including the beats surrounding it).
 
-\subsubsection{clip}
+\subsection{clip}
 
 An instrument is one of a pre-defined set of sounds (e.g. drum notes) that can occupy a single beat.
 A clip is a mapping of patterns to instruments. Clips are processed in sequence as the program runs to produce output which may be plain-text or a MIDI file.  Clips are immutable.
 
-\subsubsection{string}
+\subsection{string}
 
 A string constant begins with an ASCII double-quote character, continues
 with an arbitrary sequence of ASCII characters other than $\backslash$, $''$, and the ASCII newline character,
 and concludes with another $''$ character.  If a $\backslash$ or $''$ character is
 desired, it can be escaped using the $\backslash$ character.
 
-\subsection{Statements}
+\section{Statements}
 
 In the most common case, a statement consists of a single expression followed by a semicolon (``;'').  Importantly, unlike many languages with similar syntax, DruL does \emph{not} consider a block to be equivalent to a statement.  Instead, statements in DruL take one of the six forms below.
 
-\subsubsection{Expression Statements}
+\subsection{Expression Statements}
 
 The basic form of statement, as in most C-like languages, is the expression statement: \emph{expression-statement}: \emph{expression}\textbf{;}
 
@@ -113,7 +112,7 @@ $\&\&$            &                                  &               \\
 $||$              &                                  &
 \end{tabular}
 
-The subsections that follow use the model of the C Language Reference Manual to indicate the various types of expression.  As in that example. the highest-precedence forms of expression are listed first.  Since much of the material below is extremely straightforward, plain-English descriptions are supplemented by grammatical descriptions only when necessary.
+The sections that follow use the model of the C Language Reference Manual to indicate the various types of expression.  As in that example. the highest-precedence forms of expression are listed first.  Since much of the material below is extremely straightforward, plain-English descriptions are supplemented by grammatical descriptions only when necessary.
 
 \paragraph{Primary Expressions}
 
@@ -156,7 +155,7 @@ Relational tests may be used on integer values only; equality tests can be used 
 
 Here again we follow the conventions of C, and give $\&\&$ precedence over $||$.  These operators require their operands to be boolean values, and return boolean values.
 
-\subsubsection{Assignment Statements}
+\subsection{Assignment Statements}
 
 Assignment in DruL is not a simple operator to be placed in the middle of an expression.  Rather, it is a separate type of statement, which may appear anywhere another statement may appear.
 
@@ -168,7 +167,7 @@ Assignment is polymorphic: the same syntax is used to assign variables to
 integers, patterns and clips. Furthermore, due to DruL's dynamic typing,
 a variable may be reassigned to a different type.
 
-\subsubsection{Selection Statements}
+\subsection{Selection Statements}
 
 Selection statements in DruL take the following form: the string \textbf{if}, followed by an expression that returns a boolean result, enclosed in parentheses, followed by an open-brace (``\{''), one or more statements, and a close-brace (``\}'').  This may optionally be followed by one or more \textbf{elseif}s, which are also followed by parentheses and a block of statements, and one (optional) \textbf{else}, which omits the test expression but is also followed by a block of statements.
 
@@ -179,7 +178,7 @@ Selection statements in DruL take the following form: the string \textbf{if}, fo
 
 \emph{if-middle} : $\epsilon$ $|$ \textbf{elseif ( } \emph{boolean-expression} \textbf{ ) \{} \emph{statement-list} \textbf{\}} \emph{if-middle}
 
-\subsubsection{Mapper Definition Statements}\label{MapperDefinitionStatement}
+\subsection{Mapper Definition Statements}\label{MapperDefinitionStatement}
 
 A mapper definition consists of the word \textbf{Mapper}, followed by an identifier, followed by a parenthesized list of comma-separated identifiers, followed by a block.
 
@@ -188,7 +187,7 @@ A mapper definition consists of the word \textbf{Mapper}, followed by an identif
 \emph{namelist}: \textbf ( \emph{identifier} \textbf ) $|$  \textbf ( \emph{identifier}
 \textbf{,} \emph{namelist} \textbf )
 
-\subsubsection{Return statements}
+\subsection{Return statements}
 
 A return statement can only appear inside the statement block of a named or anonymous mapper:
 
@@ -196,7 +195,7 @@ A return statement can only appear inside the statement block of a named or anon
 
 If this statement is reached, the value of \emph{expression} will be the output of this iteration of the mapper block.  Accordingly, this expression must evaluate to either a pattern or a beat value.
 
-\subsubsection{Instrument definition}
+\subsection{Instrument definition}
 
 This is a special statement that closely resembles a function call:
 
@@ -205,20 +204,20 @@ This is a special statement that closely resembles a function call:
 The arguments to this pseudo-function must all evaluate to strings.  See section \ref{instrSection} for
 a detailed discussion.
 
-\subsection{Blocks, namespace and scoping}
+\section{Blocks, namespace and scoping}
 
-\subsubsection{Blocks}
+\subsection{Blocks}
 
 DruL has a limited block structure: only in the context of an \textbf{if}/\textbf{elseif}/\textbf{else} sequence or a Mapper Definition statement is a new block needed or allowed.  In these cases, curly braces (``\{\}'') are used to delimit the statement-sequence that falls within the block, and they must contain one or more statements.
 
 Mapper definitions define a new closed scope (one from within which externally defined variables are not visible); \textbf{if} blocks do not define a new scope, so all variables used within them are visible to the enclosing  block, and vise-versa.
 
-\subsubsection{Namespace}
+\subsection{Namespace}
 
 DruL has one namespace shared by variables, built-in functions and
 mapper names. Additionally, each type has an associated namespace for methods.  Technically speaking, mappers are values like any other, and their names can be re-used, but this is strongly discouraged.
 
-\subsubsection{Scoping}
+\subsection{Scoping}
 
 Variables in DruL are dynamically scoped.
 DruL has one top level scope, and one scope for each mapper that the program enters
@@ -227,9 +226,9 @@ Within each scope, a program has read-only access to all variables and mapper na
 defined in the scopes above it in this hierarchy: attempts to assign to a variable from an outer scope
 will produce a new variable in the inner scope, which masks the original variable.
 
-\subsection{Patterns and pattern operations}
+\section{Patterns and pattern operations}
 
-\subsubsection{Patterns}
+\subsection{Patterns}
 
 A pattern is a sequence of beats.  Each beat can be a note or a rest.
 To define a pattern, DruL uses `0' for rests and `1' for notes.
@@ -284,7 +283,7 @@ Finally, you can have an empty pattern of length $0$:
   p8 = pattern("");
 \end{verbatim}
 
-\subsubsection{Map}\label{MapSection}
+\subsection{Map}\label{MapSection}
 
 The \textbf{map} construct is used to create new patterns from existing ones.
 \textbf{map} performs an operation iteratively on a set of patterns.
@@ -338,7 +337,7 @@ Each new pattern constructed by map begins as an empty string.  As the pattern a
 
 Variables defined in a mapper function are garbage collected at the end of the map.
 
-\subsubsection{Mapper}
+\subsection{Mapper}
 
 Mapper functions may also be defined with a name, to be used elsewhere in the program.
 
@@ -358,9 +357,9 @@ Then, within the body of the mapper, the current beat of each pattern is aliased
 
 A mapper function must be defined before it is used.
 
-\subsection{Clips}
+\section{Clips}
 
-\subsubsection{Instruments}\label{instrSection}
+\subsection{Instruments}\label{instrSection}
 
 Before we define any clips, we must tell the compiler what instruments they will use.
 This can only be done once per program, and uses the instruments function.
@@ -374,7 +373,7 @@ instruments(``hihat'',``bassdrum'',``crash'',``snare'');
 Instruments must be defined before any clips have been defined. This function
 can only be called once. Also, it cannot be called from inside a mapper.
 
-\subsubsection{Clips}
+\subsection{Clips}
 
 A clip represents a collection of patterns to be played in parallel, where each pattern is played on a single instrument.
 
@@ -402,12 +401,12 @@ The patterns passed into clips are passed by value, not by reference.
 
 Clips also have a small selection of output methods, discussed in the section below.
 
-\subsection{Outputs}
+\section{Outputs}
 
 DruL has two kinds of outputs: any data structure can be printed to standard output for debugging purposes, and clips may be output into files as text or using some
 more complex representation, such as MIDI or Lilypond (for PDF conversion).
 
-\subsubsection{Standard output}
+\subsection{Standard output}
 
 The \textbf{print} statement displays any type to the standard
 output, including strings. For example:
@@ -428,7 +427,7 @@ The output is "0101";
 The \textbf{print} function always include a platform-appropriate line
 ending.
 
-\subsubsection{Text file}
+\subsection{Text file}
 
 Using the same format as is used by \textbf{print}, DruL can print a text representation of a clip to a file
 using the \textbf{outputText} method of the clip:
@@ -439,7 +438,7 @@ myClip.outputText("myfile.txt");
 
 The file being written to is truncated if it exists, and created if it does not exist.
 
-\subsubsection{MIDI file}
+\subsection{MIDI file}
 
 The method \textbf{outputMidi} works similarly, but in addition to the filename, it requires a tempo for the MIDI file to be produced (in beats per minute--this must be a positive integer).
 
@@ -452,7 +451,7 @@ on external libraries like MIDGE\footnote{\url{http://www.undef.org.uk/code/midg
 DruL tries to match its instrument definition with MIDI instruments definitions
 using the names. If no match can be found, DruL will use a default MIDI instrument (first one is cow bell).
 
-\subsubsection{Lilypond file}
+\subsection{Lilypond file}
 
 The clip method \textbf{outputLilypond} operates similarly to the above, but takes a title (to be printed at the top of the page of typeset music) as an optional second argument:
 
