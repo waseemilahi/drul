@@ -5,7 +5,7 @@
 
 Our plan was to complete tasks in the following order, working on tasks in paralell where possible:
 
-\begin{enumeration}
+\begin{enumerate}
 
 \item Design DruL
 \begin{itemize}
@@ -33,7 +33,7 @@ Our plan was to complete tasks in the following order, working on tasks in paral
 	\item Selection statements
 \end{itemize}
 
-\item Core DruL Language Features
+\item Implement Core DruL Language Features
 \begin{itemize}
 	\item Pattern creation and printing
 	\item Pattern built-in functions and methods
@@ -44,7 +44,7 @@ Our plan was to complete tasks in the following order, working on tasks in paral
 	\item Clip creation and printing
 \end{itemize}
 
-\item Advanced DruL Language Features
+\item Implement Advanced DruL Language Features
 \begin{itemize}
 	\item Clip text output
 	\item Clip MIDI output
@@ -52,7 +52,7 @@ Our plan was to complete tasks in the following order, working on tasks in paral
 	\item Clip built-ins concat and repeat (not implemented)
 \end{itemize}
 
-\item Fit and Finish
+\item Implement Fit and Finish
 \begin{itemize}
 	\item Interpreter command-line arguments
 	\item Detailed error messages
@@ -61,7 +61,7 @@ Our plan was to complete tasks in the following order, working on tasks in paral
 	\item Static semantic checks (not implemented)
 \end{itemize}
 
-\end{enumeration}
+\end{enumerate}
 
 We initially used our own SVN server for source and documentation management.  However, we soon moved to Google Code to make used of its issues list for keeping track of bugs and the ToDo's correpsonding to the above features.
 
@@ -81,45 +81,44 @@ Due to the fact that all of our team members started as novice OCaml programmers
 	\item Horizontally align similar lines of code using extra whitespace
 \end{itemize}
 
-We never reached a conensus on whether to make our OCaml identifiers CamelCase or underscore_separated.
+We never reached a conensus on whether to make our OCaml identifiers CamelCase or underscore\_separated.
 
 \section{Timeline}
 * Show your project timeline
 
 \begin{tabular}{ | l | l | } \hline
-
-	Specify syntax & \\
-	Specify semantics & \\
-	Write the LRM & \\
-	AST & \\
-	Scanner & & \\
-	Parser & \\
-	Test Suite Driver & \\
-	Initial test cases & \\
-	Basic Interpreter & \\
-	Integer arithmetic & \\
-	Boolean operations & \\
-	Assignment statments and symbol table & \\
-	Selection statements & \\
-	Pattern creation and printing & \\
-	Pattern built-in functions and methods & \\
-	Map, mappers, and beats & \\
-	Named mappers & \\
-	Beat built-in methods & \\
-	DruL GCD & \\
-	Instrument definition & \\
-	Clip creation and printing & \\
-	Clip text output & Dec 15 \\
-	Clip MIDI output & Dec 16-17 \\
-	Interpreter command-line argument & Dec 16 \\
-	Detailed error messages & Dec 16 \\
-	Error message line numbers & Dec 16 \\
-	Clip Lilypond output & Dec 17 \\
-	Trapped parse errors & Dec 17 \\
-	DruL song & Dec 17
-	Presentation slides & Dec 17-18 \\
-	Report & Dec 18-19 \\
-
+	\textbf{Task} & \textbf{Date(s)} \\ \hline \hline
+	Specify syntax & \\ \hline
+	Specify semantics & \\ \hline
+	Write the LRM & \\ \hline
+	AST & \\ \hline
+	Scanner & \\ \hline
+	Parser & \\ \hline
+	Test Suite Driver & \\ \hline
+	Initial test cases & \\ \hline
+	Basic Interpreter & \\ \hline
+	Integer arithmetic & \\ \hline
+	Boolean operations & \\ \hline
+	Assignment statments and symbol table & \\ \hline
+	Selection statements & \\ \hline
+	Pattern creation and printing & \\ \hline
+	Pattern built-in functions and methods & \\ \hline
+	Map, mappers, and beats & \\ \hline
+	Named mappers & \\ \hline
+	Beat built-in methods & \\ \hline
+	DruL GCD & \\ \hline
+	Instrument definition & \\ \hline
+	Clip creation and printing & \\ \hline
+	Clip text output & Dec 15 \\ \hline
+	Clip MIDI output & Dec 16-17 \\ \hline
+	Interpreter command-line argument & Dec 16 \\ \hline
+	Detailed error messages & Dec 16 \\ \hline
+	Error message line numbers & Dec 16 \\ \hline
+	Clip Lilypond output & Dec 17 \\ \hline
+	Trapped parse errors & Dec 17 \\ \hline
+	DruL song & Dec 17 \\ \hline
+	Presentation slides & Dec 17-18 \\ \hline
+	Report & Dec 18-19 \\ \hline
 \end{tabular}
 
 \section{Roles and Responsibilities}
@@ -129,15 +128,89 @@ Each team member volunteered for the completion of tasks.  Tasks were not divied
 
 Below is a general description of the major tasks completed by each team member.  Paired efforts are noted in parentheses.  Note, that most work was with the group all in one room at one common table.  This allowed and individual or pair to ask for help or advice from the rest of the team.  This is done consistently and resulted with all members of the team being at least somewhat familiar with the impementation of almost all parts of the system.
 
-\begin{Itemize}
+\begin{itemize}
 
-\item \textbf{Rob:} As team leader, resolved minor conflicts.  Decided on drumming language idea.  Setup intial SVN repository.  Wrote introduction for all documents.  Assisted with language design.  Wrote the Pattern, Map, and Mapper sections of the LRM.  Coded the AST (with Ben).  Assisted with coding the parser.  Coded the initial "helloworld" interpreter (with Waseem).  Coded pattern construct (with Ben).  Coded DruL's built-in functions and methods and added corresponding test cases (with Waseem).  Coded instrument and clip constructs (with Theirry).  Performed built-ins code refactoring (with Ben).  Performed code cleanup.  Refactored text output.  Coded MIDI output.  Wrote an example drum song using DruL.  Edited all the presentation slides.  Wrote the Project Plan section of the report.
+\item \textbf{Rob:}
+\begin{enumerate}
+	\item As team leader, resolved minor conflicts
+	\item Proposed drumming language idea
+	\item Setup intial SVN repository
+	\item Wrote introduction for all documents
+	\item Assisted with language design
+	\item Wrote the Pattern, Map, and Mapper sections of the LRM
+	\item Coded the AST (with Ben)
+	\item Assisted with coding the parser
+	\item Coded the initial ``helloworld'' interpreter (with Waseem)
+	\item Coded pattern construct (with Ben)
+	\item Coded DruL's built-in functions and methods and added corresponding test cases (with Waseem)
+	\item Coded instrument and clip constructs (with Theirry)
+	\item Performed built-ins code refactoring (with Ben)
+	\item Performed code cleanup
+	\item Refactored text output
+	\item Coded MIDI output
+	\item Wrote an example drum song using DruL
+	\item Edited all the presentation slides
+	\item Wrote the Project Plan section of the report
+\end{enumerate}
 
-\item \textbf{Ben:} Decided on map/mapper idea.  Proposal???  Assited with language design.  Wrote the Types, Statments, Blocks and Scoping sections of the LRM.  Coded the AST (with Rob).  Assisted with coding the parser.  Coded the parse-tree dumper.  Coded selecton and assignment statements.  Coded pattern construct (with Rob).  Coded map and mapper (with Theirry).  Coded GCD implementation using DruL.  Refactored built-ins (with Rob).  Refactored interpreter into smaller files.  Refactored scanner, parser, and interpreter to inculde line numbers in error messages with (with Thierry).  Added tests for error messages.  Coded Coded Lilypond output.  Refactored output code.  Fixed corner-case symbol-table bugs.  Wrote parts 1 and 2 of the presentation (except for the mapper animation).  Updated the LRM for the report (with Waseem).  Wrote the tutorial section of the report (with Waseem).
+\item \textbf{Ben:}
+\begin{enumerate}
+	\item Decided on map/mapper idea
+	\item Proposal???
+	\item Assited with language design
+	\item Wrote the Types, Statments, Blocks and Scoping sections of the LRM
+	\item Coded the AST (with Rob)
+	\item Assisted with coding the parser
+	\item Coded the parse-tree dumper
+	\item Coded selecton and assignment statements
+	\item Coded pattern construct (with Rob)
+	\item Coded map and mapper (with Theirry)
+	\item Coded GCD implementation using DruL
+	\item Refactored built-ins (with Rob)
+	\item Refactored interpreter into smaller files
+	\item Refactored scanner, parser, and interpreter to inculde line numbers in error messages with (with Thierry)
+	\item Added tests for error messages
+	\item Coded Coded Lilypond output
+	\item Refactored output code
+	\item Fixed corner-case symbol-table bugs
+	\item Wrote parts 1 and 2 of the presentation (except for the mapper animation)
+	\item Updated the LRM for the report (with Waseem).  Wrote the tutorial section of the report (with Waseem)
+\end{enumerate}
 
-\item \textbf{Thierry:} Proposal???  Assisted with language design.  Wrote the Instrument, Clip, and Output sections of the LRM.  Setup replacement Google Code repository.  Coded the test-suite driver.  Manualy created initial suite of test input and corresponding output files.  Assisted with coding the parser.  Coded map and mapper (with Ben).  Coded named mapper.  Coded instruments and clip constructs (with Rob).  Refactored scanner, parser, and interpreter to include line numbers in error messages (with Ben).  Added tests for error messages.  Fixed corner-case symbol-table bugs.  Wrote part 4 of the presentation.  Made the mapper animation for the presentation.  Wrote the testing section of the report.
+\item \textbf{Thierry:}
+\begin{enumerate}
+	\item Proposal???
+	\item Assisted with language design
+	\item Wrote the Instrument, Clip, and Output sections of the LRM
+	\item Setup replacement Google Code repository
+	\item Coded the test-suite driver
+	\item Manualy created initial suite of test input and corresponding output files
+	\item Assisted with coding the parser
+	\item Coded map and mapper (with Ben)
+	\item Coded named mapper
+	\item Coded instruments and clip constructs (with Rob)
+	\item Refactored scanner, parser, and interpreter to include line numbers in error messages (with Ben)
+	\item Added tests for error messages
+	\item Fixed corner-case symbol-table bugs
+	\item Wrote part 4 of the presentation
+	\item Made the mapper animation for the presentation
+	\item Wrote the testing section of the report
+\end{enumerate}
 
-\item \textbf{Waseem:} Proposal???  Assisted with lanuage design.  Wrote the Example Code section of the LRM.  Coded the scanner.  Assisted with coding the parser.  Coded the initial "helloworld" interpreter (with Rob).  Coded DruL's built-in functions and methods and added corresponding test cases (with Rob).  Coded text output.  Wrote part 3 of the presentation. Updated the LRM for the report (with Ben).  Wrote the tutorial section of the report (with Ben).
+\item \textbf{Waseem:}
+\begin{enumerate}
+	\item Proposal???
+	\item Assisted with lanuage design
+	\item Wrote the Example Code section of the LRM
+	\item Coded the scanner
+	\item Assisted with coding the parser
+	\item Coded the initial ``helloworld'' interpreter (with Rob)
+	\item Coded DruL's built-in functions and methods and added corresponding test cases (with Rob)
+	\item Coded text output
+	\item Wrote part 3 of the presentation
+	\item Updated the LRM for the report (with Ben)
+	\item Wrote the tutorial section of the report (with Ben)
+\end{enumerate}
 
 \end{itemize}
 
@@ -146,7 +219,7 @@ Below is a general description of the major tasks completed by each team member.
 
 All of our source code was written using OCaml with the exception of the special syntaxes used by ocamllex and ocamlyacc, and the test-suite driver which was written in Python.
 
-\section{Tools}
+\subsection{Tools}
 
 \begin{itemize}
 \item \textbf{Lexer:} We used ocamllex to compile our ocamllex code into an Ocaml lexer/tokenizer, which given DruL source code, produces a token stream.
