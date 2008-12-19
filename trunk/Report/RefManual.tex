@@ -343,11 +343,11 @@ Before we define any clips, we must tell the compiler what instruments they will
 This can only be done once per program, and uses the instruments function.  This function can take a variable number of arguments.  Each argument is the name of an instrument to be defined.  In the example below, four instruments are defined:
 
 \begin{verbatim}
-instruments(hihat bassdrum crash snare);
+instruments(``hihat'',``bassdrum'',``crash'',``snare'');
 \end{verbatim}
 
 Instruments must be defined before any clips have been defined. This function 
-can only be called once.
+can only be called once. Also, it cannot be called from inside a mapper.
 
 \subsubsection{Clips}
 
@@ -359,8 +359,8 @@ associative-array notation:
 \begin{verbatim}
 clip1 = clip
 (
-    bassdrum = downbeats
-    hihat    = alternate_beats
+    bassdrum <- downbeats
+    hihat    <- alternate_beats
 );
 \end{verbatim}
 The same result can be achieved by simply listing the patterns for each instrument in the order they are defined using the \textbf{instruments} function:
