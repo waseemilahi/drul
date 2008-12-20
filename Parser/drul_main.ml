@@ -309,7 +309,7 @@ and method_call objectExpr mname margs env =
 			|	(_, _) -> raise 
 				(Invalid_argument ("slice must be given integer values for start position and length", lineno))
 		)
-	|	(Beat(a,i), "isnull", []) -> let beatval = state_of_beat objectVal in
+	|	(Beat(a,i), "null", []) -> let beatval = state_of_beat objectVal in
 		(
 			match beatval with
 				Some(_)     -> Bool(false)
