@@ -333,7 +333,7 @@ If you call map on multiple patterns that are not of the same length, the shorte
 
 By default, an empty pattern is returned for each iteration.
 
-Each new pattern constructed by map begins as an empty string.  As the pattern arugments are iterated over, the return values of the mapper function (which are also patterns) are concatenated onto the end of the new pattern.
+The return value of a map begins as an empty pattern.  As the pattern arguments are iterated over, the return values of the mapper function (which are also patterns) are concatenated onto the end of the new pattern.  As a shorthand, it is also possible to return a beat object, which is equivalent to calling \textbf{asPattern} on that beat.
 
 Variables defined in a mapper function are garbage collected at the end of the map.
 
